@@ -1,0 +1,178 @@
+// Sample tirth data - to be replaced with real API calls
+export const sampleTirths = [
+  {
+    id: '1',
+    name: 'Palitana Temples',
+    description:
+      'The magnificent Palitana Temples are one of the most holy pilgrimage sites for Jains, with over 900 temples carved from white stone.',
+    historicalBackground:
+      'Palitana has been a sacred pilgrimage site for thousands of years. The temples were built over several centuries, with the earliest temples dating back to the 11th century.',
+    foundingYear: 1000,
+    foundingDetails: 'Founded by Jain monks and later expanded by various kings and wealthy merchants',
+    pratisthaYear: 1500,
+    acharya: 'Various Acharyas',
+    architecture:
+      'The temples feature intricate marble carvings, grand domes, and beautiful sculptural details. The architectural style blends both Shwetambar and Digambar influences.',
+    moolnayak: [
+      {
+        name: 'Adinath',
+        height: '25 feet',
+        metal: 'Gold and Silver',
+        year: 1200,
+        details: 'The main deity of Palitana',
+      },
+      {
+        name: 'Vasupujya',
+        height: '18 feet',
+        metal: 'Silver',
+        year: 1300,
+        details: 'The 12th Tirthankara',
+      },
+    ],
+    specialFacts: [
+      '900+ temples on a single hill',
+      'The temples are made entirely of marble',
+      'The pilgrimage involves climbing 3,500 steps',
+      'The temples are illuminated with beautiful lighting at night',
+    ],
+    poojaTimings: '6:00 AM - 10:00 PM',
+    darshanTimings: '6:00 AM - 8:00 PM',
+    festivals: [
+      {
+        name: 'Mahavir Jayanti',
+        date: 'Chaitra Shukla 13',
+        month: 'March-April',
+        description: 'Celebration of Lord Mahavir\'s birth',
+        specialEvent: 'Special pujas and processions',
+      },
+      {
+        name: 'Diwali',
+        date: 'Kartik Amavasya',
+        month: 'October-November',
+        description: 'Festival of lights',
+        specialEvent: 'Oil lamps light up all temples',
+      },
+    ],
+    location: {
+      latitude: 22.128,
+      longitude: 71.828,
+      address: 'Palitana, Bhavnagar',
+      city: 'Palitana',
+      state: 'Gujarat',
+      zipCode: '364270',
+    },
+    images: [
+      'https://via.placeholder.com/500x400?text=Palitana+Temples',
+      'https://via.placeholder.com/500x400?text=Temple+Detail',
+      'https://via.placeholder.com/500x400?text=Night+View',
+    ],
+    sect: 'Shwetambar',
+    type: 'Atishay-Kshetra',
+    facilities: [
+      {
+        id: 'f1',
+        name: 'Shri Krishna Bhojanshala',
+        type: 'bhojanshala',
+        description: 'Traditional vegetarian restaurant serving Gujarati cuisine',
+        location: {
+          latitude: 22.128,
+          longitude: 71.828,
+          address: 'Main Market, Palitana',
+          city: 'Palitana',
+          state: 'Gujarat',
+        },
+        contact: {
+          phone: '+91-2848-252222',
+          email: 'info@krishna-bhojanshala.com',
+          website: 'www.krishna-bhojanshala.com',
+        },
+        image: 'https://via.placeholder.com/300x200?text=Bhojanshala',
+        rating: 4.5,
+        availability: 'Open daily',
+        operatingHours: '12:00 PM - 10:00 PM',
+      },
+      {
+        id: 'f2',
+        name: 'Shanti Dharmashala',
+        type: 'dharmashala',
+        description: 'Budget-friendly accommodation for pilgrims',
+        location: {
+          latitude: 22.129,
+          longitude: 71.829,
+          address: 'Near Temple Gate, Palitana',
+          city: 'Palitana',
+          state: 'Gujarat',
+        },
+        contact: {
+          phone: '+91-2848-252333',
+          email: 'info@shanti-dharmashala.com',
+        },
+        image: 'https://via.placeholder.com/300x200?text=Dharmashala',
+        rating: 4.2,
+        availability: '50 rooms available',
+        operatingHours: '24 hours',
+      },
+    ],
+    rating: 4.8,
+    reviews: 1250,
+    travelDuration: '2-3 days',
+  },
+  {
+    id: '2',
+    name: 'Ranakpur Jain Temple',
+    description:
+      'A stunning white marble temple complex with intricate carvings and vast courtyards, one of the five most important pilgrimage sites for Jains.',
+    historicalBackground:
+      'Built in the 15th century by the merchant Dhanraj Mandal, Ranakpur temple represents a masterpiece of Jain architecture.',
+    foundingYear: 1440,
+    foundingDetails: 'Constructed by the Jain merchant Dhanraj Mandal during the reign of Rana Kumbha',
+    pratisthaYear: 1442,
+    acharya: 'Sri Diji Maharaj',
+    architecture:
+      'The temple features 29 halls, 80 domes, and is supported by 1,444 marble pillars, each with unique carvings and designs.',
+    moolnayak: [
+      {
+        name: 'Adinath',
+        height: '20 feet',
+        metal: 'White Marble',
+        year: 1442,
+        details: 'The main idol of the temple',
+      },
+    ],
+    specialFacts: [
+      '1,444 uniquely carved marble pillars',
+      'Every pillar has different carving designs',
+      'The temple is located at 2,585 feet altitude',
+      'The sacred hill has caves used by ancient Jain monks',
+    ],
+    poojaTimings: '5:00 AM - 10:00 PM',
+    darshanTimings: '5:00 AM - 9:00 PM',
+    festivals: [
+      {
+        name: 'Kartik Purnima',
+        date: 'Kartik Purnima',
+        month: 'November',
+        description: 'Full moon celebration',
+      },
+    ],
+    location: {
+      latitude: 25.05,
+      longitude: 73.8,
+      address: 'Ranakpur, Pali District',
+      city: 'Ranakpur',
+      state: 'Rajasthan',
+      zipCode: '306703',
+    },
+    images: [
+      'https://via.placeholder.com/500x400?text=Ranakpur+Temple',
+      'https://via.placeholder.com/500x400?text=Marble+Pillars',
+      'https://via.placeholder.com/500x400?text=Interior+View',
+    ],
+    sect: 'Shwetambar',
+    type: 'Gyan-sthan',
+    facilities: [],
+    rating: 4.7,
+    reviews: 980,
+    travelDuration: '1-2 days',
+  },
+]
