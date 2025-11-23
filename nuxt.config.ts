@@ -21,7 +21,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       mapboxToken: process.env.NUXT_PUBLIC_MAPBOX_TOKEN || '',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+  // Use relative `/api` by default so client-side code talks to the same origin (avoids CORS during dev)
+  apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
     },
   },
 

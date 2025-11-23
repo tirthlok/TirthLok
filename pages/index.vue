@@ -21,9 +21,19 @@
       <p class="text-red-600 text-xs md:text-sm mt-1">{{ error }}</p>
     </div>
 
-    <!-- Tirth Cards Grid -->
-    <div v-if="!loading && filteredTirths.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 px-4 sm:px-6 lg:px-8 pb-32 md:pb-12">
-      <TirthCard v-for="tirth in filteredTirths" :key="tirth.id" :tirth="tirth" />
+    <!-- Tirth Cards Horizontal Scroll -->
+    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 pb-12">
+      <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-4 sm:gap-5 md:gap-6 w-max snap-x snap-mandatory">
+          <div
+            v-for="tirth in filteredTirths"
+            :key="tirth.id"
+            class="flex-shrink-0 snap-start w-[150px] sm:w-[150px] md:w-[160px] lg:w-[180px]"
+          >
+            <TirthCard :tirth="tirth" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Empty State -->
