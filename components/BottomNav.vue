@@ -1,49 +1,54 @@
 <template>
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg md:hidden z-40">
-    <div class="flex items-center justify-around h-20 safe-area-bottom px-2">
+  <!-- Show bottom nav on all sizes (removed md:hidden) so it's visible during development/testing -->
+  <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+    <div
+      class="inline-flex items-center gap-3 px-3 py-2 bg-white/80 backdrop-blur-md border border-gray-100 rounded-full shadow-lg safe-area-bottom"
+      role="navigation"
+      aria-label="Bottom navigation"
+    >
       <NuxtLink
         to="/"
-        class="flex flex-col items-center justify-center gap-1 flex-1 h-full hover:bg-gray-50 transition-colors rounded-lg"
-        :class="{ 'text-red-500': isActive('/') }"
+        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
+        :class="isActive('/') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+        aria-label="Home"
       >
-        <Icon name="Home" :size="24" />
-        <span class="text-xs font-medium">Home</span>
+        <Icon name="Home" :size="20" />
       </NuxtLink>
 
       <NuxtLink
         to="/tirth"
-        class="flex flex-col items-center justify-center gap-1 flex-1 h-full hover:bg-gray-50 transition-colors rounded-lg"
-        :class="{ 'text-red-500': isActive('/tirth') }"
+        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
+        :class="isActive('/tirth') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+        aria-label="Tirths"
       >
-        <Icon name="Building2" :size="24" />
-        <span class="text-xs font-medium">Tirth</span>
+        <Icon name="Building2" :size="20" />
       </NuxtLink>
 
       <NuxtLink
         to="/dharamshala"
-        class="flex flex-col items-center justify-center gap-1 flex-1 h-full hover:bg-gray-50 transition-colors rounded-lg"
-        :class="{ 'text-red-500': isActive('/dharamshala') }"
+        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
+        :class="isActive('/dharamshala') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+        aria-label="Dharamshala"
       >
-        <Icon name="Building" :size="24" />
-        <span class="text-xs font-medium">Dharamshala</span>
+        <Icon name="Building" :size="20" />
       </NuxtLink>
 
       <NuxtLink
         to="/bhojanshala"
-        class="flex flex-col items-center justify-center gap-1 flex-1 h-full hover:bg-gray-50 transition-colors rounded-lg"
-        :class="{ 'text-red-500': isActive('/bhojanshala') }"
+        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
+        :class="isActive('/bhojanshala') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+        aria-label="Bhojanshala"
       >
-        <Icon name="UtensilsCrossed" :size="24" />
-        <span class="text-xs font-medium">Bhojanshala</span>
+        <Icon name="UtensilsCrossed" :size="20" />
       </NuxtLink>
 
       <NuxtLink
         to="/profile"
-        class="flex flex-col items-center justify-center gap-1 flex-1 h-full hover:bg-gray-50 transition-colors rounded-lg"
-        :class="{ 'text-red-500': isActive('/profile') }"
+        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
+        :class="isActive('/profile') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+        aria-label="Profile"
       >
-        <Icon name="User" :size="24" />
-        <span class="text-xs font-medium">Profile</span>
+        <Icon name="User" :size="20" />
       </NuxtLink>
     </div>
   </nav>

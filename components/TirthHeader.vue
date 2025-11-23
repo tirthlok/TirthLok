@@ -5,15 +5,15 @@
       <div class="md:w-1/2">
         <div class="relative rounded-lg overflow-hidden bg-gray-200 h-96 mb-4">
           <img
-            :src="tirth.images[currentImageIndex] || 'https://via.placeholder.com/500x500'"
+            :src="imagesArr[currentImageIndex] || 'https://via.placeholder.com/500x500'"
             :alt="tirth.name"
             class="w-full h-full object-cover"
           />
           
           <!-- Image Navigation -->
-          <div v-if="tirth.images.length > 1" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <div v-if="imagesArr.length > 1" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
             <button
-              v-for="(_, index) in tirth.images"
+              v-for="(_, index) in imagesArr"
               :key="index"
               @click="currentImageIndex = index"
               :class="[
@@ -25,9 +25,9 @@
         </div>
 
         <!-- Thumbnail Strip -->
-        <div v-if="tirth.images.length > 1" class="flex gap-2 overflow-x-auto">
+        <div v-if="imagesArr.length > 1" class="flex gap-2 overflow-x-auto">
           <button
-            v-for="(image, index) in tirth.images"
+            v-for="(image, index) in imagesArr"
             :key="index"
             @click="currentImageIndex = index"
             :class="[
@@ -128,6 +128,7 @@
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
 import { useUserStore } from '~/stores/user'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   tirth: Tirth
@@ -135,6 +136,12 @@ const props = defineProps<{
 
 const userStore = useUserStore()
 const currentImageIndex = ref(0)
+
+// Normalize tirth.images to an array to handle both string or array cases
+const imagesArr = computed(() => {
+  if (!props.tirth.images) return [] as string[]
+  return Array.isArray(props.tirth.images) ? props.tirth.images : [props.tirth.images]
+})
 const isFav = computed(() => userStore.isFavorite(props.tirth.id))
 
 const toggleFavorite = async () => {

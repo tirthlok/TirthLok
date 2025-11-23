@@ -19,15 +19,25 @@
       </NuxtLink>
     </div>
 
-    <!-- Favorites Grid -->
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 pb-32 md:pb-12">
-      <TirthCard v-for="tirth in favorites" :key="tirth.id" :tirth="tirth" />
+    <!-- Favorites Horizontal Scroll -->
+    <div v-else class="pb-8">
+      <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-4 sm:gap-5 md:gap-6 w-max snap-x snap-mandatory">
+          <div
+            v-for="tirth in favorites"
+            :key="tirth.id"
+            class="flex-shrink-0 snap-start w-[150px] sm:w-[150px] md:w-[160px] lg:w-[180px]"
+          >
+            <TirthCard :tirth="tirth" />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Tirth } from '~/types/models'
+
 import { useTirthStore } from '~/stores/tirth'
 import { useUserStore } from '~/stores/user'
 

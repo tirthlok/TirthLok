@@ -1,85 +1,95 @@
 <template>
-  <div :class="['bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all', gridClass]">
+  <div
+    :class="[
+      'bg-white rounded-2xl transition-all duration-300',
+      gridClass,
+      clickable ? 'cursor-pointer' : '',
+    ]"
+    @click="clickable && $emit('click')"
+  >
     <!-- Image -->
-    <div class="relative h-40 sm:h-48 bg-gray-200 overflow-hidden group">
+    <div class="relative w-full portrait-aspect overflow-hidden rounded-2xl">
       <img
-        :src="image || 'https://via.placeholder.com/300x200'"
+        :src="imagesArr[currentImageIndex] || 'https://via.placeholder.com/300x200'"
         :alt="title"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        class="absolute inset-0 w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
       />
-      <div v-if="badge" class="absolute top-3 left-3">
-        <BaseBadge variant="primary">{{ badge }}</BaseBadge>
+      <div v-if="imagesArr.length > 1" class="absolute inset-0 flex items-center justify-between px-2">
+        <button @click.stop="prevImage" class="p-2 bg-white rounded-full shadow-md opacity-75 hover:opacity-100 transition-opacity">
+          <Icon name="ChevronLeft" :size="20" />
+        </button>
+        <button @click.stop="nextImage" class="p-2 bg-white rounded-full shadow-md opacity-75 hover:opacity-100 transition-opacity">
+          <Icon name="ChevronRight" :size="20" />
+        </button>
       </div>
-      <button
-        v-if="showFavorite"
-        @click.stop="$emit('favorite')"
-        :class="['absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all', isFavorite ? 'text-red-500' : 'text-gray-400']"
-      >
-        <Icon name="Heart" :size="20" :fill="isFavorite" />
-      </button>
+      <div v-if="imagesArr.length > 1" class="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+        <span
+          v-for="(_, index) in imagesArr"
+          :key="index"
+          :class="['block w-1.5 h-1.5 rounded-full', index === currentImageIndex ? 'bg-white' : 'bg-gray-400 opacity-75']"
+        ></span>
+      </div>
     </div>
 
     <!-- Content -->
-    <div class="p-4">
-      <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-red-600 transition-colors">
+    <div class="pt-3 px-2 pb-2">
+      <h3 class="text-base font-medium text-gray-800 line-clamp-1">
         {{ title }}
       </h3>
 
-      <div v-if="subtitle" class="flex items-center gap-1 text-sm text-gray-500 mb-3">
-        <Icon name="MapPin" :size="16" class="text-gray-400" />
-        <span class="line-clamp-1">{{ subtitle }}</span>
-      </div>
-
-      <!-- Meta Info Grid -->
-      <div v-if="metaInfo.length > 0" class="grid grid-cols-3 gap-2 mb-4 text-center text-xs">
-        <div v-for="(meta, idx) in metaInfo" :key="idx" class="bg-gray-50 rounded-lg py-2">
-          <div class="text-gray-500">{{ meta.label }}</div>
-          <div class="font-bold text-gray-900">{{ meta.value }}</div>
-        </div>
-      </div>
-
-      <!-- Rating -->
-      <div v-if="rating" class="flex items-center gap-1 mb-4">
-        <Icon name="Star" :size="16" class="fill-yellow-400 text-yellow-400" />
-        <span class="text-sm font-semibold">{{ rating }}</span>
-        <span v-if="reviews" class="text-xs text-gray-600">({{ reviews }})</span>
-      </div>
-
-      <!-- Actions -->
-      <div class="flex gap-2">
-        <slot name="actions" />
+      <div v-if="subtitle" class="text-sm text-gray-500 mt-1 line-clamp-1">
+        {{ subtitle }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface MetaItem {
-  label: string
-  value: string | number
-}
+import { ref, onMounted, computed } from 'vue'
+import Icon from '~/components/Icon.vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
-    image?: string
+    images?: string[] | string
     title: string
     subtitle?: string
-    badge?: string
-    rating?: number
-    reviews?: number
-    metaInfo?: MetaItem[]
-    isFavorite?: boolean
-    showFavorite?: boolean
     gridClass?: string
+    clickable?: boolean
   }>(),
   {
-    metaInfo: () => [],
-    showFavorite: true,
+    images: () => [],
     gridClass: '',
+    clickable: false,
   }
 )
 
+const currentImageIndex = ref(0)
+
+// Normalize images prop to always be an array for easier handling
+
+const imagesArr = computed(() => {
+  if (!props.images) return [] as string[]
+  if (Array.isArray(props.images)) return props.images as string[]
+  return [props.images as string]
+})
+
+const nextImage = () => {
+  if (imagesArr.value.length === 0) return
+  currentImageIndex.value = (currentImageIndex.value + 1) % imagesArr.value.length
+}
+
+const prevImage = () => {
+  if (imagesArr.value.length === 0) return
+  currentImageIndex.value = (currentImageIndex.value - 1 + imagesArr.value.length) % imagesArr.value.length
+}
+
 defineEmits<{
-  favorite: []
+  click: []
 }>()
+// Lightweight debug output (kept minimal). Remove or toggle as needed.
+onMounted(() => {
+  // console.log('BaseCard images for', props.title, ':', imagesArr.value)
+})
 </script>
+
+
