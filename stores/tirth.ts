@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Tirth, Facility, User } from '~/types/models'
+import { sampleTirths } from '~/server/utils/sampleData'
 
 interface TirthState {
   tirths: Tirth[]
@@ -11,9 +12,9 @@ interface TirthState {
 
 export const useTirthStore = defineStore('tirth', {
   state: (): TirthState => ({
-    tirths: [],
+    tirths: sampleTirths as Tirth[],
     selectedTirth: null,
-    filteredTirths: [],
+    filteredTirths: sampleTirths as Tirth[],
     loading: false,
     error: null,
   }),

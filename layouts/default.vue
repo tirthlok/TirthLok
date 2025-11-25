@@ -1,27 +1,24 @@
 <template>
-  <div class="min-h-screen bg-white flex flex-col">
-    <!-- Header - Airbnb Style -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col">
+    <!-- Header - Modern Gradient -->
+    <header class="bg-gradient-to-r from-white via-red-50 to-white border-b border-red-200/50 sticky top-0 z-40 shadow-md backdrop-blur-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <!-- Top Row: Logo and Menu -->
         <div class="flex items-center justify-between gap-4 mb-3">
           <!-- Logo -->
-          <NuxtLink to="/" class="flex items-center gap-2 flex-shrink-0">
-            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-md">
-              <Icon name="Palmtree" :size="20" class="text-white" />
+          <NuxtLink to="/" class="flex items-center gap-2 flex-shrink-0 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 animate-pulse-glow">
+              <Icon name="Palmtree" :size="22" class="text-white group-hover:animate-float" />
             </div>
-            <span class="text-xl font-bold text-red-500 font-serif hidden sm:inline">Tirth</span>
+            <span class="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-clip-text text-transparent font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
           </NuxtLink>
 
           <!-- Desktop Navigation -->
-          <nav class="hidden md:flex items-center gap-6">
-            <button class="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors">
-              Become a host
+          <nav class="hidden md:flex items-center gap-4">
+            <button class="text-gray-600 hover:text-red-500 font-medium text-sm transition-colors p-2 hover:bg-red-50 rounded-full">
+              <Icon name="Globe" :size="20" />
             </button>
-            <button class="text-gray-700 hover:text-gray-900 font-medium text-sm transition-colors">
-              <Icon name="Globe" :size="18" />
-            </button>
-            <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:shadow-md transition-shadow">
+            <button class="flex items-center gap-2 px-5 py-2 border-2 border-red-300 rounded-full hover:bg-red-50 transition-all hover:shadow-lg font-medium text-sm">
               <Icon name="Menu" :size="18" />
               <Icon name="User" :size="18" />
             </button>
@@ -33,44 +30,44 @@
           </button>
         </div>
 
-        <!-- Search Bar - Full Width -->
-        <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 hover:shadow-md transition-all">
-          <Icon name="Search" :size="18" class="text-gray-600 flex-shrink-0" />
+        <!-- Search Bar - Full Width with Gradient -->
+        <div class="flex items-center gap-2 bg-gradient-to-r from-white to-red-50 border-2 border-red-200 rounded-full px-4 py-2.5 hover:shadow-lg hover:border-red-300 transition-all focus-within:ring-2 focus-within:ring-red-400 focus-within:ring-opacity-50">
+          <Icon name="Search" :size="18" class="text-red-500 flex-shrink-0" />
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search temples, cities..."
-            class="flex-1 bg-transparent text-gray-900 placeholder-gray-500 outline-none text-sm"
+            class="flex-1 bg-transparent text-gray-900 placeholder-gray-400 outline-none text-sm font-medium"
             @input="handleSearch"
             @focus="showSuggestions = true"
-            @blur="setTimeout(() => (showSuggestions = false), 200)"
+            @blur="handleBlur"
           />
           <button
             @click="filterOpen = !filterOpen"
-            class="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-red-100 rounded-lg transition-all hover:text-red-600"
           >
-            <Icon name="Sliders" :size="18" class="text-gray-600 flex-shrink-0 cursor-pointer hover:text-gray-900" />
+            <Icon name="Sliders" :size="18" class="text-gray-600 flex-shrink-0 cursor-pointer" />
           </button>
         </div>
 
         <!-- Search Suggestions -->
         <div
           v-if="showSuggestions && filteredSuggestions.length > 0"
-          class="absolute top-20 left-4 right-4 md:left-auto md:right-auto md:w-full md:max-w-md bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-slide-up md:ml-16"
+          class="absolute top-20 left-4 right-4 md:left-auto md:right-auto md:w-full md:max-w-md bg-white rounded-xl shadow-2xl border-2 border-red-200 z-50 animate-slide-up md:ml-16 overflow-hidden"
         >
           <div class="max-h-96 overflow-y-auto">
             <div>
-              <div v-if="searchQuery" class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Results
+              <div v-if="searchQuery" class="px-4 py-3 text-xs font-bold text-red-600 uppercase tracking-widest bg-gradient-to-r from-red-50 to-transparent">
+                🔍 Results
               </div>
               <button
                 v-for="suggestion in filteredSuggestions"
                 :key="suggestion"
                 @click="selectSuggestion(suggestion)"
-                class="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                class="w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-red-50 to-transparent transition-all flex items-center gap-3 border-b border-gray-100 last:border-0 hover:border-red-200"
               >
-                <Icon name="MapPin" :size="16" class="text-red-500" />
-                <span class="text-sm text-gray-900">{{ suggestion }}</span>
+                <Icon name="MapPin" :size="18" class="text-red-500" />
+                <span class="text-sm font-medium text-gray-900">{{ suggestion }}</span>
               </button>
             </div>
           </div>
@@ -166,7 +163,7 @@
           <BaseButton
             variant="secondary"
             size="md"
-            @click="resetFilters"
+            @click="_handleResetFilters"
             class="flex-1"
           >
             Reset
@@ -241,11 +238,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useFilter } from '~/composables/useFilter'
+import { useTirthStore } from '~/stores/tirth'
 
 const mobileMenuOpen = ref(false)
 const filterOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
+const tirtStore = useTirthStore()
 
 const suggestions = [
   'Palitana',
@@ -265,7 +264,7 @@ const filterValues = computed(() => ({
   state: filters.value.state || '',
   sect: filters.value.sect || '',
   type: filters.value.type || '',
-  amenities: (filters.value.amenities as string[]) || []
+  amenities: typeof filters.value.amenities === 'string' ? filters.value.amenities.split(',').filter(Boolean) : []
 }))
 
 const filteredSuggestions = computed(() => {
@@ -276,7 +275,7 @@ const filteredSuggestions = computed(() => {
 })
 
 const handleSearch = () => {
-  console.log('Searching for:', searchQuery.value)
+  // handleSearch: hook into search/composable when needed
 }
 
 const selectSuggestion = (suggestion: string) => {
@@ -285,22 +284,39 @@ const selectSuggestion = (suggestion: string) => {
   handleSearch()
 }
 
+const handleBlur = () => {
+  setTimeout(() => {
+    showSuggestions.value = false
+  }, 200)
+}
+
 const toggleAmenity = (amenity: string) => {
-  const currentAmenities = (filters.value.amenities as string[]) || []
+  const currentStr = typeof filters.value.amenities === 'string' ? filters.value.amenities : ''
+  const currentAmenities = currentStr ? currentStr.split(',') : []
+  let newAmenities: string[]
   if (currentAmenities.includes(amenity)) {
-    setFilter('amenities', currentAmenities.filter(a => a !== amenity))
+    newAmenities = currentAmenities.filter((a: string) => a !== amenity)
   } else {
-    setFilter('amenities', [...currentAmenities, amenity])
+    newAmenities = [...currentAmenities, amenity]
   }
+  setFilter('amenities', newAmenities.join(','))
 }
 
 const applyFilters = () => {
-  console.log('Filters applied:', filters.value)
+  // Apply filters to tirth store
+  tirtStore.filterTirths({
+    state: filters.value.state || undefined,
+    sect: filters.value.sect || undefined,
+    type: filters.value.type || undefined,
+  })
+  // Close modal
   filterOpen.value = false
 }
 
-const handleResetFilters = () => {
+const _handleResetFilters = () => {
   resetFilters()
+  // Also reset tirth store to show all tirths
+  tirtStore.filterTirths({})
   filterOpen.value = false
 }
 </script>

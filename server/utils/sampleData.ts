@@ -1,10 +1,10 @@
 // Sample tirth data - to be replaced with real API calls
 export const sampleTirths = [
   {
-    id: '1',
-    name: 'Palitana Temples',
+    id: 'palitana',
+    name: 'Palitana',
     description:
-      'The magnificent Palitana Temples are one of the most holy pilgrimage sites for Jains, with over 900 temples carved from white stone.',
+      'The magnificent Palitana is one of the most holy pilgrimage sites for Jains, with over 900 temples carved from white stone.',
     historicalBackground:
       'Palitana has been a sacred pilgrimage site for thousands of years. The temples were built over several centuries, with the earliest temples dating back to the 11th century.',
     foundingYear: 1000,
@@ -62,10 +62,10 @@ export const sampleTirths = [
       zipCode: '364270',
     },
     images: [
-      'https://via.placeholder.com/500x400?text=Palitana+Temples+1',
-      'https://via.placeholder.com/500x400?text=Palitana+Temples+2',
-      'https://via.placeholder.com/500x400?text=Palitana+Temples+3',
-      'https://via.placeholder.com/500x400?text=Palitana+Temples+4',
+      'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1504681869696-d977211a0f4d?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1465014849957-b69a14ad6edf?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=600&h=400&fit=crop',
     ],
     sect: 'Shwetambar',
     type: 'Atishay-Kshetra',
@@ -119,7 +119,7 @@ export const sampleTirths = [
     travelDuration: '2-3 days',
   },
   {
-    id: '2',
+    id: 'ranakpur',
     name: 'Ranakpur Jain Temple',
     description:
       'A stunning white marble temple complex with intricate carvings and vast courtyards, one of the five most important pilgrimage sites for Jains.',
@@ -165,10 +165,10 @@ export const sampleTirths = [
       zipCode: '306703',
     },
     images: [
-      'https://via.placeholder.com/500x400?text=Ranakpur+Temple+1',
-      'https://via.placeholder.com/500x400?text=Ranakpur+Temple+2',
-      'https://via.placeholder.com/500x400?text=Ranakpur+Temple+3',
-      'https://via.placeholder.com/500x400?text=Ranakpur+Temple+4',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
     ],
     sect: 'Shwetambar',
     type: 'Gyan-sthan',
@@ -178,7 +178,7 @@ export const sampleTirths = [
     travelDuration: '1-2 days',
   },
   {
-    id: '3',
+    id: 'manas-mandir',
     name: 'Manas Mandir',
     description: 'A revered Jain temple known for its serene atmosphere and active community rituals.',
     historicalBackground: 'Manas Mandir has been maintained by local Jain communities for centuries and serves as an important center for daily worship and festivals.',
@@ -216,10 +216,11 @@ export const sampleTirths = [
       zipCode: '823001',
     },
     images: [
-      'https://via.placeholder.com/500x400?text=Manas+Mandir+1',
-      'https://via.placeholder.com/500x400?text=Manas+Mandir+2',
+      'https://images.unsplash.com/photo-1504681869696-d977211a0f4d?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1465014849957-b69a14ad6edf?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1533462701944-a01f13c4c89f?w=600&h=400&fit=crop',
     ],
-    sect: 'Sthanakvasi',
+    sect: 'Shwetambar',
     type: 'Gyan-sthan',
     facilities: [],
     rating: 4.4,
@@ -227,7 +228,7 @@ export const sampleTirths = [
     travelDuration: '1 day',
   },
   {
-    id: '4',
+    id: 'shikharji',
     name: 'Shikharji (Parasnath Hill)',
     description: 'One of the most sacred Jain pilgrimage sites, located on Parasnath Hill with numerous temples across the summit.',
     historicalBackground: 'Shikharji has been a major pilgrimage site for Jains for many centuries, with inscriptions and temples dating back several eras.',
@@ -265,11 +266,11 @@ export const sampleTirths = [
       zipCode: '815301',
     },
     images: [
-      'https://via.placeholder.com/500x400?text=Shikharji+1',
-      'https://via.placeholder.com/500x400?text=Shikharji+2',
-      'https://via.placeholder.com/500x400?text=Shikharji+3',
+      'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=400&fit=crop',
     ],
-    sect: 'Both',
+    sect: 'Shwetambar',
     type: 'Siddhakshetra',
     facilities: [],
     rating: 4.7,
@@ -277,7 +278,7 @@ export const sampleTirths = [
     travelDuration: '2-3 days',
   },
   {
-    id: '5',
+    id: 'girnar',
     name: 'Girnar Hills',
     description: 'A group of mountains with many important Jain temples and pilgrimage spots.',
     historicalBackground: 'Girnar temples date back many centuries and are revered by Jains.',
@@ -308,8 +309,9 @@ export const sampleTirths = [
       zipCode: '362001',
     },
     images: [
-      'https://via.placeholder.com/500x400?text=Girnar+1',
-      'https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1533462701944-a01f13c4c89f?w=600&h=400&fit=crop',
     ],
     sect: 'Digambar',
     type: 'Siddhakshetra',

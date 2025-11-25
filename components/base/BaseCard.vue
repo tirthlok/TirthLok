@@ -1,51 +1,67 @@
 <template>
   <div
     :class="[
-      'bg-white rounded-2xl transition-all duration-300',
+      'group rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer',
+      'bg-white shadow-lg hover:shadow-2xl hover:scale-105',
+      'border-2 border-red-100 hover:border-red-300',
       gridClass,
-      clickable ? 'cursor-pointer' : '',
     ]"
     @click="clickable && $emit('click')"
   >
-    <!-- Image -->
-    <div class="relative w-full portrait-aspect overflow-hidden rounded-2xl">
+    <!-- Image Container -->
+    <div class="relative w-full h-64 overflow-hidden bg-gray-200">
+      <!-- Image with lazy loading effect -->
       <img
-        :src="imagesArr[currentImageIndex] || 'https://via.placeholder.com/300x200'"
+        :src="imagesArr[currentImageIndex] || 'https://via.placeholder.com/400x320'"
         :alt="title"
-        class="absolute inset-0 w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
       />
-      <div v-if="imagesArr.length > 1" class="absolute inset-0 flex items-center justify-between px-2">
-        <button @click.stop="prevImage" class="p-2 bg-white rounded-full shadow-md opacity-75 hover:opacity-100 transition-opacity">
-          <Icon name="ChevronLeft" :size="20" />
+
+      <!-- Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+
+      <!-- Navigation Arrows -->
+      <div v-if="imagesArr.length > 1" class="absolute inset-0 flex items-center justify-between px-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          @click.stop="prevImage"
+          class="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors hover:shadow-xl"
+        >
+          <Icon name="ChevronLeft" :size="24" class="text-gray-900" />
         </button>
-        <button @click.stop="nextImage" class="p-2 bg-white rounded-full shadow-md opacity-75 hover:opacity-100 transition-opacity">
-          <Icon name="ChevronRight" :size="20" />
+        <button
+          @click.stop="nextImage"
+          class="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors hover:shadow-xl"
+        >
+          <Icon name="ChevronRight" :size="24" class="text-gray-900" />
         </button>
       </div>
-      <div v-if="imagesArr.length > 1" class="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-        <span
+
+      <!-- Image Dots -->
+      <div v-if="imagesArr.length > 1" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+        <button
           v-for="(_, index) in imagesArr"
           :key="index"
-          :class="['block w-1.5 h-1.5 rounded-full', index === currentImageIndex ? 'bg-white' : 'bg-gray-400 opacity-75']"
-        ></span>
+          @click.stop="currentImageIndex = index"
+          :class="[
+            'transition-all duration-300',
+            index === currentImageIndex
+              ? 'w-8 h-2 bg-red-400 rounded-full'
+              : 'w-2 h-2 bg-white/60 rounded-full hover:bg-white/80'
+          ]"
+        />
       </div>
-    </div>
 
-    <!-- Content -->
-    <div class="pt-3 px-2 pb-2">
-      <h3 class="text-base font-medium text-gray-800 line-clamp-1">
-        {{ title }}
-      </h3>
-
-      <div v-if="subtitle" class="text-sm text-gray-500 mt-1 line-clamp-1">
-        {{ subtitle }}
+      <!-- Title and Subtitle positioned over gradient -->
+      <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <h3 class="text-lg font-bold line-clamp-2">{{ title }}</h3>
+        <p v-if="subtitle" class="text-sm text-gray-200 mt-1 line-clamp-1">{{ subtitle }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import Icon from '~/components/Icon.vue'
 
 const props = withDefaults(
@@ -64,8 +80,6 @@ const props = withDefaults(
 )
 
 const currentImageIndex = ref(0)
-
-// Normalize images prop to always be an array for easier handling
 
 const imagesArr = computed(() => {
   if (!props.images) return [] as string[]
@@ -86,10 +100,6 @@ const prevImage = () => {
 defineEmits<{
   click: []
 }>()
-// Lightweight debug output (kept minimal). Remove or toggle as needed.
-onMounted(() => {
-  // console.log('BaseCard images for', props.title, ':', imagesArr.value)
-})
 </script>
 
 

@@ -52,6 +52,14 @@
         </li>
       </ul>
     </div>
+
+    <!-- Rules & Regulations -->
+    <div v-if="tirth.rules && tirth.rules.length > 0" class="mb-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Rules & Regulations</h3>
+      <ul class="list-disc list-inside space-y-2 text-gray-700">
+        <li v-for="(rule, idx) in tirth.rules" :key="idx">{{ rule }}</li>
+      </ul>
+    </div>
   </div>
 </template>
 

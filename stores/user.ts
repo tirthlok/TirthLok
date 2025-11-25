@@ -6,14 +6,21 @@ interface UserState {
   isAuthenticated: boolean
   loading: boolean
   error: string | null
+  userId: string
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    user: null,
+    user: {
+      id: 'guest',
+      name: 'Guest',
+      email: 'guest@example.com',
+      favorites: [],
+    },
     isAuthenticated: false,
     loading: false,
     error: null,
+    userId: 'guest', // Default guest user
   }),
 
   getters: {
@@ -34,13 +41,32 @@ export const useUserStore = defineStore('user', {
       this.isAuthenticated = false
     },
 
+    async loadFavorites() {
+      try {
+        const { data } = await useFetch(`/api/favorites?userId=${this.userId}`)
+        if (data.value && this.user) {
+          this.user.favorites = data.value.favorites || []
+        }
+      } catch (error) {
+        console.error('Failed to load favorites:', error)
+      }
+    },
+
     async addFavorite(tithId: string) {
       if (!this.user) return
 
       try {
         if (!this.user.favorites.includes(tithId)) {
           this.user.favorites.push(tithId)
-          // TODO: Sync with backend
+          // Sync with server
+          await $fetch('/api/favorites', {
+            method: 'POST',
+            body: {
+              userId: this.userId,
+              tithId,
+              action: 'add',
+            },
+          })
         }
       } catch (error) {
         this.error = 'Failed to add favorite'
@@ -55,7 +81,15 @@ export const useUserStore = defineStore('user', {
         const index = this.user.favorites.indexOf(tithId)
         if (index > -1) {
           this.user.favorites.splice(index, 1)
-          // TODO: Sync with backend
+          // Sync with server
+          await $fetch('/api/favorites', {
+            method: 'POST',
+            body: {
+              userId: this.userId,
+              tithId,
+              action: 'remove',
+            },
+          })
         }
       } catch (error) {
         this.error = 'Failed to remove favorite'

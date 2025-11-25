@@ -57,6 +57,7 @@ export interface Tirth {
   rating: number
   reviews: number
   travelDuration?: string
+  rules?: string[]
 }
 
 export interface Festival {

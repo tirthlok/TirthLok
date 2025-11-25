@@ -1,6 +1,6 @@
 <template>
   <!-- Show bottom nav on all sizes (removed md:hidden) so it's visible during development/testing -->
-  <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+  <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
     <div
       class="inline-flex items-center gap-3 px-3 py-2 bg-white/80 backdrop-blur-md border border-gray-100 rounded-full shadow-lg safe-area-bottom"
       role="navigation"

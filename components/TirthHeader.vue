@@ -3,36 +3,59 @@
     <div class="flex flex-col md:flex-row gap-6 p-6">
       <!-- Image Carousel -->
       <div class="md:w-1/2">
-        <div class="relative rounded-lg overflow-hidden bg-gray-200 h-96 mb-4">
+        <!-- Main Image Container with smooth fade transition -->
+        <div class="relative rounded-lg overflow-hidden bg-gray-200 h-96 mb-4 group">
+          <!-- Main displayed image - no transition to avoid state issues -->
           <img
-            :src="imagesArr[currentImageIndex] || 'https://via.placeholder.com/500x500'"
+            :src="currentImage"
             :alt="tirth.name"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover transition-opacity duration-300"
+            :style="{ opacity: 1 }"
           />
           
-          <!-- Image Navigation -->
-          <div v-if="imagesArr.length > 1" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <!-- Image Navigation Dots -->
+          <div v-if="imagesArr.length > 1" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
             <button
               v-for="(_, index) in imagesArr"
               :key="index"
               @click="currentImageIndex = index"
               :class="[
-                'w-2 h-2 rounded-full transition-all',
+                'w-2 h-2 rounded-full transition-all duration-200',
                 index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
               ]"
             />
           </div>
+
+          <!-- Arrow Navigation -->
+          <button
+            v-if="imagesArr.length > 1"
+            @click="previousImage"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            v-if="imagesArr.length > 1"
+            @click="nextImage"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
         <!-- Thumbnail Strip -->
-        <div v-if="imagesArr.length > 1" class="flex gap-2 overflow-x-auto">
+        <div v-if="imagesArr.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
           <button
             v-for="(image, index) in imagesArr"
             :key="index"
             @click="currentImageIndex = index"
             :class="[
-              'flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all',
-              index === currentImageIndex ? 'border-amber-600' : 'border-gray-200'
+              'flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200',
+              index === currentImageIndex ? 'border-amber-600 scale-105' : 'border-gray-200 hover:border-gray-400'
             ]"
           >
             <img :src="image" :alt="`Image ${index + 1}`" class="w-full h-full object-cover" />
@@ -142,7 +165,29 @@ const imagesArr = computed(() => {
   if (!props.tirth.images) return [] as string[]
   return Array.isArray(props.tirth.images) ? props.tirth.images : [props.tirth.images]
 })
+
 const isFav = computed(() => userStore.isFavorite(props.tirth.id))
+
+// Safely get current image
+const currentImage = computed(() => {
+  if (!imagesArr.value || imagesArr.value.length === 0) {
+    return 'https://via.placeholder.com/500x500'
+  }
+  return imagesArr.value[currentImageIndex.value] || 'https://via.placeholder.com/500x500'
+})
+
+// Simple navigation functions with safety guards
+const nextImage = () => {
+  if (imagesArr.value.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value + 1) % imagesArr.value.length
+  }
+}
+
+const previousImage = () => {
+  if (imagesArr.value.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value - 1 + imagesArr.value.length) % imagesArr.value.length
+  }
+}
 
 const toggleFavorite = async () => {
   if (isFav.value) {
@@ -166,3 +211,10 @@ const openDirections = () => {
   window.open(googleMapsUrl, '_blank')
 }
 </script>
+
+<style scoped>
+/* Smooth transitions for interactive elements */
+button {
+  transition: all 0.2s ease;
+}
+</style>
