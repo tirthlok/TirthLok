@@ -1,94 +1,203 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-cream to-white py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-charcoal mb-2">Bhojnshala</h1>
-        <p class="text-light-gray text-base md:text-lg">Find authentic vegetarian dining and food facilities</p>
+  <div class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <!-- Back Button -->
+      <div class="mb-6 sm:mb-8">
+        <NuxtLink
+          to="/tirth"
+          class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-bold transition-all duration-300 transform hover:scale-105 hover:gap-3"
+        >
+          <Icon name="ArrowLeft" :size="22" />
+          <span class="text-base sm:text-lg">Back to Home</span>
+        </NuxtLink>
+      </div>
+
+      <!-- Header Section -->
+      <div class="mb-8 sm:mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          <Icon name="UtensilsCrossed" :size="40" class="text-green-600" />
+          <div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+              Bhojanshala
+            </h1>
+            <p class="text-lg text-gray-600">Authentic vegetarian dining facilities</p>
+          </div>
+        </div>
+        <p class="text-gray-700 leading-relaxed text-base sm:text-lg max-w-3xl">
+          Bhojanshala (भोजनशाला) are traditional vegetarian dining facilities that serve authentic cuisine following strict dietary practices. They provide affordable, wholesome meals for pilgrims and devotees, maintaining the spiritual essence of vegetarian hospitality.
+        </p>
+      </div>
+
+      <!-- Filter & Search Section -->
+      <div class="mb-8 flex flex-wrap gap-3">
+        <button
+          v-for="filter in ['All', 'Budget', 'Mid-Range', 'Premium']"
+          :key="filter"
+          :class="[
+            'px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 border-2',
+            activeFilter === filter
+              ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white border-green-600 shadow-lg'
+              : 'bg-white text-gray-700 border-gray-200 hover:border-green-300 hover:bg-green-50'
+          ]"
+          @click="activeFilter = filter"
+        >
+          <Icon name="Filter" :size="18" />
+          {{ filter }}
+        </button>
       </div>
 
       <!-- Bhojanshala Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-        <!-- Shahapur Bhojanshala -->
-        <NuxtLink to="/shahapur">
-          <div class="group rounded-3xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl hover:scale-105">
-            <div class="relative w-full h-64 overflow-hidden bg-gray-200">
-              <img
-                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop"
-                alt="Shahapur Bhojanshala"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-
-              <!-- Rating Badge -->
-              <div class="absolute top-3 left-3 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-                <Icon name="Star" :size="16" class="fill-current" />
-                4.8
-              </div>
-
-              <!-- Type Badge -->
-              <div class="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                Bhojanshala
-              </div>
-
-              <!-- Title -->
-              <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                <h3 class="text-lg font-bold line-clamp-2">Shahapur Bhojanshala</h3>
-                <p class="text-sm text-gray-200 mt-1 line-clamp-1">Shahapur, Maharashtra</p>
-              </div>
-            </div>
-
-            <!-- Details -->
-            <div class="p-4 sm:p-5">
-              <p class="text-sm text-gray-600 mb-4">Traditional vegetarian cuisine with authentic Jain recipes and dietary accommodations.</p>
-
-              <!-- Info Grid -->
-              <div class="space-y-2 mb-4 text-sm">
-                <div class="flex items-center gap-2 text-gray-700">
-                  <Icon name="Clock" :size="16" class="text-amber-600" />
-                  <span>11:00 AM - 9:00 PM</span>
-                </div>
-                <div class="flex items-center gap-2 text-gray-700">
-                  <Icon name="Phone" :size="16" class="text-amber-600" />
-                  <span>+91-7275-223445</span>
-                </div>
-                <div class="flex items-center gap-2 text-gray-700">
-                  <Icon name="MapPin" :size="16" class="text-amber-600" />
-                  <span>Main Bazaar, Shahapur</span>
-                </div>
-              </div>
-
-              <!-- Features Tags -->
-              <div class="flex flex-wrap gap-2">
-                <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold">Jain Friendly</span>
-                <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">Vegetarian</span>
-                <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">Budget Friendly</span>
-              </div>
-            </div>
-          </div>
-        </NuxtLink>
-
-        <!-- Coming Soon Placeholder -->
-        <div class="rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 shadow-lg p-8 flex flex-col items-center justify-center h-96 group hover:shadow-2xl transition-all duration-300">
-          <Icon name="UtensilsCrossed" :size="48" class="text-gray-300 mb-4" />
-          <h3 class="text-lg font-semibold text-gray-600 mb-2">More Coming Soon</h3>
-          <p class="text-sm text-gray-500 text-center">Additional Bhojanshala locations will be added soon</p>
-        </div>
+      <div v-if="filteredBhojanShalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+        <BhojanshalaCard
+          v-for="bhojanshala in filteredBhojanShalas"
+          :key="bhojanshala.id"
+          :bhojanshala="bhojanshala"
+        />
       </div>
 
-      <!-- Empty Features Info -->
-      <div class="mt-12 bg-amber-50 border-l-4 border-amber-500 p-6 rounded">
-        <h3 class="font-semibold text-amber-900 mb-2">About Bhojanshala</h3>
-        <p class="text-amber-800 text-sm">
-          Bhojanshala (भोजनशाला) are traditional vegetarian dining facilities that serve authentic Jain cuisine. They are typically run by religious organizations and provide affordable, wholesome meals for pilgrims and devotees following strict dietary practices.
-        </p>
+      <!-- Empty State -->
+      <div v-else class="text-center py-16 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-dashed border-green-300">
+        <Icon name="UtensilsCrossed" :size="64" class="text-green-300 mx-auto mb-4" />
+        <p class="text-gray-600 font-semibold text-lg">No bhojanshala found</p>
+        <p class="text-gray-500 text-sm mt-2">Try adjusting your filter</p>
+      </div>
+
+      <!-- Features Info Section -->
+      <div class="mt-12 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 p-8 rounded-2xl">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg">
+              <Icon name="Leaf" :size="24" class="text-white" />
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-900 mb-1">Vegetarian Only</h3>
+              <p class="text-gray-600 text-sm">100% pure vegetarian cuisine</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg">
+              <Icon name="Heart" :size="24" class="text-white" />
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-900 mb-1">Jain Friendly</h3>
+              <p class="text-gray-600 text-sm">Strict dietary accommodations available</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-gradient-to-br from-teal-600 to-green-600 rounded-lg">
+              <Icon name="Utensils" :size="24" class="text-white" />
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-900 mb-1">Traditional Recipes</h3>
+              <p class="text-gray-600 text-sm">Authentic regional vegetarian cuisine</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+import Icon from '~/components/Icon.vue'
+
 definePageMeta({
   layout: 'default'
+})
+
+const activeFilter = ref('All')
+
+// Sample bhojanshala data
+const bhojanShalas = [
+  {
+    id: 'shri-krishna-bhojanshala',
+    name: 'Shri Krishna Bhojanshala',
+    description: 'Traditional vegetarian restaurant serving authentic Gujarati cuisine',
+    type: 'bhojanshala',
+    rating: 4.8,
+    reviews: 312,
+    operatingHours: '11:00 AM - 9:00 PM',
+    priceRange: '₹60-150',
+    category: 'Budget',
+    cuisines: ['Gujarati', 'Jain', 'North Indian'],
+    location: {
+      city: 'Palitana',
+      state: 'Gujarat',
+      address: 'Main Market, Palitana',
+      latitude: 22.128,
+      longitude: 71.828
+    },
+    contact: {
+      phone: '+91-2848-252222',
+      email: 'info@krishna-bhojanshala.com',
+      website: 'www.krishna-bhojanshala.com'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1501195530297-a145d97f3a7f?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'annapurna-dining',
+    name: 'Annapurna Dining Hall',
+    description: 'Premium vegetarian fine dining with organic ingredients',
+    type: 'bhojanshala',
+    rating: 4.7,
+    reviews: 289,
+    operatingHours: '12:00 PM - 10:00 PM',
+    priceRange: '₹200-400',
+    category: 'Mid-Range',
+    cuisines: ['Gujarati', 'Rajasthani', 'Jain'],
+    location: {
+      city: 'Ranakpur',
+      state: 'Rajasthan',
+      address: 'Near Temple, Ranakpur',
+      latitude: 25.05,
+      longitude: 73.8
+    },
+    contact: {
+      phone: '+91-2954-224789',
+      email: 'contact@annapurna-dining.com',
+      website: 'www.annapurna-dining.com'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'divine-taste',
+    name: 'Divine Taste Restaurant',
+    description: 'Luxury vegetarian dining experience with gourmet cuisine',
+    type: 'bhojanshala',
+    rating: 4.9,
+    reviews: 405,
+    operatingHours: '10:00 AM - 11:00 PM',
+    priceRange: '₹400-800',
+    category: 'Premium',
+    cuisines: ['Fusion', 'International Vegetarian', 'Jain'],
+    location: {
+      city: 'Girnar',
+      state: 'Gujarat',
+      address: 'Hill Road, Girnar',
+      latitude: 21.506,
+      longitude: 71.711
+    },
+    contact: {
+      phone: '+91-2845-334890',
+      email: 'info@divine-taste.com',
+      website: 'www.divine-taste.com'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1455619452474-d2be8b1e4e31?w=600&h=400&fit=crop'
+    ]
+  }
+]
+
+const filteredBhojanShalas = computed(() => {
+  if (activeFilter.value === 'All') return bhojanShalas
+  return bhojanShalas.filter(b => b.category === activeFilter.value)
 })
 </script>

@@ -41,15 +41,6 @@
       >
         <Icon name="UtensilsCrossed" :size="20" />
       </NuxtLink>
-
-      <NuxtLink
-        to="/profile"
-        class="inline-flex items-center justify-center p-2 rounded-full transition-colors"
-        :class="isActive('/profile') ? 'bg-white text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
-        aria-label="Profile"
-      >
-        <Icon name="User" :size="20" />
-      </NuxtLink>
     </div>
   </nav>
 </template>
