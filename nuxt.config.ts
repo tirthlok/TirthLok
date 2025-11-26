@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   components: {
     dirs: [
       {
-        path: '~/src/components',
+        path: '~/components',
         pathPrefix: false,
       },
     ],
@@ -58,7 +58,8 @@ export default defineNuxtConfig({
   // Auto-import composables and stores from `src/`
   imports: {
     autoImport: true,
-    dirs: ['src/composables', 'src/stores'],
+    // directories are relative to `srcDir`
+    dirs: ['composables', 'stores'],
   },
 
   devtools: { enabled: true },
