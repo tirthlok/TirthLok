@@ -74,9 +74,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useFavoritesStore } from '~/stores/favorites'
+import type { Dharamshala } from '~/types/models'
 import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
 
@@ -88,6 +89,20 @@ const dharamshalaStore = useDharamshalaStore()
 const route = useRoute()
 const hasId = computed(() => !!(route && route.params && route.params.id))
 const favoritesStore = useFavoritesStore()
+
+// Server-side fetch and hydrate store
+const { data: serverDharamshala } = await useAsyncData<Dharamshala[]>('dharamshala', () => $fetch('/api/dharamshala'))
+if (serverDharamshala?.value) {
+  dharamshalaStore.$patch((state) => {
+    state.dharamshalas = serverDharamshala.value as Dharamshala[]
+    state.filteredDharamshalas = serverDharamshala.value as Dharamshala[]
+  })
+}
+
+const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+if (serverFavorites?.value) {
+  favoritesStore.setFavorites(serverFavorites.value as string[])
+}
 
 const loading = computed(() => dharamshalaStore.loading)
 const error = computed(() => dharamshalaStore.error)
@@ -157,17 +172,5 @@ const handleSelectResult = (result: any) => {
   navigateTo(`/dharamshala/${result.id}`)
 }
 
-// Fetch data on mount
-onMounted(async () => {
-  if (dharamshalaStore.dharamshalas.length === 0) {
-    await dharamshalaStore.fetchDharamshalas()
-  } else if (dharamshalaStore.filteredDharamshalas.length === 0) {
-    dharamshalaStore.filteredDharamshalas = [...dharamshalaStore.dharamshalas]
-  }
-
-  // Initialize favorites
-  if (favoritesStore.favorites.length === 0) {
-    await favoritesStore.fetchFavorites()
-  }
-})
+// Data is fetched and stores hydrated on the server via useAsyncData
 </script>

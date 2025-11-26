@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
+  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <!-- Back Button -->
       <div class="mb-6 sm:mb-8">
@@ -222,13 +222,13 @@
 
         <!-- Back to Top Button -->
         <div class="flex justify-center pt-8 border-t">
-          <button
-            @click="scrollToTop"
+          <a
+            href="#top"
             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-bold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
           >
             <Icon name="ArrowUp" :size="20" />
             <span>Back to Top</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -273,9 +273,7 @@ const previousImage = () => {
   }
 }
 
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+// Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
 const loadData = async (idParam?: string) => {
   try {

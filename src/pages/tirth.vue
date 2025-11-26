@@ -75,7 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
+import type { Tirth } from '~/types/models'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
 import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
@@ -155,17 +156,17 @@ const handleSelectResult = (result: any) => {
   navigateTo(`/tirth/${result.id}`)
 }
 
-// Fetch data on mount
-onMounted(async () => {
-  if (tirthStore.tirths.length === 0) {
-    await tirthStore.fetchTirths()
-  } else if (tirthStore.filteredTirths.length === 0) {
-    tirthStore.filteredTirths = [...tirthStore.tirths]
-  }
+// Server-side data fetching (runs during SSR) and store hydration
+const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))
+if (serverTirths?.value) {
+  tirthStore.$patch((state) => {
+    state.tirths = serverTirths.value as Tirth[]
+    state.filteredTirths = serverTirths.value as Tirth[]
+  })
+}
 
-  // Initialize favorites
-  if (favoritesStore.favorites.length === 0) {
-    await favoritesStore.fetchFavorites()
-  }
-})
+const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+if (serverFavorites?.value) {
+  favoritesStore.setFavorites(serverFavorites.value as string[])
+}
 </script>

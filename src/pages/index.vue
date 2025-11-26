@@ -140,8 +140,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
+import type { Tirth } from '~/types/models'
 import { BaseCard } from '~/components/shared'
 
 definePageMeta({
@@ -149,6 +150,15 @@ definePageMeta({
 })
 
 const tithStore = useTirthStore()
+
+// Server-side fetch and hydrate tirth store
+const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))
+if (serverTirths?.value) {
+  tithStore.$patch((state) => {
+    state.tirths = serverTirths.value as Tirth[]
+    state.filteredTirths = serverTirths.value as Tirth[]
+  })
+}
 
 const loading = computed(() => tithStore.loading)
 const error = computed(() => tithStore.error)
@@ -160,13 +170,5 @@ const step1Image = 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=
 const step2Image = 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=400&h=300&fit=crop' // Ancient architecture
 const step3Image = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop' // Accommodation/facility
 
-// Fetch data on mount
-onMounted(async () => {
-  if (tithStore.tirths.length === 0) {
-    await tithStore.fetchTirths()
-  } else if (tithStore.filteredTirths.length === 0) {
-    // If seeded tirths exist but filtered list is empty, populate it so cards render
-    tithStore.filteredTirths = [...tithStore.tirths]
-  }
-})
+// Data is fetched and stores hydrated on the server via useAsyncData
 </script>

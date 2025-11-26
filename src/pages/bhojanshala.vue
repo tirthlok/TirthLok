@@ -75,9 +75,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useFavoritesStore } from '~/stores/favorites'
+import type { Bhojanshala } from '~/types/models'
 import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
 
@@ -87,6 +88,20 @@ definePageMeta({
 
 const bhojanshalaStore = useBhojanshalaStore()
 const favoritesStore = useFavoritesStore()
+
+// Server-side fetch and hydrate store
+const { data: serverBhojans } = await useAsyncData<Bhojanshala[]>('bhojanshala', () => $fetch('/api/bhojanshala'))
+if (serverBhojans?.value) {
+  bhojanshalaStore.$patch((state) => {
+    state.bhojanshalas = serverBhojans.value as Bhojanshala[]
+    state.filteredBhojanshalas = serverBhojans.value as Bhojanshala[]
+  })
+}
+
+const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+if (serverFavorites?.value) {
+  favoritesStore.setFavorites(serverFavorites.value as string[])
+}
 
 const loading = computed(() => bhojanshalaStore.loading)
 const error = computed(() => bhojanshalaStore.error)
@@ -158,17 +173,5 @@ const handleSelectResult = (result: any) => {
   navigateTo(`/bhojanshala/${result.id}`)
 }
 
-// Fetch data on mount
-onMounted(async () => {
-  if (bhojanshalaStore.bhojanshalas.length === 0) {
-    await bhojanshalaStore.fetchBhojanshalas()
-  } else if (bhojanshalaStore.filteredBhojanshalas.length === 0) {
-    bhojanshalaStore.filteredBhojanshalas = [...bhojanshalaStore.bhojanshalas]
-  }
-
-  // Initialize favorites
-  if (favoritesStore.favorites.length === 0) {
-    await favoritesStore.fetchFavorites()
-  }
-})
+// Data is fetched and stores hydrated on the server via useAsyncData
 </script>
