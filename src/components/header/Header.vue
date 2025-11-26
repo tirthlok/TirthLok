@@ -132,140 +132,142 @@
       </div>
     </Transition>
 
-    <!-- Filter Modal - Only visible when filterOpen is true -->
-    <div 
-      v-if="filterOpen"
-      class="fixed inset-0 bg-black/50 z-40 transition-opacity"
-      @click="filterOpen = false"
-    >
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 w-11/12 max-w-md" @click.stop>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Filters</h2>
-          <button @click="filterOpen = false" class="text-gray-400 hover:text-gray-600">
-            <Icon name="X" :size="24" />
-          </button>
-        </div>
+    <!-- Filter Modal - Teleported to body so it's not clipped by header or parent stacking contexts -->
+    <teleport to="body">
+      <div
+        v-if="filterOpen"
+        class="fixed inset-0 bg-black/50 z-50 transition-opacity flex items-center justify-center p-4"
+        @click="filterOpen = false"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar filter-modal" @click.stop>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Filters</h2>
+            <button @click="filterOpen = false" class="text-gray-400 hover:text-gray-600">
+              <Icon name="X" :size="24" />
+            </button>
+          </div>
 
-        <div class="space-y-4 max-h-96 overflow-y-auto mb-6">
-          <!-- State Filter -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-900 mb-2">State</label>
-            <div class="relative">
-              <select v-model="selectedState" class="w-full px-4 py-3 border-2 border-red-200 rounded-lg bg-gradient-to-r from-white to-red-50 text-gray-900 font-medium focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition-all text-sm hover:border-red-300 cursor-pointer appearance-none pr-10">
-                <option value="" class="bg-white text-gray-900">All States</option>
-                <option value="Gujarat" class="bg-white text-gray-900">Gujarat</option>
-                <option value="Rajasthan" class="bg-white text-gray-900">Rajasthan</option>
-                <option value="Karnataka" class="bg-white text-gray-900">Karnataka</option>
-                <option value="Maharashtra" class="bg-white text-gray-900">Maharashtra</option>
-              </select>
-              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-red-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                </svg>
+          <div class="space-y-4 mb-6">
+            <!-- State Filter -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-900 mb-2">State</label>
+              <div class="relative">
+                <select v-model="selectedState" class="w-full px-4 py-3 border-2 border-red-200 rounded-lg bg-gradient-to-r from-white to-red-50 text-gray-900 font-medium focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition-all text-sm hover:border-red-300 cursor-pointer appearance-none pr-10">
+                  <option value="" class="bg-white text-gray-900">All States</option>
+                  <option value="Gujarat" class="bg-white text-gray-900">Gujarat</option>
+                  <option value="Rajasthan" class="bg-white text-gray-900">Rajasthan</option>
+                  <option value="Karnataka" class="bg-white text-gray-900">Karnataka</option>
+                  <option value="Maharashtra" class="bg-white text-gray-900">Maharashtra</option>
+                </select>
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-red-500">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sect Filter -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-900 mb-2">Sect</label>
+              <div class="relative">
+                <select v-model="selectedSect" class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gradient-to-r from-white to-blue-50 text-gray-900 font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm hover:border-blue-300 cursor-pointer appearance-none pr-10">
+                  <option value="" class="bg-white text-gray-900">All Sects</option>
+                  <option value="Shwetambar" class="bg-white text-gray-900">Shwetambar</option>
+                  <option value="Digambar" class="bg-white text-gray-900">Digambar</option>
+                </select>
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-blue-500">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Facilities Filter - Stylish Checkboxes with Icons -->
+            <div class="border-t pt-4">
+              <label class="block text-sm font-semibold text-gray-900 mb-3">Facilities</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Dharamshala -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="dharmashala"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Dharamshala</span>
+                </label>
+
+                <!-- Bhojanshala -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="bhojanshala"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Bhojanshala</span>
+                </label>
+
+                <!-- Gaushala -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="gaushala"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Gaushala</span>
+                </label>
+
+                <!-- Parking -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="parking"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Parking</span>
+                </label>
+
+                <!-- Restroom -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="washroom"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Restroom</span>
+                </label>
+
+                <!-- Water Facility -->
+                <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                  <input 
+                    v-model="selectedFacilities"
+                    type="checkbox" 
+                    value="water"
+                    class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                  >
+                  <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Water Facility</span>
+                </label>
               </div>
             </div>
           </div>
 
-          <!-- Sect Filter -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-900 mb-2">Sect</label>
-            <div class="relative">
-              <select v-model="selectedSect" class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gradient-to-r from-white to-blue-50 text-gray-900 font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm hover:border-blue-300 cursor-pointer appearance-none pr-10">
-                <option value="" class="bg-white text-gray-900">All Sects</option>
-                <option value="Shwetambar" class="bg-white text-gray-900">Shwetambar</option>
-                <option value="Digambar" class="bg-white text-gray-900">Digambar</option>
-              </select>
-              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-blue-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                </svg>
-              </div>
-            </div>
+          <div class="flex gap-2 border-t pt-4">
+            <button @click="resetFilters" class="flex-1 px-4 py-2 border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-all font-medium">
+              Reset
+            </button>
+            <button @click="applyFilters" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium">
+              Apply
+            </button>
           </div>
-
-          <!-- Facilities Filter - Stylish Checkboxes with Icons -->
-          <div class="border-t pt-4">
-            <label class="block text-sm font-semibold text-gray-900 mb-3">Facilities</label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <!-- Dharamshala -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="dharmashala"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Dharamshala</span>
-              </label>
-
-              <!-- Bhojanshala -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="bhojanshala"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Bhojanshala</span>
-              </label>
-
-              <!-- Gaushala -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="gaushala"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Gaushala</span>
-              </label>
-
-              <!-- Parking -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="parking"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Parking</span>
-              </label>
-
-              <!-- Restroom -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="washroom"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Restroom</span>
-              </label>
-
-              <!-- Water Facility -->
-              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
-                <input 
-                  v-model="selectedFacilities"
-                  type="checkbox" 
-                  value="water"
-                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
-                >
-                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Water Facility</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex gap-2 border-t pt-4">
-          <button @click="resetFilters" class="flex-1 px-4 py-2 border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-all font-medium">
-            Reset
-          </button>
-          <button @click="applyFilters" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium">
-            Apply
-          </button>
         </div>
       </div>
-    </div>
+    </teleport>
   </header>
 </template>
 

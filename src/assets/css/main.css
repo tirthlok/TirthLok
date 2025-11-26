@@ -172,3 +172,49 @@ body {
   background-size: 1000px 100%;
   background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
 }
+
+/* ----------------------------
+   Universal hide scrollbar
+   Keeps native scrolling but hides visual scrollbars across browsers
+   Place at end of file so it overrides earlier scrollbar styles
+   ---------------------------- */
+html,
+body,
+#app,
+#__nuxt {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Webkit browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#app::-webkit-scrollbar,
+#__nuxt::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
+/* Utility to re-enable scrollbars when explicitly needed */
+.show-scrollbar {
+  -ms-overflow-style: auto !important;
+  scrollbar-width: auto !important;
+}
+.show-scrollbar::-webkit-scrollbar {
+  display: block !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+
+/* Force-hide scrollbar for filter modal specifically (extra safety) */
+.filter-modal {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.filter-modal::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari and Opera */
+  width: 0 !important;
+  height: 0 !important;
+}
