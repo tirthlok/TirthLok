@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import Icon from '~/components/Icon.vue'
+import Icon from '~/components/common/Icon.vue'
 
 interface BhojanshalaItem {
   id: string

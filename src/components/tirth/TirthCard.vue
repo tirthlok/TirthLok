@@ -72,7 +72,7 @@ import type { Tirth } from '~/types/models'
 import { computed, ref } from 'vue'
 import { useUserStore } from '~/stores/user'
 import { useRouter } from 'vue-router'
-import Icon from '~/components/Icon.vue'
+import Icon from '~/components/common/Icon.vue'
 
 const props = defineProps<{
   tirth: Tirth

@@ -89,7 +89,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '~/stores/user'
-import Icon from '~/components/Icon.vue'
+import Icon from '~/components/common/Icon.vue'
 
 interface DharamshalItem {
   id: string
