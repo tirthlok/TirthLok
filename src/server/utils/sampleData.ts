@@ -94,8 +94,8 @@ export const sampleTirths = [
       },
       {
         id: 'f2',
-        name: 'Shanti Dharmashala',
-        type: 'dharmashala',
+        name: 'Shanti Dharamshala',
+        type: 'dharamshala',
         description: 'Budget-friendly accommodation for pilgrims',
         location: {
           latitude: 22.129,

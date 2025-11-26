@@ -47,7 +47,11 @@
       <div
         v-for="facility in filteredItems"
         :key="facility.id"
-        class="bg-white rounded-2xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 overflow-hidden group transform hover:scale-105"
+        class="bg-white rounded-2xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 overflow-hidden group transform hover:scale-105 cursor-pointer"
+        role="button"
+        tabindex="0"
+        @click="goToFacility(facility)"
+        @keydown.enter.prevent="goToFacility(facility)"
       >
         <!-- Facility Image -->
         <div class="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
@@ -83,17 +87,17 @@
               <div class="p-2 bg-blue-100 rounded-lg">
                 <Icon name="Phone" :size="16" class="text-blue-600" />
               </div>
-              <a :href="`tel:${facility.contact.phone}`" class="text-sm font-semibold text-blue-600 hover:text-blue-800">
-                {{ facility.contact.phone }}
-              </a>
+                <a :href="`tel:${facility.contact.phone}`" @click.stop class="text-sm font-semibold text-blue-600 hover:text-blue-800">
+                  {{ facility.contact.phone }}
+                </a>
             </div>
-            <div v-if="facility.contact.email" class="flex items-center gap-3 group/item hover:bg-green-50 p-2 rounded-lg transition-colors">
+              <div v-if="facility.contact.email" class="flex items-center gap-3 group/item hover:bg-green-50 p-2 rounded-lg transition-colors">
               <div class="p-2 bg-green-100 rounded-lg">
                 <Icon name="Mail" :size="16" class="text-green-600" />
               </div>
-              <a :href="`mailto:${facility.contact.email}`" class="text-sm font-semibold text-green-600 hover:text-green-800 truncate">
-                {{ facility.contact.email }}
-              </a>
+                <a :href="`mailto:${facility.contact.email}`" @click.stop class="text-sm font-semibold text-green-600 hover:text-green-800 truncate">
+                  {{ facility.contact.email }}
+                </a>
             </div>
             <div class="flex items-start gap-3">
               <div class="p-2 bg-amber-100 rounded-lg flex-shrink-0">
@@ -122,10 +126,10 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex gap-2">
+            <div class="flex gap-2">
             <button
               v-if="facility.contact.phone"
-              @click="callFacility(facility.contact.phone)"
+              @click.stop="callFacility(facility.contact.phone)"
               class="flex-1 py-2.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-lg transform hover:scale-105"
             >
               <Icon name="Phone" :size="16" />
@@ -133,7 +137,7 @@
             </button>
             <button
               v-if="facility.contact.website"
-              @click="openWebsite(facility.contact.website)"
+              @click.stop="openWebsite(facility.contact.website)"
               class="flex-1 py-2.5 px-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg font-bold hover:from-amber-700 hover:to-orange-700 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-lg transform hover:scale-105"
             >
               <Icon name="ExternalLink" :size="16" />
@@ -150,6 +154,8 @@
 import { computed } from 'vue'
 import type { Facility, Tirth } from '~/types/models'
 import { useFilter } from '~/composables/ui'
+import { useBhojanshalaStore } from '~/stores/bhojanshala'
+import { useDharamshalaStore } from '~/stores/dharamshala'
 
 const props = defineProps<{
   tirth: Tirth
@@ -178,5 +184,67 @@ const callFacility = (phone: string) => {
 
 const openWebsite = (url: string) => {
   window.open(url, '_blank')
+}
+
+// Navigation to facility detail
+const router = useRouter()
+
+const goToFacility = async (facility?: Facility) => {
+  if (!facility) return
+
+  const type = (facility.type || '').toString().toLowerCase()
+
+  // Helper to slugify name if we need a fallback id
+  const slugify = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+
+  // Bhojanshala
+  if (type === 'bhojanshala' || type === 'bhojanshalas') {
+    const bhojStore = useBhojanshalaStore()
+    // Ensure list is loaded
+    if (bhojStore.bhojanshalas.length === 0) {
+      await bhojStore.fetchBhojanshalas()
+    }
+
+    const found = bhojStore.bhojanshalas.find(
+      (b) => b.id === facility.id || (b.name && b.name.toLowerCase() === (facility.name || '').toLowerCase())
+    )
+
+    if (found) {
+      router.push(`/bhojanshala/${found.id}`)
+      return
+    }
+
+    // Fallback to slugified name
+    router.push(`/bhojanshala/${slugify(facility.name || String(facility.id))}`)
+    return
+  }
+
+  // Dharamshala
+  if (type === 'dharamshala' || type === 'dharamshalas') {
+    const dhStore = useDharamshalaStore()
+    if (dhStore.dharamshalas.length === 0) {
+      await dhStore.fetchDharamshalas()
+    }
+
+    const found = dhStore.dharamshalas.find(
+      (d) => d.id === facility.id || (d.name && d.name.toLowerCase() === (facility.name || '').toLowerCase())
+    )
+
+    if (found) {
+      router.push(`/dharamshala/${found.id}`)
+      return
+    }
+
+    router.push(`/dharamshala/${slugify(facility.name || String(facility.id))}`)
+    return
+  }
+
+  // Fallback: route inside tirth by id
+  router.push(`/tirth/${facility.id ?? slugify(facility.name || '')}`)
 }
 </script>
