@@ -1,3 +1,5 @@
+import { resolve } from 'path'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
@@ -44,6 +46,11 @@ export default defineNuxtConfig({
         pathPrefix: false,
       },
     ],
+  },
+
+  // Alias server imports that should resolve to the project root `server/` folder
+  alias: {
+    '~/server': resolve(__dirname, 'server'),
   },
 
   // Auto-import composables and stores from `src/`
