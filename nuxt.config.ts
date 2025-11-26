@@ -51,6 +51,8 @@ export default defineNuxtConfig({
   // Alias server imports that should resolve to the project root `server/` folder
   alias: {
     '~/server': resolve(__dirname, 'server'),
+    '~/server/': resolve(__dirname, 'server'),
+    '/server': resolve(__dirname, 'server'),
   },
 
   // Auto-import composables and stores from `src/`
