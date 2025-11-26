@@ -39,7 +39,7 @@
       <!-- Additional Fields -->
       <div v-if="displayFields.length > 0" class="space-y-2 text-sm border-t border-gray-200 pt-3">
         <div v-for="field in displayFields" :key="field.key" class="flex items-start gap-2 text-gray-700">
-          <Icon v-if="field.icon" :name="field.icon" :size="16" :class="'flex-shrink-0 ' + colorScheme.accentColor" />
+          <Icon v-if="field.icon" :name="(field.icon as any)" :size="16" :class="'flex-shrink-0 ' + colorScheme.accentColor" />
           <div>
             <span v-if="field.label" class="font-semibold">{{ field.label }}:</span>
             <span>{{ formatFieldValue(field) }}</span>
@@ -66,11 +66,10 @@ import { computed } from 'vue'
 import type { CardType, CardItem, CardDisplayField, ColorScheme } from './types'
 import { DEFAULT_COLOR_SCHEMES } from './types'
 import { useCard } from './composables/useCard'
-import { useCardStyles, formatTypeText } from './composables/useCardStyles'
-import { useUserStore } from '~/stores/user'
+import { useFavoritesStore } from '~/stores/favorites'
 import ImageCarousel from '../carousel/ImageCarousel.vue'
-import FavoriteButton from '~/components/common/FavoriteButton.vue'
-import Icon from '~/components/common/Icon.vue'
+import FavoriteButton from '../../common/FavoriteButton.vue'
+import Icon from '../../common/Icon.vue'
 
 interface Props {
   item: CardItem
@@ -98,7 +97,7 @@ const props = withDefaults(defineProps<Props>(), {
   maxTags: 3,
 })
 
-const userStore = useUserStore()
+const favoritesStore = useFavoritesStore()
 const { handleCardClick } = useCard(props.item)
 
 // Compute final color scheme with defaults
@@ -112,14 +111,7 @@ const colorScheme = computed<ColorScheme>(() => {
 
 // Check if item is favorited
 const isFavorited = computed(() => {
-  try {
-    if (typeof userStore.isFavorite === 'function') {
-      return userStore.isFavorite(props.item.id)
-    }
-    return (userStore.user?.favorites || []).includes(props.item.id)
-  } catch (_e) {
-    return false
-  }
+  return favoritesStore.isFavorite(props.item.id)
 })
 
 // Format field value

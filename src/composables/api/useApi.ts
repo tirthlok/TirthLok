@@ -6,13 +6,13 @@
 
 import { useTirthApi } from './useTirthApi'
 import { useDharamshalaApi } from './useDharamshalaApi'
-import { useBhojanshalAApi } from './useBhojanshalAApi'
+import { useBhojanshalaApi } from './useBhojanshalaApi'
 import { useFavoriteApi } from './useFavoriteApi'
 
 export const useApi = () => {
   const { fetchTirths, fetchTirthById, createTirth, updateTirth, deleteTirth } = useTirthApi()
   const { fetchDharamshalas, fetchDharamshalaById } = useDharamshalaApi()
-  const { fetchBhojanshallas, fetchBhojanshalAById } = useBhojanshalAApi()
+  const { fetchBhojanshallas, fetchBhojanshalaById } = useBhojanshalaApi()
   const { fetchFavorites, addFavorite, removeFavorite } = useFavoriteApi()
 
   return {
@@ -29,7 +29,7 @@ export const useApi = () => {
 
     // Bhojanshala API
     fetchBhojanshallas,
-    fetchBhojanshalAById,
+    fetchBhojanshalaById,
 
     // Favorites API
     fetchFavorites,

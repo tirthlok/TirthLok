@@ -1,4 +1,4 @@
-import { sampleTirths } from '~~/server/utils/sampleData'
+import { sampleTirths } from '~/server/utils/sampleData'
 
 /**
  * GET /api/tirth - Fetch all tirth locations

@@ -117,7 +117,14 @@
             :key="tirth.id"
             class="flex-shrink-0 snap-start w-[150px] sm:w-[150px] md:w-[160px] lg:w-[180px]"
           >
-            <TirthCard :tirth="tirth" />
+            <BaseCard
+              :item="tirth"
+              card-type="tirth"
+              :show-wishlist="true"
+              :show-details="true"
+              route-prefix="/tirth"
+              :tag-fields="[tirth.sect, tirth.type]"
+            />
           </div>
         </div>
       </div>
@@ -133,8 +140,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
+import { BaseCard } from '~/components/shared'
 
 definePageMeta({
   layout: 'default',

@@ -14,6 +14,15 @@ export function useCard(item: CardItem) {
    * Routes: /tirth/:id, /dharamshala/:id, /bhojanshala/:id
    */
   const navigateToDetail = (routePrefix: string) => {
+    // Use Nuxt's navigateTo when available to ensure full Nuxt navigation lifecycle
+    try {
+      // navigateTo is globally available in Nuxt pages/components
+      // @ts-ignore
+      if (typeof navigateTo === 'function') return navigateTo(`${routePrefix}/${item.id}`)
+    } catch (e) {
+      // fallback to router.push
+    }
+
     router.push(`${routePrefix}/${item.id}`)
   }
 

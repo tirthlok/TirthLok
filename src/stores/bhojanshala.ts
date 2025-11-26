@@ -13,7 +13,7 @@ interface BhojanshalState {
  * Bhojanshala Store
  * Manages bhojanshala (food service) locations and state
  */
-export const useBhojanshalStore = defineStore('bhojanshala', {
+export const useBhojanshalaStore = defineStore('bhojanshala', {
   state: (): BhojanshalState => ({
     bhojanshalas: [],
     selectedBhojanshala: null,
@@ -52,8 +52,8 @@ export const useBhojanshalStore = defineStore('bhojanshala', {
       this.loading = true
       this.error = null
       try {
-        const { useBhojanshalAApi } = await import('~/composables/api')
-        const { fetchBhojanshallas } = useBhojanshalAApi()
+        const { useBhojanshalaApi } = await import('~/composables/api')
+        const { fetchBhojanshallas } = useBhojanshalaApi()
         const response = await fetchBhojanshallas()
         this.bhojanshalas = response
         this.filteredBhojanshalas = response
@@ -74,9 +74,9 @@ export const useBhojanshalStore = defineStore('bhojanshala', {
 
       this.loading = true
       try {
-        const { useBhojanshalAApi } = await import('~/composables/api')
-        const { fetchBhojanshalAById } = useBhojanshalAApi()
-        const response = await fetchBhojanshalAById(id)
+        const { useBhojanshalaApi } = await import('~/composables/api')
+        const { fetchBhojanshalaById } = useBhojanshalaApi()
+        const response = await fetchBhojanshalaById(id)
         this.selectedBhojanshala = response
         return response
       } catch (error) {

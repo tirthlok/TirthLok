@@ -1,5 +1,8 @@
-import { sampleTirths } from '~~/server/utils/sampleData'
+import { sampleTirths } from '~/server/utils/sampleData'
 
+/**
+ * GET /api/tirth/:id - Fetch single tirth by ID
+ */
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
 

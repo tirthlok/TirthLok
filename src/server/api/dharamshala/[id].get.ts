@@ -10,11 +10,13 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Dharamshala ID is required',
     })
   }
+  // Use sample data for now
+  const { sampleDharamshalas } = await import('~/server/utils/sampleData')
+  const dh = sampleDharamshalas.find((d: any) => d.id === id)
 
-  // TODO: Implement dharamshala API
-  // TODO: Replace with actual database calls
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Dharamshala not found',
-  })
+  if (!dh) {
+    throw createError({ statusCode: 404, statusMessage: 'Dharamshala not found' })
+  }
+
+  return dh
 })

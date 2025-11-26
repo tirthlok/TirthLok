@@ -321,3 +321,171 @@ export const sampleTirths = [
     travelDuration: '1-2 days',
   },
 ]
+
+// Sample dharamshala data
+export const sampleDharamshalas = [
+  {
+    id: 'shanti-dharamshala',
+    name: 'Shanti Dharamshala',
+    description: 'Peaceful lodging with clean rooms and basic amenities for pilgrims',
+    type: 'dharamshala',
+    rating: 4.2,
+    reviews: 156,
+    capacity: 50,
+    priceRange: '₹200-500',
+    amenities: ['WiFi Available', 'Vegetarian Kitchen', '24-Hour Security', 'Prayer Room', 'Common Lounge', 'Free Parking'],
+    features: ['WiFi Available', 'Vegetarian Kitchen', '24-Hour Security', 'Prayer Room', 'Common Lounge', 'Free Parking'],
+    location: {
+      city: 'Palitana',
+      state: 'Gujarat',
+      address: 'Near Temple Gate, Palitana',
+      latitude: 22.129,
+      longitude: 71.829,
+    },
+    contact: {
+      phone: '+91-2848-252333',
+      email: 'info@shanti-dharamshala.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1611142351537-a3c87d3364e9?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'divya-nivas',
+    name: 'Divya Nivas Dharamshala',
+    description: 'Comfortable accommodation with modern facilities for spiritual seekers',
+    type: 'dharamshala',
+    rating: 4.5,
+    reviews: 234,
+    capacity: 75,
+    priceRange: '₹500-1000',
+    amenities: ['AC Rooms', 'Conference Hall', 'Prayer Room', 'Restaurant', 'Laundry Service', 'Room Service'],
+    features: ['AC Rooms', 'Conference Hall', 'Prayer Room', 'Restaurant', 'Laundry Service', 'Room Service'],
+    location: {
+      city: 'Ranakpur',
+      state: 'Rajasthan',
+      address: 'Main Road, Ranakpur',
+      latitude: 25.05,
+      longitude: 73.8,
+    },
+    contact: {
+      phone: '+91-2954-224456',
+      email: 'contact@divya-nivas.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1540932239986-310128078ceb?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'jain-rest-house',
+    name: 'Jain Rest House',
+    description: 'Budget-friendly accommodation near Girnar hills',
+    type: 'dharamshala',
+    rating: 4.0,
+    reviews: 98,
+    capacity: 30,
+    priceRange: '₹150-300',
+    amenities: ['Basic Rooms', 'Prayer Room', 'Vegetarian Kitchen', 'Parking'],
+    features: ['Basic Rooms', 'Prayer Room', 'Vegetarian Kitchen', 'Parking'],
+    location: {
+      city: 'Junagadh',
+      state: 'Gujarat',
+      address: 'Near Girnar Gate, Junagadh',
+      latitude: 21.1039,
+      longitude: 70.784,
+    },
+    contact: {
+      phone: '+91-2852-251800',
+      email: 'info@jain-rest-house.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+    ]
+  }
+]
+
+// Sample bhojanshala data
+export const sampleBhojanshalas = [
+  {
+    id: 'shri-krishna-bhojanshala',
+    name: 'Shri Krishna Bhojanshala',
+    description: 'Traditional vegetarian restaurant serving authentic Gujarati cuisine with strict adherence to Jain dietary principles.',
+    type: 'bhojanshala',
+    rating: 4.8,
+    reviews: 312,
+    operatingHours: '11:00 AM - 9:00 PM',
+    priceRange: '₹60-150',
+    cuisines: ['Gujarati', 'Jain', 'North Indian', 'South Indian'],
+    location: {
+      city: 'Palitana',
+      state: 'Gujarat',
+      address: 'Main Market, Palitana',
+      latitude: 22.128,
+      longitude: 71.828,
+    },
+    contact: {
+      phone: '+91-2848-252222',
+      email: 'info@krishna-bhojanshala.com',
+      website: 'www.krishna-bhojanshala.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1501195530297-a145d97f3a7f?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'annapurna-dining',
+    name: 'Annapurna Dining Hall',
+    description: 'Premium vegetarian fine dining with organic ingredients.',
+    type: 'bhojanshala',
+    rating: 4.7,
+    reviews: 289,
+    operatingHours: '12:00 PM - 10:00 PM',
+    priceRange: '₹200-400',
+    cuisines: ['Gujarati', 'Rajasthani', 'Jain'],
+    location: {
+      city: 'Ranakpur',
+      state: 'Rajasthan',
+      address: 'Near Temple, Ranakpur',
+      latitude: 25.05,
+      longitude: 73.8,
+    },
+    contact: {
+      phone: '+91-2954-224789',
+      email: 'contact@annapurna-dining.com',
+      website: 'www.annapurna-dining.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop'
+    ]
+  },
+  {
+    id: 'pure-veg-corner',
+    name: 'Pure Veg Corner',
+    description: 'Casual vegetarian dining with affordable prices and quick service.',
+    type: 'bhojanshala',
+    rating: 4.3,
+    reviews: 156,
+    operatingHours: '10:00 AM - 9:00 PM',
+    priceRange: '₹40-100',
+    cuisines: ['Gujarati', 'Indian', 'Snacks'],
+    location: {
+      city: 'Girnar',
+      state: 'Gujarat',
+      address: 'Market Square, Junagadh',
+      latitude: 21.1039,
+      longitude: 70.784,
+    },
+    contact: {
+      phone: '+91-2852-252000',
+      email: 'info@purevegjain.com',
+      website: 'www.purevegjain.com',
+    },
+    images: [
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop'
+    ]
+  }
+]

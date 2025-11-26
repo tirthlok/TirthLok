@@ -5,34 +5,53 @@
 
 import type { Bhojanshala } from '~/types/models'
 
-export const useBhojanshalAApi = () => {
+export const useBhojanshalaApi = () => {
   const config = useRuntimeConfig()
+
+  // Helper: wrap a promise with a timeout and return a fallback on timeout
+  const fetchWithTimeout = async <T>(promise: Promise<T>, timeoutMs = 5000, fallback: T): Promise<T> => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<T>((resolve) => {
+          timer = setTimeout(() => resolve(fallback), timeoutMs)
+        }),
+      ])
+    } finally {
+      if (timer) clearTimeout(timer)
+    }
+  }
 
   /**
    * Fetch all bhojanshala locations
    */
   const fetchBhojanshallas = async (): Promise<Bhojanshala[]> => {
     try {
-      return await $fetch('/api/bhojanshala', {
+      const promise = $fetch('/api/bhojanshala', {
         baseURL: config.public.apiBaseUrl,
-      })
+      }) as Promise<Bhojanshala[]>
+
+      return await fetchWithTimeout<Bhojanshala[]>(promise, 5000, [])
     } catch (error) {
       console.error('Error fetching bhojanshalas:', error)
-      throw error
+      return []
     }
   }
 
   /**
    * Fetch single bhojanshala by ID
    */
-  const fetchBhojanshalAById = async (id: string): Promise<Bhojanshala> => {
+  const fetchBhojanshalaById = async (id: string): Promise<Bhojanshala> => {
     try {
-      return await $fetch(`/api/bhojanshala/${id}`, {
+      const promise = $fetch(`/api/bhojanshala/${id}`, {
         baseURL: config.public.apiBaseUrl,
-      })
+      }) as Promise<Bhojanshala>
+
+      return await fetchWithTimeout<Bhojanshala>(promise, 5000, {} as Bhojanshala)
     } catch (error) {
       console.error(`Error fetching bhojanshala ${id}:`, error)
-      throw error
+      return {} as Bhojanshala
     }
   }
 
@@ -120,7 +139,7 @@ export const useBhojanshalAApi = () => {
 
   return {
     fetchBhojanshallas,
-    fetchBhojanshalAById,
+    fetchBhojanshalaById,
     createBhojanshala,
     updateBhojanshala,
     deleteBhojanshala,

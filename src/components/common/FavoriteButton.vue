@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUserStore } from '~/stores/user'
+import { useFavoritesStore } from '~/stores/favorites'
 import Icon from './Icon.vue'
 
 interface Props {
@@ -38,32 +38,18 @@ const emit = defineEmits<{
   'toggle-favorite': [{ id: string; isFavorited: boolean }]
 }>()
 
-const userStore = useUserStore()
+const favoritesStore = useFavoritesStore()
 
 // Determine if favorited
 const isFavorited = computed(() => {
-  try {
-    if (typeof userStore.isFavorite === 'function') {
-      return userStore.isFavorite(props.itemId)
-    }
-    return (userStore.user?.favorites || []).includes(props.itemId)
-  } catch (_e) {
-    return false
-  }
+  return favoritesStore.isFavorite(props.itemId)
 })
 
 // Toggle favorite
 const toggleFavorite = async () => {
   try {
-    const favs = (userStore.user?.favorites || [])
     const newState = !isFavorited.value
-
-    if (isFavorited.value) {
-      await userStore.removeFavorite(props.itemId)
-    } else {
-      await userStore.addFavorite(props.itemId)
-    }
-
+    await favoritesStore.toggleFavorite(props.itemId, props.entityType)
     emit('toggle-favorite', { id: props.itemId, isFavorited: newState })
   } catch (e) {
     console.error('Error toggling favorite:', e)

@@ -7,10 +7,9 @@
 export { default as ImageCarousel } from './carousel/ImageCarousel.vue'
 export { useImageCarousel } from './carousel/composables/useImageCarousel.ts'
 export type { UseImageCarouselOptions } from './carousel/composables/useImageCarousel.ts'
+export { default as Icon } from '../common/Icon.vue'
+export { default as FavoriteButton } from '../common/FavoriteButton.vue'
 
-// Card Components
-export { default as BaseCard } from './cards/BaseCard.vue'
-export { useCard } from './cards/composables/useCard.ts'
 export { useCardStyles, getContrastColor, formatTypeText } from './cards/composables/useCardStyles.ts'
 export * from './cards/types.ts'
 export type {

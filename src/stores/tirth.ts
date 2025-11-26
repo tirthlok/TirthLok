@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Tirth, Facility, User } from '~/types/models'
-import { sampleTirths } from '~~/server/utils/sampleData'
+import { sampleTirths } from '~/server/utils/sampleData'
 
 interface TirthState {
   tirths: Tirth[]
