@@ -1,71 +1,39 @@
+/**
+ * useApi Composable
+ * Unified API interface - delegates to entity-specific composables
+ * @deprecated Use specific composables instead: useTirthApi, useDharamshalaApi, useBhojanshalAApi, useFavoriteApi
+ */
+
+import { useTirthApi } from './useTirthApi'
+import { useDharamshalaApi } from './useDharamshalaApi'
+import { useBhojanshalAApi } from './useBhojanshalAApi'
+import { useFavoriteApi } from './useFavoriteApi'
+
 export const useApi = () => {
-  const config = useRuntimeConfig()
-
-  const fetchTirths = async () => {
-    try {
-      return await $fetch('/api/tirths', {
-        baseURL: config.public.apiBaseUrl,
-      })
-    } catch (error) {
-      console.error('Error fetching tirths:', error)
-      throw error
-    }
-  }
-
-  const fetchTirthById = async (id: string) => {
-    try {
-      return await $fetch(`/api/tirths/${id}`, {
-        baseURL: config.public.apiBaseUrl,
-      })
-    } catch (error) {
-      console.error(`Error fetching tirth ${id}:`, error)
-      throw error
-    }
-  }
-
-  const createTirth = async (data: any) => {
-    try {
-      return await $fetch('/api/tirths', {
-        method: 'POST',
-        baseURL: config.public.apiBaseUrl,
-        body: data,
-      })
-    } catch (error) {
-      console.error('Error creating tirth:', error)
-      throw error
-    }
-  }
-
-  const updateTirth = async (id: string, data: any) => {
-    try {
-      return await $fetch(`/api/tirths/${id}`, {
-        method: 'PUT',
-        baseURL: config.public.apiBaseUrl,
-        body: data,
-      })
-    } catch (error) {
-      console.error(`Error updating tirth ${id}:`, error)
-      throw error
-    }
-  }
-
-  const deleteTirth = async (id: string) => {
-    try {
-      return await $fetch(`/api/tirths/${id}`, {
-        method: 'DELETE',
-        baseURL: config.public.apiBaseUrl,
-      })
-    } catch (error) {
-      console.error(`Error deleting tirth ${id}:`, error)
-      throw error
-    }
-  }
+  const { fetchTirths, fetchTirthById, createTirth, updateTirth, deleteTirth } = useTirthApi()
+  const { fetchDharamshalas, fetchDharamshalaById } = useDharamshalaApi()
+  const { fetchBhojanshallas, fetchBhojanshalAById } = useBhojanshalAApi()
+  const { fetchFavorites, addFavorite, removeFavorite } = useFavoriteApi()
 
   return {
+    // Tirth API
     fetchTirths,
     fetchTirthById,
     createTirth,
     updateTirth,
     deleteTirth,
+
+    // Dharamshala API
+    fetchDharamshalas,
+    fetchDharamshalaById,
+
+    // Bhojanshala API
+    fetchBhojanshallas,
+    fetchBhojanshalAById,
+
+    // Favorites API
+    fetchFavorites,
+    addFavorite,
+    removeFavorite,
   }
 }
