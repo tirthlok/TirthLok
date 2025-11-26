@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
-import { sampleTirths } from '~/server/utils/sampleData'
+import { sampleTirths } from '~~/server/utils/sampleData'
 import { ref, computed, onMounted } from 'vue'
 import { BookOpen, Home, Sparkles } from 'lucide-vue-next'
 
@@ -131,7 +131,7 @@ const getTabIcon = (tabId: string) => {
 
 const loadData = () => {
   try {
-    const found = sampleTirths.find((t: any) => t.id === 'girnar')
+    const found = sampleTirths.find((t: any) => t.id === 'palitana')
     tirth.value = (found as Tirth) || null
     activeTab.value = 'about'
   } catch (error) {

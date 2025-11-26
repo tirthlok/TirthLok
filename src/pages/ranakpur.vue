@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
-import { sampleTirths } from '~/server/utils/sampleData'
+import { sampleTirths } from '~~/server/utils/sampleData'
 import { ref, computed, onMounted } from 'vue'
 import { BookOpen, Home, Sparkles } from 'lucide-vue-next'
 

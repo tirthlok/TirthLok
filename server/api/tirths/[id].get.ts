@@ -1,4 +1,4 @@
-import { sampleTirths } from '~/server/utils/sampleData'
+import { sampleTirths } from '~~/server/utils/sampleData'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')

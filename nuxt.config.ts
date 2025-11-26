@@ -1,3 +1,5 @@
+import { resolve } from 'path'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
@@ -6,6 +8,9 @@ export default defineNuxtConfig({
   
   css: ['~/assets/css/main.css'],
   
+  // Use `src/` as the application's source directory. This groups all app code under `src/`.
+  srcDir: 'src/',
+
   ssr: true,
   
   typescript: {
@@ -33,6 +38,7 @@ export default defineNuxtConfig({
     '/tirth/**': { cache: { maxAge: 3600 } },
   },
 
+  // Components scanning will look under `src/components`
   components: {
     dirs: [
       {
@@ -42,8 +48,17 @@ export default defineNuxtConfig({
     ],
   },
 
+  // Alias server imports that should resolve to the project root `server/` folder
+  alias: {
+    '~/server': resolve(__dirname, 'server'),
+    '~/server/': resolve(__dirname, 'server'),
+    '/server': resolve(__dirname, 'server'),
+  },
+
+  // Auto-import composables and stores from `src/`
   imports: {
     autoImport: true,
+    // directories are relative to `srcDir`
     dirs: ['composables', 'stores'],
   },
 
