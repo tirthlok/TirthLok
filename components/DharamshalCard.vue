@@ -50,9 +50,6 @@
             <Icon name="Star" :size="16" class="fill-yellow-400 text-yellow-400" />
             <span class="text-sm font-bold text-gray-900">{{ dharamshala.rating }}</span>
           </div>
-          <span class="px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs font-bold rounded-full shadow-lg">
-            {{ formatType(dharamshala.type) }}
-          </span>
         </div>
 
         <!-- Title and Subtitle positioned over gradient -->
@@ -64,28 +61,9 @@
 
       <!-- Quick Info Section -->
       <div class="p-4 space-y-3">
-        <!-- Description -->
-        <p class="text-sm text-gray-600 line-clamp-2">{{ dharamshala.description }}</p>
-
-        <!-- Info Grid -->
-        <div class="space-y-2 text-sm border-t border-gray-200 pt-3">
-          <div class="flex items-center gap-2 text-gray-700">
-            <Icon name="Users" :size="16" class="text-blue-600 flex-shrink-0" />
-            <span>{{ dharamshala.capacity }} Rooms/Beds</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-700">
-            <Icon name="IndianRupee" :size="16" class="text-blue-600 flex-shrink-0" />
-            <span>₹{{ dharamshala.priceRange }}</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-700">
-            <Icon name="Phone" :size="16" class="text-blue-600 flex-shrink-0" />
-            <a :href="`tel:${dharamshala.contact.phone}`" class="text-blue-600 hover:underline truncate">{{ dharamshala.contact.phone }}</a>
-          </div>
-        </div>
-
         <!-- Features Tags -->
-        <div class="flex flex-wrap gap-2 pt-2">
-          <span v-for="feature in dharamshala.features.slice(0, 2)" :key="feature" class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
+        <div class="flex flex-wrap gap-2">
+          <span v-for="feature in dharamshala.features.slice(0, 3)" :key="feature" class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
             {{ feature }}
           </span>
         </div>
@@ -99,8 +77,8 @@
       :title="isFavorited ? 'Remove from wishlist' : 'Add to wishlist'"
       class="absolute top-4 right-4 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl"
       :class="isFavorited 
-        ? 'bg-red-500 text-white scale-110' 
-        : 'bg-white text-red-500 hover:bg-red-500 hover:text-white hover:scale-110'"
+        ? 'bg-blue-600 text-white scale-110' 
+        : 'bg-white text-blue-600 hover:bg-blue-600 hover:text-white hover:scale-110'"
     >
       <Icon name="Heart" :size="22" :class="isFavorited ? 'fill-current' : 'fill-current'" />
     </button>
@@ -110,6 +88,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '~/stores/user'
 import Icon from '~/components/Icon.vue'
 
 interface DharamshalItem {
@@ -141,12 +120,25 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const userStore = useUserStore()
 const currentImageIndex = ref(0)
 
 // Normalize images to an array
 const imagesArr = computed(() => {
   if (!props.dharamshala.images) return [] as string[]
   return Array.isArray(props.dharamshala.images) ? props.dharamshala.images : [props.dharamshala.images]
+})
+
+// Helper to check if favorited
+const isFavorited = computed(() => {
+  try {
+    if (typeof userStore.isFavorite === 'function') {
+      return userStore.isFavorite(props.dharamshala.id)
+    }
+    return (userStore.user?.favorites || []).includes(props.dharamshala.id)
+  } catch (e) {
+    return false
+  }
 })
 
 // Format type text
@@ -169,10 +161,18 @@ const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + imagesArr.value.length) % imagesArr.value.length
 }
 
-// Toggle wishlist (simplified for now)
-const isFavorited = ref(false)
-const toggleWishlist = () => {
-  isFavorited.value = !isFavorited.value
+// Toggle wishlist
+const toggleWishlist = async () => {
+  try {
+    const favs = (userStore.user?.favorites || [])
+    if (favs.includes(props.dharamshala.id)) {
+      await userStore.removeFavorite(props.dharamshala.id)
+    } else {
+      await userStore.addFavorite(props.dharamshala.id)
+    }
+  } catch (e) {
+    console.error('Error toggling favorite:', e)
+  }
 }
 
 // Handle card click to navigate to details page

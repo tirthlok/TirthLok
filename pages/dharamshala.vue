@@ -20,36 +20,52 @@
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 bg-clip-text text-transparent mb-2">
               Dharamshala
             </h1>
-            <p class="text-lg text-gray-600">Pilgrim lodges and accommodations</p>
           </div>
         </div>
-        <p class="text-gray-700 leading-relaxed text-base sm:text-lg max-w-3xl">
-          Dharamshala (धर्मशाला) are traditional pilgrim accommodations that provide affordable, clean lodging for spiritual seekers and pilgrims visiting sacred sites. They are run by religious organizations and offer a welcoming environment for travelers.
-        </p>
       </div>
 
-      <!-- Filter & Search Section -->
-      <div class="mb-8 flex flex-wrap gap-3">
-        <button
-          v-for="filter in ['All', 'Budget', 'Mid-Range', 'Premium']"
-          :key="filter"
-          :class="[
-            'px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 border-2',
-            activeFilter === filter
-              ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-blue-600 shadow-lg'
-              : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-          ]"
-          @click="activeFilter = filter"
+      <!-- Filter Clips (All / Wishlist) -->
+      <div class="mb-8">
+        <div
+          class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 hide-scrollbar whitespace-nowrap px-2 sm:px-4"
+          role="tablist"
+          tabindex="0"
+          aria-label="Dharamshala filters"
         >
-          <Icon name="Filter" :size="18" />
-          {{ filter }}
-        </button>
+          <button
+            role="tab"
+            @click="selectedClip = 'all'"
+            :class="chipClass('all')"
+            :aria-selected="selectedClip === 'all'"
+            title="Show all dharamshala"
+          >
+            <Icon name="Home" :size="16" class="inline-block mr-2" />
+            <span>All Dharamshala</span>
+            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-white/20">
+              {{ allCount }}
+            </span>
+          </button>
+
+          <button
+            role="tab"
+            @click="selectedClip = 'wishlist'"
+            :class="chipClass('wishlist')"
+            :aria-selected="selectedClip === 'wishlist'"
+            title="Show wishlist dharamshala"
+          >
+            <Icon name="Heart" :size="16" class="inline-block mr-2" />
+            <span>Wishlist</span>
+            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-white/20">
+              {{ wishlistCount }}
+            </span>
+          </button>
+        </div>
       </div>
 
       <!-- Dharamshala Cards Grid -->
-      <div v-if="filteredDharamshalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+      <div v-if="displayedDharamshalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
         <DharamshalCard
-          v-for="dharamshala in filteredDharamshalas"
+          v-for="dharamshala in displayedDharamshalas"
           :key="dharamshala.id"
           :dharamshala="dharamshala"
         />
@@ -101,12 +117,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import Icon from '~/components/Icon.vue'
+import { useUserStore } from '~/stores/user'
 
 definePageMeta({
   layout: 'default'
 })
 
-const activeFilter = ref('All')
+const userStore = useUserStore()
+const selectedClip = ref<'all' | 'wishlist'>('all')
 
 // Sample dharamshala data
 const dharamshalas = [
@@ -194,8 +212,47 @@ const dharamshalas = [
   }
 ]
 
-const filteredDharamshalas = computed(() => {
-  if (activeFilter.value === 'All') return dharamshalas
-  return dharamshalas.filter(d => d.category === activeFilter.value)
+// Wishlist functionality
+const allCount = computed(() => dharamshalas.length)
+
+const wishlistCount = computed(() => {
+  try {
+    if (typeof userStore.getFavorites === 'function') {
+      return userStore.getFavorites().length || 0
+    }
+    return (userStore.getFavorites || []).length
+  } catch (e) {
+    return 0
+  }
 })
+
+// Display dharamshalas based on selected clip
+const displayedDharamshalas = computed(() => {
+  const all = dharamshalas
+  if (selectedClip.value === 'all') return all
+
+  if (selectedClip.value === 'wishlist') {
+    let favs: string[] = []
+    try {
+      if (typeof userStore.getFavorites === 'function') {
+        favs = userStore.getFavorites()
+      } else {
+        favs = userStore.getFavorites || []
+      }
+    } catch (e) {
+      favs = []
+    }
+    return all.filter((d) => favs.includes(d.id))
+  }
+
+  return all
+})
+
+// Chip styling
+const chipClass = (filter: 'all' | 'wishlist') => {
+  const base = 'px-4 py-2 rounded-full border transition-transform transform-gpu inline-flex items-center gap-2 text-sm select-none focus:outline-none'
+  const active = 'bg-blue-600 text-white border-transparent shadow-lg scale-105 ring-2 ring-blue-300'
+  const inactive = 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:shadow-sm hover:scale-102'
+  return `${base} ${selectedClip.value === filter ? active : inactive}`
+}
 </script>
