@@ -13,17 +13,7 @@
             <span class="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-clip-text text-transparent font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
           </NuxtLink>
 
-          <!-- Desktop Icons - Hidden on Mobile -->
-          <nav class="hidden sm:flex items-center gap-2">
-            <button class="text-gray-600 hover:text-red-500 font-medium text-sm transition-colors p-2 hover:bg-red-50 rounded-full">
-              <Icon name="Globe" :size="20" />
-            </button>
-            <button class="flex items-center justify-center p-2 rounded-full hover:bg-red-50 transition-all">
-              <Icon name="User" :size="20" class="text-gray-600 hover:text-red-500" />
-            </button>
-          </nav>
-
-          <!-- Mobile/Desktop Hamburger Button - Modern Animated -->
+          <!-- Hamburger Button - Modern Animated -->
           <button 
             @click="mobileMenuOpen = !mobileMenuOpen" 
             class="p-2 hover:bg-red-100 rounded-lg transition-all duration-300 group"
@@ -101,7 +91,11 @@
         <div v-if="mobileMenuOpen" class="border-t border-red-200/50 bg-gradient-to-b from-white to-red-50/30 backdrop-blur-sm">
           <div class="px-4 sm:px-6 lg:px-8 py-6 space-y-3">
             <!-- Profile Section -->
-            <button class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-red-600/10 flex items-center gap-3 border border-transparent hover:border-red-200">
+            <NuxtLink 
+              to="/profile"
+              @click="mobileMenuOpen = false"
+              class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-red-600/10 flex items-center gap-3 border border-transparent hover:border-red-200"
+            >
               <div class="p-2 rounded-lg bg-gradient-to-br from-red-500 to-red-600 group-hover:shadow-lg group-hover:scale-110 transition-all duration-300">
                 <Icon name="User" :size="18" class="text-white" />
               </div>
@@ -110,10 +104,14 @@
                 <p class="text-xs text-gray-500 group-hover:text-gray-600">Manage your account</p>
               </div>
               <Icon name="ChevronRight" :size="18" class="text-gray-300 group-hover:text-red-400 transition-all duration-300 ml-auto group-hover:translate-x-1" />
-            </button>
+            </NuxtLink>
 
             <!-- Settings Section -->
-            <button class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-blue-600/10 flex items-center gap-3 border border-transparent hover:border-blue-200">
+            <NuxtLink 
+              to="/settings"
+              @click="mobileMenuOpen = false"
+              class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-blue-600/10 flex items-center gap-3 border border-transparent hover:border-blue-200"
+            >
               <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 group-hover:shadow-lg group-hover:scale-110 transition-all duration-300">
                 <Icon name="Settings" :size="18" class="text-white" />
               </div>
@@ -122,13 +120,16 @@
                 <p class="text-xs text-gray-500 group-hover:text-gray-600">Customize your experience</p>
               </div>
               <Icon name="ChevronRight" :size="18" class="text-gray-300 group-hover:text-blue-400 transition-all duration-300 ml-auto group-hover:translate-x-1" />
-            </button>
+            </NuxtLink>
 
             <!-- Divider -->
             <div class="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent my-3"></div>
 
             <!-- Sign Out Section -->
-            <button class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-orange-600/10 flex items-center gap-3 border border-transparent hover:border-red-300">
+            <button 
+              @click="signOut"
+              class="w-full group relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-orange-600/10 flex items-center gap-3 border border-transparent hover:border-red-300"
+            >
               <div class="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 group-hover:shadow-lg group-hover:scale-110 transition-all duration-300">
                 <Icon name="LogOut" :size="18" class="text-white" />
               </div>
@@ -296,5 +297,13 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
   }, 200)
+}
+
+const signOut = () => {
+  mobileMenuOpen.value = false
+  // Implement sign out logic here
+  console.log('User signed out')
+  // You can redirect to home or login page
+  navigateTo('/')
 }
 </script>
