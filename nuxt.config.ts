@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   
   css: ['~/assets/css/main.css'],
   
+  // Use `src/` as the application's source directory. This groups all app code under `src/`.
+  srcDir: 'src/',
+
   ssr: true,
   
   typescript: {
@@ -33,18 +36,20 @@ export default defineNuxtConfig({
     '/tirth/**': { cache: { maxAge: 3600 } },
   },
 
+  // Components scanning will look under `src/components`
   components: {
     dirs: [
       {
-        path: '~/components',
+        path: '~/src/components',
         pathPrefix: false,
       },
     ],
   },
 
+  // Auto-import composables and stores from `src/`
   imports: {
     autoImport: true,
-    dirs: ['composables', 'stores'],
+    dirs: ['src/composables', 'src/stores'],
   },
 
   devtools: { enabled: true },
