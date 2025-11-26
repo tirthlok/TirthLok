@@ -162,42 +162,117 @@
           <!-- State Filter -->
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-2">State</label>
-            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:border-red-500 outline-none transition-all text-sm">
-              <option value="">All States</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Rajasthan">Rajasthan</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Maharashtra">Maharashtra</option>
-            </select>
+            <div class="relative">
+              <select v-model="selectedState" class="w-full px-4 py-3 border-2 border-red-200 rounded-lg bg-gradient-to-r from-white to-red-50 text-gray-900 font-medium focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition-all text-sm hover:border-red-300 cursor-pointer appearance-none pr-10">
+                <option value="" class="bg-white text-gray-900">All States</option>
+                <option value="Gujarat" class="bg-white text-gray-900">Gujarat</option>
+                <option value="Rajasthan" class="bg-white text-gray-900">Rajasthan</option>
+                <option value="Karnataka" class="bg-white text-gray-900">Karnataka</option>
+                <option value="Maharashtra" class="bg-white text-gray-900">Maharashtra</option>
+              </select>
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-red-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+              </div>
+            </div>
           </div>
 
           <!-- Sect Filter -->
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-2">Sect</label>
-            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:border-red-500 outline-none transition-all text-sm">
-              <option value="">All Sects</option>
-              <option value="Shwetambar">Shwetambar</option>
-              <option value="Digambar">Digambar</option>
-            </select>
+            <div class="relative">
+              <select v-model="selectedSect" class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gradient-to-r from-white to-blue-50 text-gray-900 font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm hover:border-blue-300 cursor-pointer appearance-none pr-10">
+                <option value="" class="bg-white text-gray-900">All Sects</option>
+                <option value="Shwetambar" class="bg-white text-gray-900">Shwetambar</option>
+                <option value="Digambar" class="bg-white text-gray-900">Digambar</option>
+              </select>
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-blue-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+              </div>
+            </div>
           </div>
 
-          <!-- Type Filter -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-900 mb-2">Type</label>
-            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:border-red-500 outline-none transition-all text-sm">
-              <option value="">All Types</option>
-              <option value="Temple">Temple</option>
-              <option value="Mountain Peak">Mountain Peak</option>
-              <option value="Cave">Cave</option>
-            </select>
+          <!-- Facilities Filter - Stylish Checkboxes with Icons -->
+          <div class="border-t pt-4">
+            <label class="block text-sm font-semibold text-gray-900 mb-3">Facilities</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Dharamshala -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="dharmashala"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Dharamshala</span>
+              </label>
+
+              <!-- Bhojanshala -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="bhojanshala"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Bhojanshala</span>
+              </label>
+
+              <!-- Gaushala -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="gaushala"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Gaushala</span>
+              </label>
+
+              <!-- Parking -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="parking"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Parking</span>
+              </label>
+
+              <!-- Restroom -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="washroom"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Restroom</span>
+              </label>
+
+              <!-- Water Facility -->
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 cursor-pointer group hover:border-red-300 hover:shadow-md transition-all duration-300">
+                <input 
+                  v-model="selectedFacilities"
+                  type="checkbox" 
+                  value="water"
+                  class="w-4 h-4 rounded border-red-400 text-red-500 bg-white cursor-pointer accent-red-500 focus:ring-red-500"
+                >
+                <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Water Facility</span>
+              </label>
+            </div>
           </div>
         </div>
 
         <div class="flex gap-2 border-t pt-4">
-          <button @click="filterOpen = false" class="flex-1 px-4 py-2 border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-all font-medium">
-            Cancel
+          <button @click="resetFilters" class="flex-1 px-4 py-2 border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-all font-medium">
+            Reset
           </button>
-          <button @click="filterOpen = false" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium">
+          <button @click="applyFilters" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium">
             Apply
           </button>
         </div>
@@ -261,11 +336,19 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useTirthStore } from '~/stores/tirth'
+
+const tithStore = useTirthStore()
 
 const mobileMenuOpen = ref(false)
 const filterOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
+
+// Filter state
+const selectedState = ref('')
+const selectedSect = ref('')
+const selectedFacilities = ref<string[]>([])
 
 const suggestions = [
   'Palitana',
@@ -284,7 +367,13 @@ const filteredSuggestions = computed(() => {
 })
 
 const handleSearch = () => {
-  // Search functionality can be implemented when needed
+  // Filter tirths based on search term and other active filters
+  tithStore.filterTirths({
+    searchTerm: searchQuery.value || undefined,
+    state: selectedState.value || undefined,
+    sect: selectedSect.value || undefined,
+    facilities: selectedFacilities.value.length > 0 ? selectedFacilities.value : undefined,
+  })
 }
 
 const selectSuggestion = (suggestion: string) => {
@@ -297,6 +386,25 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
   }, 200)
+}
+
+const applyFilters = () => {
+  tithStore.filterTirths({
+    state: selectedState.value || undefined,
+    sect: selectedSect.value || undefined,
+    facilities: selectedFacilities.value.length > 0 ? selectedFacilities.value : undefined,
+    searchTerm: searchQuery.value || undefined,
+  })
+  filterOpen.value = false
+}
+
+const resetFilters = () => {
+  selectedState.value = ''
+  selectedSect.value = ''
+  selectedFacilities.value = []
+  searchQuery.value = ''
+  tithStore.filterTirths({})
+  filterOpen.value = false
 }
 
 const signOut = () => {

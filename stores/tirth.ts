@@ -86,6 +86,7 @@ export const useTirthStore = defineStore('tirth', {
       state?: string
       sect?: string
       type?: string
+      facilities?: string[]
       searchTerm?: string
     }) {
       let results = [...this.tirths]
@@ -110,6 +111,16 @@ export const useTirthStore = defineStore('tirth', {
 
       if (filters.type) {
         results = results.filter((t) => t.type === filters.type)
+      }
+
+      if (filters.facilities && filters.facilities.length > 0) {
+        results = results.filter((t) => {
+          // Check if tirth has facilities property and if any selected facility type is included
+          if (!t.facilities || t.facilities.length === 0) return false
+          return filters.facilities!.some((facilityType) =>
+            t.facilities!.some((f) => f.type === facilityType)
+          )
+        })
       }
 
       this.filteredTirths = results
