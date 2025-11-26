@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import * as Icons from 'lucide-vue-next'
 
 interface Props {
