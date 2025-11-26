@@ -1,203 +1,177 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/tirth"
-          class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-bold transition-all duration-300 transform hover:scale-105 hover:gap-3"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Home</span>
-        </NuxtLink>
+
+    <router-view v-if="hasId" />
+    <div v-else class="min-h-screen bg-gray-50 py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2">All Bhojanshala</h1>
+        <p class="text-gray-600 text-base md:text-lg">Authentic vegetarian dining facilities</p>
       </div>
 
-      <!-- Header Section -->
-      <div class="mb-8 sm:mb-12">
-        <div class="flex items-center gap-4 mb-4">
-          <Icon name="UtensilsCrossed" :size="40" class="text-green-600" />
-          <div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
-              Bhojanshala
-            </h1>
-            <p class="text-lg text-gray-600">Authentic vegetarian dining facilities</p>
-          </div>
+      <!-- Search & Filter Section -->
+      <div class="mb-8 space-y-4">
+        <!-- Search Bar -->
+        <SearchBox 
+          v-model="searchQuery"
+          placeholder="Search bhojanshala by name, city, or cuisine..."
+          :results="searchResults"
+          :is-loading="searchLoading"
+          @search="handleSearch"
+          @select-result="handleSelectResult"
+        />
+
+        <!-- Filter Chips (All / Wishlist) -->
+        <div class="flex items-center gap-3 overflow-x-auto pb-2">
+          <TagButton
+            v-for="filter in filterOptions"
+            :key="filter.id"
+            :tag="filter.id"
+            :label="filter.label"
+            :is-selected="selectedFilter === filter.id"
+            @toggle="(tag: string) => selectedFilter = (tag as 'all' | 'wishlist')"
+          />
         </div>
-        <p class="text-gray-700 leading-relaxed text-base sm:text-lg max-w-3xl">
-          Bhojanshala (भोजनशाला) are traditional vegetarian dining facilities that serve authentic cuisine following strict dietary practices. They provide affordable, wholesome meals for pilgrims and devotees, maintaining the spiritual essence of vegetarian hospitality.
-        </p>
       </div>
 
-      <!-- Filter & Search Section -->
-      <div class="mb-8 flex flex-wrap gap-3">
-        <button
-          v-for="filter in ['All', 'Budget', 'Mid-Range', 'Premium']"
-          :key="filter"
-          :class="[
-            'px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 border-2',
-            activeFilter === filter
-              ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white border-green-600 shadow-lg'
-              : 'bg-white text-gray-700 border-gray-200 hover:border-green-300 hover:bg-green-50'
-          ]"
-          @click="activeFilter = filter"
-        >
-          <Icon name="Filter" :size="18" />
-          {{ filter }}
-        </button>
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent"></div>
       </div>
 
-      <!-- Bhojanshala Cards Grid -->
-      <div v-if="filteredBhojanShalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
-        <BhojanshalaCard
-          v-for="bhojanshala in filteredBhojanShalas"
+      <!-- Error State -->
+      <div v-if="error" class="mb-6 p-4 sm:p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
+        <p class="text-red-700 text-sm md:text-base font-semibold">Error loading bhojanshala</p>
+        <p class="text-red-600 text-xs md:text-sm mt-1">{{ error }}</p>
+      </div>
+
+      <!-- Bhojanshala Cards Grid - Using BaseCard -->
+      <div v-if="!loading && displayedBhojanShalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <BaseCard
+          v-for="bhojanshala in displayedBhojanShalas"
           :key="bhojanshala.id"
-          :bhojanshala="bhojanshala"
+          :item="bhojanshala"
+          card-type="bhojanshala"
+          :show-wishlist="true"
+          :show-details="true"
+          route-prefix="/bhojanshala"
+          :tag-fields="(bhojanshala as any).cuisines || bhojanshala.cuisineTypes || []"
         />
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-16 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border-2 border-dashed border-green-300">
-        <Icon name="UtensilsCrossed" :size="64" class="text-green-300 mx-auto mb-4" />
-        <p class="text-gray-600 font-semibold text-lg">No bhojanshala found</p>
-        <p class="text-gray-500 text-sm mt-2">Try adjusting your filter</p>
+      <div v-if="!loading && displayedBhojanShalas.length === 0" class="text-center py-12 md:py-16">
+        <Icon name="UtensilsCrossed" :size="48" class="text-gray-400 mx-auto mb-4" />
+        <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">No Bhojanshala Found</h3>
+        <p class="text-gray-600 text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
       </div>
 
-      <!-- Features Info Section -->
-      <div class="mt-12 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 p-8 rounded-2xl">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="flex items-start gap-4">
-            <div class="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg">
-              <Icon name="Leaf" :size="24" class="text-white" />
-            </div>
-            <div>
-              <h3 class="font-bold text-gray-900 mb-1">Vegetarian Only</h3>
-              <p class="text-gray-600 text-sm">100% pure vegetarian cuisine</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="p-3 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg">
-              <Icon name="Heart" :size="24" class="text-white" />
-            </div>
-            <div>
-              <h3 class="font-bold text-gray-900 mb-1">Jain Friendly</h3>
-              <p class="text-gray-600 text-sm">Strict dietary accommodations available</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="p-3 bg-gradient-to-br from-teal-600 to-green-600 rounded-lg">
-              <Icon name="Utensils" :size="24" class="text-white" />
-            </div>
-            <div>
-              <h3 class="font-bold text-gray-900 mb-1">Traditional Recipes</h3>
-              <p class="text-gray-600 text-sm">Authentic regional vegetarian cuisine</p>
-            </div>
-          </div>
-        </div>
+      <!-- Results Info -->
+      <div v-if="!loading && displayedBhojanShalas.length > 0" class="mt-8 text-center text-sm text-gray-600">
+        Showing {{ displayedBhojanShalas.length }} of {{ filteredBhojanShalas.length }} bhojanshala locations
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Icon from '~/components/Icon.vue'
+import { computed, ref } from 'vue'
+import { useBhojanshalaStore } from '~/stores/bhojanshala'
+import { useFavoritesStore } from '~/stores/favorites'
+import type { Bhojanshala } from '~/types/models'
+import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
+import type { CardItem } from '~/components/shared'
 
 definePageMeta({
   layout: 'default'
 })
 
-const activeFilter = ref('All')
+const bhojanshalaStore = useBhojanshalaStore()
+const favoritesStore = useFavoritesStore()
 
-// Sample bhojanshala data
-const bhojanShalas = [
-  {
-    id: 'shri-krishna-bhojanshala',
-    name: 'Shri Krishna Bhojanshala',
-    description: 'Traditional vegetarian restaurant serving authentic Gujarati cuisine',
-    type: 'bhojanshala',
-    rating: 4.8,
-    reviews: 312,
-    operatingHours: '11:00 AM - 9:00 PM',
-    priceRange: '₹60-150',
-    category: 'Budget',
-    cuisines: ['Gujarati', 'Jain', 'North Indian'],
-    location: {
-      city: 'Palitana',
-      state: 'Gujarat',
-      address: 'Main Market, Palitana',
-      latitude: 22.128,
-      longitude: 71.828
-    },
-    contact: {
-      phone: '+91-2848-252222',
-      email: 'info@krishna-bhojanshala.com',
-      website: 'www.krishna-bhojanshala.com'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1501195530297-a145d97f3a7f?w=600&h=400&fit=crop'
-    ]
-  },
-  {
-    id: 'annapurna-dining',
-    name: 'Annapurna Dining Hall',
-    description: 'Premium vegetarian fine dining with organic ingredients',
-    type: 'bhojanshala',
-    rating: 4.7,
-    reviews: 289,
-    operatingHours: '12:00 PM - 10:00 PM',
-    priceRange: '₹200-400',
-    category: 'Mid-Range',
-    cuisines: ['Gujarati', 'Rajasthani', 'Jain'],
-    location: {
-      city: 'Ranakpur',
-      state: 'Rajasthan',
-      address: 'Near Temple, Ranakpur',
-      latitude: 25.05,
-      longitude: 73.8
-    },
-    contact: {
-      phone: '+91-2954-224789',
-      email: 'contact@annapurna-dining.com',
-      website: 'www.annapurna-dining.com'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop'
-    ]
-  },
-  {
-    id: 'divine-taste',
-    name: 'Divine Taste Restaurant',
-    description: 'Luxury vegetarian dining experience with gourmet cuisine',
-    type: 'bhojanshala',
-    rating: 4.9,
-    reviews: 405,
-    operatingHours: '10:00 AM - 11:00 PM',
-    priceRange: '₹400-800',
-    category: 'Premium',
-    cuisines: ['Fusion', 'International Vegetarian', 'Jain'],
-    location: {
-      city: 'Girnar',
-      state: 'Gujarat',
-      address: 'Hill Road, Girnar',
-      latitude: 21.506,
-      longitude: 71.711
-    },
-    contact: {
-      phone: '+91-2845-334890',
-      email: 'info@divine-taste.com',
-      website: 'www.divine-taste.com'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1455619452474-d2be8b1e4e31?w=600&h=400&fit=crop'
-    ]
+// Server-side fetch and hydrate store
+const { data: serverBhojans } = await useAsyncData<Bhojanshala[]>('bhojanshala', () => $fetch('/api/bhojanshala'))
+if (serverBhojans?.value) {
+  bhojanshalaStore.$patch((state) => {
+    state.bhojanshalas = serverBhojans.value as Bhojanshala[]
+    state.filteredBhojanshalas = serverBhojans.value as Bhojanshala[]
+  })
+}
+
+const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+if (serverFavorites?.value) {
+  favoritesStore.setFavorites(serverFavorites.value as string[])
+}
+
+const loading = computed(() => bhojanshalaStore.loading)
+const error = computed(() => bhojanshalaStore.error)
+const filteredBhojanShalas = computed(() => bhojanshalaStore.filteredBhojanshalas)
+
+// Search & Filter State
+type SearchResult = { id: string; name: string; subtitle: string }
+const searchQuery = ref('')
+const searchLoading = ref(false)
+const searchResults = ref<SearchResult[]>([])
+const selectedFilter = ref<'all' | 'wishlist'>('all')
+
+// Filter options (computed so labels update reactively)
+const filterOptions = computed(() => [
+  { id: 'all', label: `All (${(filteredBhojanShalas.value || []).length})` },
+  { id: 'wishlist', label: `Wishlist (${favoritesStore.getFavoriteCount})` },
+])
+
+  const route = useRoute()
+  const hasId = computed(() => !!(route && route.params && route.params.id))
+// Display bhojanshala based on filter
+const displayedBhojanShalas = computed(() => {
+  const all = filteredBhojanShalas.value || []
+  
+  if (selectedFilter.value === 'all') return all
+  
+  if (selectedFilter.value === 'wishlist') {
+    return all.filter((b: CardItem) => favoritesStore.isFavorite(b.id))
   }
-]
 
-const filteredBhojanShalas = computed(() => {
-  if (activeFilter.value === 'All') return bhojanShalas
-  return bhojanShalas.filter(b => b.category === activeFilter.value)
+  return all
 })
+
+// Handle search
+const handleSearch = (query: string) => {
+  if (!query.trim()) {
+    searchResults.value = []
+    return
+  }
+
+  searchLoading.value = true
+  try {
+    const term = query.toLowerCase()
+    const results = (filteredBhojanShalas.value || [])
+      .filter(
+        (b: CardItem) =>
+          b.name.toLowerCase().includes(term) ||
+          b.location.city.toLowerCase().includes(term) ||
+          b.location.state.toLowerCase().includes(term) ||
+          ((b.cuisines as string[]) && (b.cuisines as string[]).some((c: string) => c.toLowerCase().includes(term)))
+      )
+      .slice(0, 5)
+      .map((b: CardItem) => ({
+        id: b.id,
+        name: b.name,
+        subtitle: `${b.location.city}, ${b.location.state}`,
+      }))
+
+    searchResults.value = results
+  } finally {
+    searchLoading.value = false
+  }
+}
+
+// Handle search result selection
+const handleSelectResult = (result: any) => {
+  const selected = bhojanshalaStore.getBhojanshalAById(result.id)
+  bhojanshalaStore.setSelectedBhojanshala(selected || null)
+  navigateTo(`/bhojanshala/${result.id}`)
+}
+
+// Data is fetched and stores hydrated on the server via useAsyncData
 </script>

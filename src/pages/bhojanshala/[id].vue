@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
+  <div id="top" class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <!-- Back Button -->
       <div class="mb-6 sm:mb-8">
         <NuxtLink
           to="/bhojanshala"
-          class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-bold transition-all duration-300 transform hover:scale-105 hover:gap-3"
+          class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-bold transition-all"
         >
           <Icon name="ArrowLeft" :size="22" />
           <span class="text-base sm:text-lg">Back to Bhojanshala List</span>
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="!bhojanshala" class="flex justify-center items-center py-32">
+      <div v-if="loading" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6">
           <div class="relative w-16 h-16 mx-auto">
             <div class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
@@ -23,8 +23,19 @@
         </div>
       </div>
 
+      <!-- Error State -->
+      <div v-else-if="error" class="flex justify-center items-center py-32">
+        <div class="text-center space-y-6 max-w-md">
+          <Icon name="AlertTriangle" :size="48" class="text-red-500 mx-auto" />
+          <p class="text-red-600 font-semibold text-lg">{{ error }}</p>
+          <NuxtLink to="/bhojanshala" class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700">
+            Return to List
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Content -->
-      <div v-else class="space-y-8 sm:space-y-10">
+      <div v-else-if="bhojanshala" class="space-y-8 sm:space-y-10">
         <!-- Header Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           <!-- Image Gallery -->
@@ -38,14 +49,14 @@
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
               <!-- Image Counter -->
-              <div v-if="imagesArr.length > 1" class="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full text-white text-sm font-semibold">
-                {{ currentImageIndex + 1 }} / {{ imagesArr.length }}
+              <div v-if="bhojanshala.images && bhojanshala.images.length > 1" class="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full text-white text-sm font-semibold">
+                {{ currentImageIndex + 1 }} / {{ bhojanshala.images.length }}
               </div>
 
               <!-- Navigation Dots -->
-              <div v-if="imagesArr.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+              <div v-if="bhojanshala.images && bhojanshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
                 <button
-                  v-for="(_, index) in imagesArr"
+                  v-for="(_, index) in bhojanshala.images"
                   :key="index"
                   @click="currentImageIndex = index"
                   :class="[
@@ -59,7 +70,7 @@
 
               <!-- Arrow Navigation -->
               <button
-                v-if="imagesArr.length > 1"
+                v-if="bhojanshala.images && bhojanshala.images.length > 1"
                 @click="previousImage"
                 class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
               >
@@ -68,7 +79,7 @@
                 </svg>
               </button>
               <button
-                v-if="imagesArr.length > 1"
+                v-if="bhojanshala.images && bhojanshala.images.length > 1"
                 @click="nextImage"
                 class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
               >
@@ -79,9 +90,9 @@
             </div>
 
             <!-- Thumbnails -->
-            <div v-if="imagesArr.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
+            <div v-if="bhojanshala.images && bhojanshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
               <button
-                v-for="(image, index) in imagesArr"
+                v-for="(image, index) in bhojanshala.images"
                 :key="index"
                 @click="currentImageIndex = index"
                 :class="[
@@ -176,13 +187,13 @@
         </div>
 
         <!-- Cuisines Section -->
-        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-2xl border-2 border-green-200">
+        <div v-if="bhojanshala.cuisineTypes && bhojanshala.cuisineTypes.length > 0" class="bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-2xl border-2 border-green-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
             <Icon name="Utensils" :size="28" class="text-green-600" />
             Cuisines Available
           </h2>
           <div class="flex flex-wrap gap-3">
-            <span v-for="cuisine in bhojanshala.cuisines" :key="cuisine" class="px-4 py-2 bg-white rounded-lg border-2 border-green-200 font-semibold text-green-700 hover:border-green-400 transition-all">
+            <span v-for="cuisine in bhojanshala.cuisineTypes" :key="cuisine" class="px-4 py-2 bg-white rounded-lg border-2 border-green-200 font-semibold text-green-700 hover:border-green-400 transition-all">
               {{ cuisine }}
             </span>
           </div>
@@ -211,13 +222,23 @@
 
         <!-- Back to Top Button -->
         <div class="flex justify-center pt-8 border-t">
-          <button
-            @click="scrollToTop"
+          <a
+            href="#top"
             class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full font-bold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
           >
             <Icon name="ArrowUp" :size="20" />
             <span>Back to Top</span>
-          </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Not Found -->
+      <div v-else class="flex justify-center items-center py-32">
+        <div class="text-center space-y-6 max-w-md">
+          <p class="text-gray-600 font-semibold text-lg">Bhojanshala not found</p>
+          <NuxtLink to="/bhojanshala" class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700">
+            Return to List
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -225,105 +246,77 @@
 </template>
 
 <script setup lang="ts">
+import type { Bhojanshala } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
-import Icon from '~/components/Icon.vue'
+import { onBeforeRouteUpdate } from 'vue-router'
+import { useBhojanshalaStore } from '~/stores/bhojanshala'
+import Icon from '~/components/common/Icon.vue'
 
 definePageMeta({
   layout: 'default',
 })
 
+const route = useRoute()
+const bhojanshalaStore = useBhojanshalaStore()
+
 const currentImageIndex = ref(0)
-const bhojanshala = ref<any>(null)
-
-// Sample bhojanshala data
-const bhojanshalasData = {
-  'shri-krishna-bhojanshala': {
-    id: 'shri-krishna-bhojanshala',
-    name: 'Shri Krishna Bhojanshala',
-    description: 'Traditional vegetarian restaurant serving authentic Gujarati cuisine with strict adherence to Jain dietary principles. We prepare fresh, wholesome meals daily using organic vegetables and traditional cooking methods.',
-    type: 'bhojanshala',
-    rating: 4.8,
-    reviews: 312,
-    operatingHours: '11:00 AM - 9:00 PM',
-    priceRange: '₹60-150',
-    cuisines: ['Gujarati', 'Jain', 'North Indian', 'South Indian'],
-    location: {
-      city: 'Palitana',
-      state: 'Gujarat',
-      address: 'Main Market, Palitana',
-      latitude: 22.128,
-      longitude: 71.828
-    },
-    contact: {
-      phone: '+91-2848-252222',
-      email: 'info@krishna-bhojanshala.com',
-      website: 'www.krishna-bhojanshala.com'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1501195530297-a145d97f3a7f?w=600&h=400&fit=crop'
-    ]
-  },
-  'annapurna-dining': {
-    id: 'annapurna-dining',
-    name: 'Annapurna Dining Hall',
-    description: 'Premium vegetarian fine dining with organic ingredients. Experience authentic regional vegetarian cuisine in a comfortable and peaceful setting perfect for pilgrims.',
-    type: 'bhojanshala',
-    rating: 4.7,
-    reviews: 289,
-    operatingHours: '12:00 PM - 10:00 PM',
-    priceRange: '₹200-400',
-    cuisines: ['Gujarati', 'Rajasthani', 'Jain'],
-    location: {
-      city: 'Ranakpur',
-      state: 'Rajasthan',
-      address: 'Near Temple, Ranakpur',
-      latitude: 25.05,
-      longitude: 73.8
-    },
-    contact: {
-      phone: '+91-2954-224789',
-      email: 'contact@annapurna-dining.com',
-      website: 'www.annapurna-dining.com'
-    },
-    images: [
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop'
-    ]
-  }
-}
-
-const imagesArr = computed(() => {
-  if (!bhojanshala.value?.images) return [] as string[]
-  return Array.isArray(bhojanshala.value.images) ? bhojanshala.value.images : [bhojanshala.value.images]
-})
+const bhojanshala = ref<Bhojanshala | null>(null)
+const loading = ref(false)
+const error = ref<string | null>(null)
 
 const currentImage = computed(() => {
-  if (!imagesArr.value || imagesArr.value.length === 0) {
+  if (!bhojanshala.value?.images || bhojanshala.value.images.length === 0) {
     return 'https://via.placeholder.com/500x500'
   }
-  return imagesArr.value[currentImageIndex.value] || 'https://via.placeholder.com/500x500'
+  return bhojanshala.value.images[currentImageIndex.value] || 'https://via.placeholder.com/500x500'
 })
 
 const nextImage = () => {
-  if (imagesArr.value.length > 0) {
-    currentImageIndex.value = (currentImageIndex.value + 1) % imagesArr.value.length
+  if (bhojanshala.value?.images && bhojanshala.value.images.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value + 1) % bhojanshala.value.images.length
   }
 }
 
 const previousImage = () => {
-  if (imagesArr.value.length > 0) {
-    currentImageIndex.value = (currentImageIndex.value - 1 + imagesArr.value.length) % imagesArr.value.length
+  if (bhojanshala.value?.images && bhojanshala.value.images.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value - 1 + bhojanshala.value.images.length) % bhojanshala.value.images.length
   }
 }
 
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+// Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
+
+const loadData = async (idParam?: string) => {
+  try {
+    loading.value = true
+    error.value = null
+    const id = (idParam ?? route.params.id) as string
+
+    // Fetch data if not in store
+    if (bhojanshalaStore.bhojanshalas.length === 0) {
+      await bhojanshalaStore.fetchBhojanshalas()
+    }
+
+    const found = bhojanshalaStore.getBhojanshalAById(id)
+    if (found) {
+      bhojanshala.value = found
+      currentImageIndex.value = 0
+    } else {
+      error.value = `Bhojanshala with ID "${id}" not found`
+    }
+  } catch (err) {
+    error.value = 'Failed to load bhojanshala data'
+    console.error('Error loading bhojanshala:', err)
+  } finally {
+    loading.value = false
+  }
 }
 
-const route = useRoute()
-
 onMounted(() => {
-  const id = route.params.id as string
-  bhojanshala.value = bhojanshalasData[id as keyof typeof bhojanshalasData] || null
+  loadData()
+})
+
+onBeforeRouteUpdate((to) => {
+  const nextId = to.params.id as string
+  loadData(nextId)
 })
 </script>

@@ -84,3 +84,38 @@ export interface AdminUser extends User {
   role: 'admin' | 'editor'
   permissions: string[]
 }
+
+export interface Dharamshala {
+  id: string
+  name: string
+  description?: string
+  type: string
+  rating: number
+  reviews: number
+  capacity?: number
+  priceRange: string
+  amenities?: string[]
+  location: Location
+  contact: ContactInfo
+  images: string[]
+  operatingHours?: string
+  rules?: string[]
+}
+
+export interface Bhojanshala {
+  id: string
+  name: string
+  description?: string
+  type: string
+  rating: number
+  reviews: number
+  operatingHours: string
+  priceRange: string
+  cuisineTypes?: string[]
+  dietaryOptions?: string[]
+  location: Location
+  contact: ContactInfo
+  images: string[]
+  speciality?: string
+  vegetarianOnly?: boolean
+}
