@@ -149,7 +149,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Facility, Tirth } from '~/types/models'
-import { useFilter } from '~/composables/useFilter'
+import { useFilter } from '~/composables/ui'
 
 const props = defineProps<{
   tirth: Tirth
