@@ -59,7 +59,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && displayedDharamshalas.length === 0" class="text-center py-12 md:py-16">
+      <div v-if="!loading && displayedDharamshalas.length === 0" class="text-center py-8 md:py-12">
         <Icon name="Home" :size="48" class="text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">No Dharamshala Found</h3>
         <p class="text-gray-600 text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>

@@ -37,7 +37,7 @@
     </div>
 
     <!-- Facilities Grid -->
-    <div v-if="filteredItems.length === 0" class="text-center py-16 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
+    <div v-if="filteredItems.length === 0" class="text-center py-8 md:py-12 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
       <Icon name="Home" :size="64" class="text-gray-300 mx-auto mb-4" />
       <p class="text-gray-600 font-semibold text-lg">No facilities found for this category</p>
       <p class="text-gray-500 text-sm mt-2">Try selecting a different filter</p>

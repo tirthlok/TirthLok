@@ -9,15 +9,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'cream': '#F9F6EF',
-        'sage': '#88B47F',
-        'saffron': '#EFC65A',
-        'charcoal': '#2C2C2C',
-        'light-gray': '#9A9A9A',
+        // Semantic Colors (New Schema)
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          hover: 'var(--color-primary-hover)',
+          light: 'var(--color-primary-light)',
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          hover: 'var(--color-secondary-hover)',
+          light: 'var(--color-secondary-light)',
+        },
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          hover: 'var(--color-accent-hover)',
+        },
+        background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
+        muted: 'var(--color-surface-muted)',
+        logo: 'var(--color-logo)',
+        
+        // Legacy Color Names (Mapped to Schema)
+        'cream': 'var(--color-background)',
+        'sage': 'var(--color-secondary)',
+        'saffron': 'var(--color-primary)',
+        'charcoal': 'var(--color-text-main)',
+        'light-gray': 'var(--color-text-muted)',
       },
       fontFamily: {
-        sans: ['PT Sans', 'Inter', 'system-ui', 'sans-serif'],
-        serif: ['PT Serif', 'serif'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui'],
+        serif: ['var(--font-serif)', 'ui-serif', 'Georgia'],
+        display: ['var(--font-display)', 'var(--font-serif)'],
       },
       fontSize: {
         'xs': '0.75rem',

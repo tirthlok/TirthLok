@@ -1,21 +1,31 @@
 <template>
   <button
     @click.stop="toggleFavorite"
+    @mouseenter="() => (isHovered = true)"
+    @mouseleave="() => (isHovered = false)"
     :aria-pressed="isFavorited"
     :title="isFavorited ? 'Remove from wishlist' : 'Add to wishlist'"
-    class="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl"
+    class="w-11 h-11 flex items-center justify-center transition-all duration-300"
     :class="
       isFavorited
-        ? `${heartFilledColor} text-white scale-110`
-        : `bg-white ${heartColor} hover:${heartFilledColor} hover:text-white hover:scale-110`
+        ? `${heartColor} scale-110`
+        : `text-white hover:scale-110`
     "
   >
-    <Icon name="Heart" :size="22" :class="isFavorited ? 'fill-current' : 'fill-current'" />
+    <!-- Icon: stroked when not favorited, filled when favorited. Hover tracked via isHovered. -->
+    <Icon
+      name="Heart"
+      :size="32"
+      :class="(isFavorited || isHovered) ? 'fill-current' : 'stroke-current'"
+      stroke-width="2"
+      :fill="(isFavorited || isHovered) ? 'currentColor' : 'none'"
+      aria-hidden
+    />
   </button>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useFavoritesStore } from '~/stores/favorites'
 import Icon from './Icon.vue'
 
@@ -44,6 +54,9 @@ const favoritesStore = useFavoritesStore()
 const isFavorited = computed(() => {
   return favoritesStore.isFavorite(props.itemId)
 })
+
+// Local hover state (used instead of group-hover)
+let isHovered = ref(false)
 
 // Toggle favorite
 const toggleFavorite = async () => {

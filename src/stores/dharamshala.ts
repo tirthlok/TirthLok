@@ -40,6 +40,8 @@ export const useDharamshalaStore = defineStore('dharamshala', {
     getDharamshalaCount: (state) => state.dharamshalas.length,
 
     getFilteredCount: (state) => state.filteredDharamshalas.length,
+    // Provide list of dharamshala names for suggestions
+    dharamshalaNames: (state) => state.dharamshalas.map((d) => d.name || ''),
   },
 
   actions: {

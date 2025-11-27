@@ -1,17 +1,17 @@
 <template>
   <div class="relative group" @click="handleCardClick($event, routePrefix)">
     <div
-      class="rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl hover:scale-105 border-2"
-      :class="[colorScheme.border, 'hover:' + colorScheme.borderHover]"
+      :class="[wrapperClasses, colorScheme.border, 'hover:' + colorScheme.borderHover, props.variant === 'featured' ? 'hover:scale-100' : 'hover:scale-105']"
     >
       <!-- Image Carousel Container -->
       <ImageCarousel
         :images="item.images"
         :title="item.name"
         :subtitle="item.location.city + ', ' + item.location.state"
-        :image-height="imageHeight"
+        :image-height="imageHeightFinal"
         :accent-dot-color="colorScheme.dot"
         :show-title-overlay="showTitleOverlay"
+        :title-overlay-class="props.variant === 'featured' ? 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/60 via-transparent to-transparent' : 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white'"
       />
     </div>
 
@@ -21,7 +21,7 @@
       :item-id="item.id"
       :entity-type="cardType"
       :is-favorited="isFavorited"
-      class="absolute top-4 right-4 z-10"
+      class='absolute top-4 right-4 z-10'
     />
 
     <!-- Additional Info Section (Optional) -->
@@ -83,6 +83,7 @@ interface Props {
   showTitleOverlay?: boolean
   showDetails?: boolean
   maxTags?: number
+  variant?: 'default' | 'featured'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -95,6 +96,7 @@ const props = withDefaults(defineProps<Props>(), {
   showTitleOverlay: true,
   showDetails: false,
   maxTags: 3,
+  variant: 'default',
 })
 
 const favoritesStore = useFavoritesStore()
@@ -107,6 +109,19 @@ const colorScheme = computed<ColorScheme>(() => {
     ...baseScheme,
     ...props.colorScheme,
   }
+})
+
+const wrapperClasses = computed(() => {
+  if (props.variant === 'featured') {
+    return 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0'
+  }
+  return 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2'
+})
+
+const imageHeightFinal = computed(() => {
+  // Featured cards should be slightly taller by default
+  if (props.variant === 'featured') return props.imageHeight || 'h-72'
+  return props.imageHeight
 })
 
 // Check if item is favorited
