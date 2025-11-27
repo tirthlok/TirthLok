@@ -1,8 +1,8 @@
 <template>
   <div class="relative w-full overflow-hidden bg-gray-200" :class="imageHeightClass" :style="imageHeightStyle">
-    <!-- Image Display -->
+    <!-- Image Display: show validated image when available, otherwise a placeholder -->
     <img
-      :src="currentImage"
+      :src="currentImage || placeholder"
       :alt="title || 'Image'"
       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
     />
@@ -54,6 +54,8 @@
 import { computed } from 'vue'
 import { useImageCarousel } from './composables/useImageCarousel'
 import Icon from '~/components/common/Icon.vue'
+// Placeholder image when there are no valid images
+import placeholderImg from '~/assets/images/jain-temple-placeholder.png'
 
 interface Props {
   images?: string[] | string
@@ -81,6 +83,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { currentImageIndex, imagesArr, currentImage, hasMultipleImages, nextImage, prevImage, goToImage } =
   useImageCarousel(props.images)
+
+const placeholder = placeholderImg
 
 // Support passing either a Tailwind height class (e.g. 'h-72') or a CSS height value (e.g. '300px' or '18rem')
 const imageHeightClass = computed(() => {

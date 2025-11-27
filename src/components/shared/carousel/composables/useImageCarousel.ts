@@ -3,7 +3,7 @@
  * Handles image carousel logic for reusable components
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 export interface UseImageCarouselOptions {
   autoPlay?: boolean
@@ -17,10 +17,53 @@ export function useImageCarousel(
 ) {
   const currentImageIndex = ref(0)
 
-  // Normalize images to array
-  const imagesArr = computed(() => {
-    if (!images) return [] as string[]
-    return Array.isArray(images) ? images : [images]
+  // Normalize images to array (and filter broken images on client)
+  const _initialImages = Array.isArray(images) ? images.slice() : images ? [images] : []
+  const imagesArr = ref<string[]>(_initialImages)
+
+  // Preload images on client and filter out broken ones
+  const preloadImage = (url: string, timeout = 5000) => {
+    return new Promise<boolean>((resolve) => {
+      if (typeof window === 'undefined') return resolve(false)
+      const img = new Image()
+      let done = false
+      const t = setTimeout(() => {
+        if (done) return
+        done = true
+        img.src = ''
+        resolve(false)
+      }, timeout)
+      img.onload = () => {
+        if (done) return
+        done = true
+        clearTimeout(t)
+        resolve(true)
+      }
+      img.onerror = () => {
+        if (done) return
+        done = true
+        clearTimeout(t)
+        resolve(false)
+      }
+      img.src = url
+    })
+  }
+
+  onMounted(async () => {
+    if (_initialImages.length === 0) return
+    const validated: string[] = []
+    await Promise.all(
+      _initialImages.map(async (u) => {
+        try {
+          const ok = await preloadImage(u)
+          if (ok) validated.push(u)
+        } catch (e) {
+          // ignore
+        }
+      })
+    )
+    // Replace imagesArr with only valid images
+    imagesArr.value = validated
   })
 
   // Navigate to next image
@@ -44,7 +87,7 @@ export function useImageCarousel(
 
   // Get current image
   const currentImage = computed(() => {
-    return imagesArr.value[currentImageIndex.value] || 'https://via.placeholder.com/400x320'
+    return imagesArr.value[currentImageIndex.value] || ''
   })
 
   // Check if carousel has multiple images
