@@ -11,16 +11,6 @@
 
       <!-- Search & Filter Section -->
       <div class="mb-8 space-y-4">
-        <!-- Search Bar -->
-        <SearchBox 
-          v-model="searchQuery"
-          placeholder="Search bhojanshala by name, city, or cuisine..."
-          :results="searchResults"
-          :is-loading="searchLoading"
-          @search="handleSearch"
-          @select-result="handleSelectResult"
-        />
-
         <!-- Filter Chips (All / Wishlist) -->
         <div class="flex items-center gap-3 overflow-x-auto pb-2">
           <TagButton

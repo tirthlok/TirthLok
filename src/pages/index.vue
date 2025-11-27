@@ -36,46 +36,86 @@
       </div>
     </div>
 
-    <!-- Key Features Section - "Enhance your travel Experiences" style -->
-    <section class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
+    <!-- Tirth Cards Horizontal Scroll -->
+    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
       <div class="max-w-7xl mx-auto">
-        <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif">Featured Tirths</h3>
+          <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-1 text-sm sm:text-base sm:text-lg">
+            View All <Icon name="ArrowRight" :size="16" />
+          </NuxtLink>
+        </div>
+        
+        <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4">
+          <div class="flex gap-6 w-max snap-x snap-mandatory">
+            <div
+              v-for="tirth in filteredTirths"
+              :key="tirth.id"
+              class="flex-shrink-0 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300"
+            >
+              <BaseCard
+                :item="tirth"
+                card-type="tirth"
+                :show-wishlist="true"
+                :show-details="false"
+                variant="featured"
+                :image-height="'h-72'"
+                route-prefix="/tirth"
+                :tag-fields="[tirth.sect, tirth.type]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Key Features Section - "Enhance your travel Experiences" style -->
+    <section class="px-4 sm:px-6 lg:px-8 py-8 md:py-8 bg-background">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-2 font-serif">Your Spiritual Companion</h2>
           <p class="text-text-muted text-base sm:text-lg">Discover ancient temples, find accommodations, and get answers.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Feature 1 -->
-          <div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="w-14 h-14 rounded-xl bg-primary-light flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
-              <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏛️</span>
+          <div class="group rounded-2xl bg-gradient-to-r from-indigo-400 via-pink-500 to-yellow-400 p-[1px]">
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 12px 30px rgba(99,102,241,0.12), 0 0 28px rgba(236,72,153,0.06);">
+              <div class="w-14 h-14 rounded-xl bg-primary-light flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
+                <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏛️</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Explore Tirths</h3>
+              <p class="text-text-muted leading-relaxed text-sm sm:text-base">
+                Browse a vast directory of Jain Tirths. Filter by sect, type, location, and more to find your next destination.
+              </p>
             </div>
-            <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Explore Tirths</h3>
-            <p class="text-text-muted leading-relaxed text-sm sm:text-base">
-              Browse a vast directory of Jain Tirths. Filter by sect, type, location, and more to find your next destination.
-            </p>
           </div>
 
           <!-- Feature 2 -->
-          <div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="w-14 h-14 rounded-xl bg-secondary-light flex items-center justify-center mb-6 group-hover:bg-secondary transition-colors duration-300">
-              <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏨</span>
+          <div class="group rounded-2xl bg-gradient-to-r from-indigo-400 via-pink-500 to-yellow-400 p-[1px]">
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 12px 30px rgba(99,102,241,0.12), 0 0 28px rgba(236,72,153,0.06);">
+              <div class="w-14 h-14 rounded-xl bg-secondary-light flex items-center justify-center mb-6 group-hover:bg-secondary transition-colors duration-300">
+                <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏨</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Find Facilities</h3>
+              <p class="text-text-muted leading-relaxed text-sm sm:text-base">
+                Easily locate Bhojanshalas and Dharmashalas. View details, timings, and contact information all in one place.
+              </p>
             </div>
-            <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Find Facilities</h3>
-            <p class="text-text-muted leading-relaxed text-sm sm:text-base">
-              Easily locate Bhojanshalas and Dharmashalas. View details, timings, and contact information all in one place.
-            </p>
           </div>
 
           <!-- Feature 3 -->
-          <div class="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="w-14 h-14 rounded-xl bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors duration-300">
-              <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🤖</span>
+          <div class="group rounded-2xl bg-gradient-to-r from-indigo-400 via-pink-500 to-yellow-400 p-[1px]">
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 12px 30px rgba(99,102,241,0.12), 0 0 28px rgba(236,72,153,0.06);">
+              <div class="w-14 h-14 rounded-xl bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors duration-300">
+                <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🤖</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">AI Tirth Assistant</h3>
+              <p class="text-text-muted leading-relaxed text-sm sm:text-base">
+                Have questions about history, rituals, or facilities? Our AI assistant has the answers you need.
+              </p>
             </div>
-            <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">AI Tirth Assistant</h3>
-            <p class="text-text-muted leading-relaxed text-sm sm:text-base">
-              Have questions about history, rituals, or facilities? Our AI assistant has the answers you need.
-            </p>
           </div>
         </div>
       </div>
@@ -163,39 +203,7 @@
       <p class="text-error/80 text-xs md:text-sm mt-1">{{ error }}</p>
     </div>
 
-    <!-- Tirth Cards Horizontal Scroll -->
-    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 pb-12 bg-background">
-      <div class="max-w-7xl mx-auto">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-text-main font-serif">Featured Tirths</h3>
-          <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-1 text-sm sm:text-base">
-            View All <Icon name="ArrowRight" :size="16" />
-          </NuxtLink>
-        </div>
-        
-        <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4">
-          <div class="flex gap-6 w-max snap-x snap-mandatory">
-            <div
-              v-for="tirth in filteredTirths"
-              :key="tirth.id"
-              class="flex-shrink-0 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300"
-            >
-              <BaseCard
-                :item="tirth"
-                card-type="tirth"
-                :show-wishlist="true"
-                :show-details="false"
-                variant="featured"
-                :image-height="'h-72'"
-                route-prefix="/tirth"
-                :tag-fields="[tirth.sect, tirth.type]"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    
     <!-- Empty State -->
     <div v-if="!loading && filteredTirths.length === 0" class="text-center py-8 md:py-12 px-4">
       <Icon name="MapPin" :size="48" class="text-text-muted mx-auto mb-4" />
