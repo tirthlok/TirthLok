@@ -9,7 +9,7 @@ export const useBhojanshalaApi = () => {
   const config = useRuntimeConfig()
 
   // Helper: wrap a promise with a timeout and return a fallback on timeout
-  const fetchWithTimeout = async <T>(promise: Promise<T>, timeoutMs = 5000, fallback: T): Promise<T> => {
+  const fetchWithTimeout = async <T>(promise: Promise<T>, timeoutMs = 500, fallback: T): Promise<T> => {
     let timer: ReturnType<typeof setTimeout> | null = null
     try {
       return await Promise.race([
@@ -32,7 +32,7 @@ export const useBhojanshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Bhojanshala[]>
 
-      return await fetchWithTimeout<Bhojanshala[]>(promise, 5000, [])
+      return await fetchWithTimeout<Bhojanshala[]>(promise, 500, [])
     } catch (error) {
       console.error('Error fetching bhojanshalas:', error)
       return []
@@ -48,7 +48,7 @@ export const useBhojanshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Bhojanshala>
 
-      return await fetchWithTimeout<Bhojanshala>(promise, 5000, {} as Bhojanshala)
+      return await fetchWithTimeout<Bhojanshala>(promise, 500, {} as Bhojanshala)
     } catch (error) {
       console.error(`Error fetching bhojanshala ${id}:`, error)
       return {} as Bhojanshala

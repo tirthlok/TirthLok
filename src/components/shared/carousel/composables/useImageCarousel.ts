@@ -22,7 +22,7 @@ export function useImageCarousel(
   const imagesArr = ref<string[]>(_initialImages)
 
   // Preload images on client and filter out broken ones
-  const preloadImage = (url: string, timeout = 5000) => {
+  const preloadImage = (url: string, timeout = 500) => {
     return new Promise<boolean>((resolve) => {
       if (typeof window === 'undefined') return resolve(false)
       const img = new Image()

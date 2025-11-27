@@ -11,7 +11,7 @@
         :image-height="imageHeightFinal"
         :accent-dot-color="colorScheme.dot"
         :show-title-overlay="showTitleOverlay"
-        :title-overlay-class="props.variant === 'featured' ? 'absolute bottom-0 left-0 right-0 p-4 text-white bg-gradient-to-t from-black/60 via-transparent to-transparent' : 'absolute bottom-0 left-0 right-0 p-4 text-white'"
+        :title-overlay-class="props.variant === 'featured' ? 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/60 via-transparent to-transparent' : 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white'"
       />
     </div>
 
@@ -21,7 +21,7 @@
       :item-id="item.id"
       :entity-type="cardType"
       :is-favorited="isFavorited"
-      :class="props.variant === 'featured' ? 'absolute top-3 right-3 z-10' : 'absolute top-4 right-4 z-10'"
+      class='absolute top-4 right-4 z-10'
     />
 
     <!-- Additional Info Section (Optional) -->

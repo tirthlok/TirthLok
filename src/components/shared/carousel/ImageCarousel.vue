@@ -1,46 +1,64 @@
 <template>
-  <div ref="root" class="relative w-full overflow-hidden bg-gray-200" :class="imageHeightClass" :style="imageHeightStyle">
+  <div
+    ref="root"
+    class="relative w-full overflow-hidden bg-gray-200 group"
+    :class="imageHeightClass"
+    :style="imageHeightStyle"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
+  >
     <!-- Image Display: show validated image when available, otherwise a placeholder -->
     <img
       :src="currentImage || placeholder"
       :alt="title || 'Image'"
       loading="lazy"
-      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      class="w-full h-full object-cover transition-transform duration-500"
+      :class="isHovered ? 'scale-110' : ''"
     />
 
     <!-- Gradient Overlay -->
     <div v-if="showGradient" class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
 
-    <!-- Navigation Arrows -->
-    <div v-if="hasMultipleImages" class="absolute inset-0 flex items-center justify-between px-3 opacity-0 group-hover:opacity-100 transition-opacity">
+    <!-- Navigation Arrows (always visible) -->
+    <div v-if="hasMultipleImages" class="absolute inset-0 flex items-center justify-between px-3 opacity-90 pointer-events-none">
       <button
-        @click.stop="prevImage"
-        class="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110"
+        @click.stop.prevent="prevImage"
+        class="p-2 bg-white/20 hover:bg-white/30 rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110 pointer-events-auto z-20"
         :aria-label="`Previous image`"
+        type="button"
+        data-no-nav="true"
       >
         <Icon name="ChevronLeft" :size="24" class="text-gray-900" />
       </button>
+
       <button
-        @click.stop="nextImage"
-        class="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110"
+        @click.stop.prevent="nextImage"
+        class="p-2 bg-white/20 hover:bg-white/30 rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110 pointer-events-auto z-20"
         :aria-label="`Next image`"
+        type="button"
+        data-no-nav="true"
       >
         <Icon name="ChevronRight" :size="24" class="text-gray-900" />
       </button>
     </div>
 
     <!-- Image Indicator Dots -->
-    <div v-if="hasMultipleImages && showDots" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+    <div v-if="hasMultipleImages && showDots" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-20 pointer-events-auto">
       <button
         v-for="(_, index) in imagesArr"
         :key="index"
-        @click.stop="goToImage(index)"
+        @click.stop.prevent="goToImage(index)"
         :class="[
-          'transition-all duration-300',
+          'transition-all duration-300 focus:outline-none',
           index === currentImageIndex ? `w-8 h-2 rounded-full ${accentDotColor}` : 'w-2 h-2 bg-white/60 rounded-full hover:bg-white/80',
         ]"
         :aria-label="`Go to image ${index + 1}`"
-      />
+        role="button"
+        type="button"
+        data-no-nav="true"
+      >
+        <span class="sr-only">Go to image {{ index + 1 }}</span>
+      </button>
     </div>
 
     <!-- Title Overlay (Optional) -->
@@ -92,6 +110,9 @@ const {
   goToImage,
   validateImages,
 } = useImageCarousel(props.images)
+
+// local hover state to control arrow visibility and image scale
+const isHovered = ref(false)
 
 const placeholder = placeholderImg
 

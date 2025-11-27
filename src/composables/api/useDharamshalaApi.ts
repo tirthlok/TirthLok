@@ -9,7 +9,7 @@ export const useDharamshalaApi = () => {
   const config = useRuntimeConfig()
 
   // Helper: wrap a promise with a timeout and return a fallback on timeout
-  const fetchWithTimeout = async <T>(promise: Promise<T>, timeoutMs = 5000, fallback: T): Promise<T> => {
+  const fetchWithTimeout = async <T>(promise: Promise<T>, timeoutMs = 500, fallback: T): Promise<T> => {
     let timer: ReturnType<typeof setTimeout> | null = null
     try {
       return await Promise.race([
@@ -32,7 +32,7 @@ export const useDharamshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Dharamshala[]>
 
-      return await fetchWithTimeout<Dharamshala[]>(promise, 5000, [])
+      return await fetchWithTimeout<Dharamshala[]>(promise, 500, [])
     } catch (error) {
       console.error('Error fetching dharamshalas:', error)
       return []
@@ -49,7 +49,7 @@ export const useDharamshalaApi = () => {
       }) as Promise<Dharamshala>
 
       // on timeout return an empty object cast to Dharamshala to avoid hanging
-      return await fetchWithTimeout<Dharamshala>(promise, 5000, {} as Dharamshala)
+      return await fetchWithTimeout<Dharamshala>(promise, 500, {} as Dharamshala)
     } catch (error) {
       console.error(`Error fetching dharamshala ${id}:`, error)
       return {} as Dharamshala

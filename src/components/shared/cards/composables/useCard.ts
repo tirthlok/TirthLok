@@ -30,12 +30,27 @@ export function useCard(item: CardItem) {
    * Handle card click - prevents navigation if clicking interactive elements
    */
   const handleCardClick = (event: MouseEvent, routePrefix: string) => {
-    const target = event.target as HTMLElement
-    const clickedButton = target.closest('button')
-    const clickedLink = target.closest('a')
+    // More robust check: look through composedPath for interactive elements
+    try {
+      const path = (event.composedPath && event.composedPath()) || (event as any).path || []
+      const clickedInteractive = path.some((node: any) => {
+        if (!node || !node.tagName) return false
+        const tag = String(node.tagName).toUpperCase()
+        if (tag === 'BUTTON' || tag === 'A') return true
+        // data attribute to explicitly opt-out of navigation
+        if (node.dataset && node.dataset.noNav === 'true') return true
+        // role=button
+        if (node.getAttribute && node.getAttribute('role') === 'button') return true
+        return false
+      })
 
-    if (!clickedButton && !clickedLink) {
-      navigateToDetail(routePrefix)
+      if (!clickedInteractive) navigateToDetail(routePrefix)
+    } catch (e) {
+      // Fallback to original logic if composedPath isn't available or errors
+      const target = event.target as HTMLElement
+      const clickedButton = target.closest && target.closest('button')
+      const clickedLink = target.closest && target.closest('a')
+      if (!clickedButton && !clickedLink) navigateToDetail(routePrefix)
     }
   }
 
