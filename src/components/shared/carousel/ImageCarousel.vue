@@ -1,9 +1,10 @@
 <template>
-  <div class="relative w-full overflow-hidden bg-gray-200" :class="imageHeightClass" :style="imageHeightStyle">
+  <div ref="root" class="relative w-full overflow-hidden bg-gray-200" :class="imageHeightClass" :style="imageHeightStyle">
     <!-- Image Display: show validated image when available, otherwise a placeholder -->
     <img
       :src="currentImage || placeholder"
       :alt="title || 'Image'"
+      loading="lazy"
       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
     />
 
@@ -51,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useImageCarousel } from './composables/useImageCarousel'
 import Icon from '~/components/common/Icon.vue'
 // Placeholder image when there are no valid images
@@ -81,10 +82,48 @@ const props = withDefaults(defineProps<Props>(), {
   titleOverlayClass: 'absolute bottom-0 left-0 right-0 p-4 text-white',
 })
 
-const { currentImageIndex, imagesArr, currentImage, hasMultipleImages, nextImage, prevImage, goToImage } =
-  useImageCarousel(props.images)
+const {
+  currentImageIndex,
+  imagesArr,
+  currentImage,
+  hasMultipleImages,
+  nextImage,
+  prevImage,
+  goToImage,
+  validateImages,
+} = useImageCarousel(props.images)
 
 const placeholder = placeholderImg
+
+
+// Observe when the carousel enters the viewport and validate images lazily
+const root = ref<HTMLElement | null>(null)
+let io: IntersectionObserver | null = null
+onMounted(() => {
+  if (typeof IntersectionObserver === 'undefined') {
+    // Fallback: validate immediately
+    validateImages()
+    return
+  }
+  io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          validateImages()
+          if (io && root.value) io.unobserve(root.value)
+        }
+      }
+    },
+    { root: null, threshold: 0.1 }
+  )
+  if (root.value) io.observe(root.value)
+})
+onBeforeUnmount(() => {
+  if (io && root.value) io.unobserve(root.value)
+  io = null
+})
+
+// (placeholder variable already defined above)
 
 // Support passing either a Tailwind height class (e.g. 'h-72') or a CSS height value (e.g. '300px' or '18rem')
 const imageHeightClass = computed(() => {

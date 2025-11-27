@@ -3,7 +3,7 @@
  * Handles image carousel logic for reusable components
  */
 
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 
 export interface UseImageCarouselOptions {
   autoPlay?: boolean
@@ -49,8 +49,12 @@ export function useImageCarousel(
     })
   }
 
-  onMounted(async () => {
-    if (_initialImages.length === 0) return
+  // Validate and filter images when called (lazy validation)
+  const validateImages = async () => {
+    if (_initialImages.length === 0) {
+      imagesArr.value = []
+      return
+    }
     const validated: string[] = []
     await Promise.all(
       _initialImages.map(async (u) => {
@@ -62,9 +66,8 @@ export function useImageCarousel(
         }
       })
     )
-    // Replace imagesArr with only valid images
     imagesArr.value = validated
-  })
+  }
 
   // Navigate to next image
   const nextImage = () => {
@@ -107,5 +110,6 @@ export function useImageCarousel(
     prevImage,
     goToImage,
     reset,
+    validateImages,
   }
 }
