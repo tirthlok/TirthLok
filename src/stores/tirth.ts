@@ -35,6 +35,8 @@ export const useTirthStore = defineStore('tirth', {
     getTirthsByType: (state) => (type: string) => {
       return state.filteredTirths.filter((t) => t.type === type)
     },
+    // Return a simple array of tirth names for suggestions
+    tirthNames: (state) => state.tirths.map((t) => t.name || ''),
   },
 
   actions: {

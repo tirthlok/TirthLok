@@ -5,16 +5,16 @@
       <div class="flex items-center justify-between sm:gap-4">
         <!-- Logo (hidden on mobile to keep header compact) -->
         <NuxtLink to="/" class="hidden sm:flex items-center gap-2 flex-shrink-0 group">
-          <div class="w-10 h-10 bg-logo rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 animate-pulse-glow">
-            <Icon name="Palmtree" :size="22" class="text-white group-hover:animate-float" />
+          <div class="w-10 h-10 rounded-full overflow-hidden group-hover:scale-110 transition-all duration-300">
+            <img :src="tirthlokLogo" alt="TirthLok" class="w-full h-full object-cover block" />
           </div>
-          <span class="text-2xl font-bold text-logo font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
+          <span class="text-2xl font-bold text-primary text-logo font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
         </NuxtLink>
 
         <!-- Center: simplified search bar -->
         <div class="flex-1 sm:px-4">
           <div class="max-w-3xl mx-auto">
-            <div class="flex items-center bg-white border border-gray-200 rounded-full shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow">
+            <div ref="searchWrapper" class="flex items-center bg-white border border-gray-200 rounded-full shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow relative">
               <input
                 v-model="searchQuery"
                 type="text"
@@ -28,6 +28,18 @@
               <button @click.stop="filterOpen = !filterOpen" aria-label="Filters" class="ml-2 p-1 rounded-full hover:bg-gray-100 transition text-gray-500">
                 <Icon name="Sliders" :size="18" />
               </button>
+              <!-- Search suggestions component -->
+              <SearchSuggestions
+                :items="suggestionsSource"
+                :query="searchQuery"
+                :minChars="1"
+                :maxResults="8"
+                matchMode="startsWith"
+                :visible="showSuggestions"
+                :anchor="searchWrapper"
+                @select="selectSuggestion"
+                @close="showSuggestions = false"
+              />
             </div>
           </div>
         </div>
@@ -42,28 +54,7 @@
         </div>
       </div>
 
-      <!-- Search Suggestions -->
-      <div
-        v-if="showSuggestions && filteredSuggestions.length > 0"
-        class="absolute top-20 left-4 right-4 md:left-auto md:right-auto md:w-full md:max-w-md bg-white rounded-xl shadow-2xl border-2 border-red-200 z-50 animate-slide-up md:ml-16 overflow-hidden"
-      >
-        <div class="max-h-96 overflow-y-auto">
-          <div>
-            <div v-if="searchQuery" class="px-4 py-3 text-xs font-bold text-red-600 uppercase tracking-widest bg-gradient-to-r from-red-50 to-transparent">
-              🔍 Results
-            </div>
-            <button
-              v-for="suggestion in filteredSuggestions"
-              :key="suggestion"
-              @click="selectSuggestion(suggestion)"
-              class="w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-red-50 to-transparent transition-all flex items-center gap-3 border-b border-gray-100 last:border-0 hover:border-red-200"
-            >
-              <Icon name="MapPin" :size="18" class="text-red-500" />
-              <span class="text-sm font-medium text-gray-900">{{ suggestion }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <!-- Search suggestions are rendered inside the input wrapper via SearchSuggestions component -->
     </div>
 
     <!-- Modern Animated Menu -->
@@ -271,45 +262,54 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Icon from '~/components/common/Icon.vue'
+import SearchSuggestions from '~/components/header/SearchSuggestions.vue'
 import { useTirthStore } from '~/stores/tirth'
+import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useBhojanshalaStore } from '~/stores/bhojanshala'
+// Logo asset
+import tirthlokLogo from '~/assets/images/TirthLok.jpeg'
 
 const tithStore = useTirthStore()
+const dStore = useDharamshalaStore()
+const bStore = useBhojanshalaStore()
+const route = useRoute()
+// template ref for the search wrapper (passed to SearchSuggestions)
+const searchWrapper = ref<HTMLElement | null>(null)
 
 const mobileMenuOpen = ref(false)
 const filterOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
 
-// Filter state
+// Filter state (used when user applies filters)
 const selectedState = ref('')
 const selectedSect = ref('')
 const selectedFacilities = ref<string[]>([])
 
-const suggestions = [
-  'Palitana',
-  'Ranakpur',
-  'Girnar',
-  'Shikharji',
-  'Dharamshala',
-  'Bhojanshala',
-]
-
-const filteredSuggestions = computed(() => {
-  if (!searchQuery.value) return []
-  return suggestions.filter(s =>
-    s.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+// Route-aware suggestions source: pick name arrays from stores
+const suggestionsSource = computed(() => {
+  const p = route.path || ''
+  if (p.startsWith('/dharamshala')) return dStore.dharamshalaNames || []
+  if (p.startsWith('/bhojanshala')) return bStore.bhojanshalaNames || []
+  // default: landing or tirth pages => tirths
+  return tithStore.tirthNames || []
 })
 
+// When user types, call the appropriate store filter for the current page
 const handleSearch = () => {
-  // Filter tirths based on search term and other active filters
-  tithStore.filterTirths({
-    searchTerm: searchQuery.value || undefined,
-    state: selectedState.value || undefined,
-    sect: selectedSect.value || undefined,
-    facilities: selectedFacilities.value.length > 0 ? selectedFacilities.value : undefined,
-  })
+  const q = searchQuery.value || undefined
+  // Ensure suggestions re-open when the user types after a previous selection
+  if (searchQuery.value && searchQuery.value.length >= 1) showSuggestions.value = true
+  const p = route.path || ''
+  if (p.startsWith('/dharamshala')) {
+    dStore.filterDharamshalas({ searchTerm: q })
+  } else if (p.startsWith('/bhojanshala')) {
+    bStore.filterBhojanshalas({ searchTerm: q })
+  } else {
+    tithStore.filterTirths({ searchTerm: q })
+  }
 }
 
 const selectSuggestion = (suggestion: string) => {

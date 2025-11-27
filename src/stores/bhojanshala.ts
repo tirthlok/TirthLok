@@ -40,6 +40,8 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
     getBhojanshalACount: (state) => state.bhojanshalas.length,
 
     getFilteredCount: (state) => state.filteredBhojanshalas.length,
+    // Provide list of bhojanshala names for suggestions
+    bhojanshalaNames: (state) => state.bhojanshalas.map((b) => b.name || ''),
   },
 
   actions: {
