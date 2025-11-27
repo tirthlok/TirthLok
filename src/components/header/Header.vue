@@ -1,46 +1,44 @@
 <template>
-  <header class="bg-gradient-to-r from-white via-red-50 to-white border-b border-red-200/50 sticky top-0 z-40 shadow-md backdrop-blur-sm overflow-x-hidden">
+  <header class="bg-white sticky top-0 z-40 shadow-sm backdrop-blur-sm overflow-x-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <!-- Top Row: Logo, Search, Actions (Airbnb-like) -->
-      <div class="flex items-center justify-between sm:gap-4 mb-3">
+      <div class="flex items-center justify-between sm:gap-4">
         <!-- Logo (hidden on mobile to keep header compact) -->
         <NuxtLink to="/" class="hidden sm:flex items-center gap-2 flex-shrink-0 group">
-          <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 animate-pulse-glow">
+          <div class="w-10 h-10 bg-logo rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 animate-pulse-glow">
             <Icon name="Palmtree" :size="22" class="text-white group-hover:animate-float" />
           </div>
-          <span class="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-clip-text text-transparent font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
+          <span class="text-2xl font-bold text-logo font-serif hidden sm:inline group-hover:opacity-80 transition-opacity">TirthLok</span>
         </NuxtLink>
 
         <!-- Center: simplified search bar -->
-        <div class="flex-1 px-4">
+        <div class="flex-1 sm:px-4">
           <div class="max-w-3xl mx-auto">
-            <div class="flex items-center bg-white border border-gray-200 rounded-full shadow-sm px-3 py-2">
+            <div class="flex items-center bg-white border border-gray-200 rounded-full shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow">
               <input
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search temples, cities..."
-                class="flex-1 bg-transparent text-gray-800 placeholder-gray-400 outline-none text-sm font-medium px-3"
+                class="flex-1 bg-transparent text-gray-800 placeholder-gray-400 outline-none text-sm font-medium"
                 @input="handleSearch"
                 @focus="showSuggestions = true"
                 @blur="handleBlur"
               />
               <!-- Filter icon inside search -->
-              <button @click.stop="filterOpen = !filterOpen" aria-label="Filters" class="p-2 rounded-full hover:bg-gray-100 transition">
-                <Icon name="Sliders" :size="18" class="text-gray-700" />
+              <button @click.stop="filterOpen = !filterOpen" aria-label="Filters" class="ml-2 p-1 rounded-full hover:bg-gray-100 transition text-gray-500">
+                <Icon name="Sliders" :size="18" />
               </button>
             </div>
           </div>
         </div>
 
         <!-- Actions: profile (desktop) / mobile menu (mobile) -->
-        <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-3">
           <!-- desktop profile button (hidden on mobile) -->
-          <button @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Profile menu" class="hidden sm:flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1 hover:shadow-md transition">
+          <button @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Profile menu" class="flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1 hover:shadow-md transition">
             <Icon name="User" :size="18" class="text-gray-700" />
             <span class="text-sm text-gray-800">Profile</span>
           </button>
-
-          <!-- hamburger removed per request (mobile will not show a separate hamburger menu) -->
         </div>
       </div>
 

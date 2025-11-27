@@ -4,7 +4,7 @@
     <Header />
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 pb-32 md:pb-8">
+    <main class="flex-1 mx-auto w-full">
       <slot />
     </main>
 

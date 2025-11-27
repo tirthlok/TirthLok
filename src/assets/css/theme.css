@@ -1,0 +1,46 @@
+:root {
+  /* 
+   * COLOR SCHEMA
+   * Soothing Earthy Palette based on Logo (#B54744)
+   */
+  
+  /* Primary Brand Colors (Terracotta/Red) */
+  --color-primary: #B54744; 
+  --color-primary-hover: #9A3B38;
+  --color-primary-light: #F2DMD9; /* For backgrounds/tints */
+  
+  /* Logo Color */
+  --color-logo: #B54744;
+
+  /* Secondary Colors (Sage Green - Complementary & Soothing) */
+  --color-secondary: #84A98C; 
+  --color-secondary-hover: #6B8E73;
+  --color-secondary-light: #E6F0E8;
+
+  /* Accent Colors (Warm Sand/Gold - For highlights) */
+  --color-accent: #E6BE6E; 
+  --color-accent-hover: #D4A955;
+
+  /* Background & Surface Colors */
+  --color-background: #FDFBF7; /* Warm Cream - Softer than pure white */
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F2F0E9; /* Slightly darker warm grey/beige */
+
+  /* Text Colors */
+  --color-text-main: #2D2A26; /* Warm Charcoal - Softer than black */
+  --color-text-muted: #787570; /* Warm Grey */
+  --color-text-inverted: #FFFFFF;
+
+  /* Status Colors */
+  --color-success: #84A98C;
+  --color-warning: #E6BE6E;
+  --color-error: #D64045; /* Slightly softer red than pure #FF0000 */
+
+  /* 
+   * FONT SCHEMA
+   * Replace these values with the fonts from your image
+   */
+  --font-sans: 'Poppins', 'Inter', system-ui, sans-serif;
+  --font-serif: 'PT Serif', serif;
+  --font-display: 'PT Serif', serif; /* For headings */
+}
