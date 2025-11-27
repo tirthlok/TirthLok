@@ -3,7 +3,7 @@
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
     <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
-      <div class="max-w-7xl mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[75vh] md:h-[600px] w-full group">
+      <div class="max-w-7xl mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
         <div 
           class="absolute inset-0 md:scale-110 transition-transform duration-700 group-hover:scale-105"
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Key Features Section - "Enhance your travel Experiences" style -->
-    <section class="px-4 sm:px-6 lg:px-8 py-16 bg-background">
+    <section class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
       <div class="max-w-7xl mx-auto">
         <div class="mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-2 font-serif">Your Spiritual Companion</h2>
@@ -82,7 +82,7 @@
     </section>
 
     <!-- How It Works Section - Soothing Style -->
-    <section class="py-16 bg-surface-muted">
+    <section class="py-8 md:py-12 bg-surface-muted">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-3 font-serif">How It Works</h2>
@@ -91,7 +91,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
-            <div class="h-48 bg-cover bg-center relative" :style="{ backgroundImage: `url(${step1Image})` }">
+            <div class="h-48 bg-contain bg-center relative" :style="{ backgroundImage: `url(${step1Image})` }">
               <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
             </div>
             <div class="p-6">
@@ -104,7 +104,7 @@
           </div>
 
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
-            <div class="h-48 bg-cover bg-center relative" :style="{ backgroundImage: `url(${step2Image})` }">
+            <div class="h-48 bg-contain bg-center relative" :style="{ backgroundImage: `url(${step2Image})` }">
               <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
             </div>
             <div class="p-6">
@@ -117,7 +117,7 @@
           </div>
 
           <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
-            <div class="h-48 bg-cover bg-center relative" :style="{ backgroundImage: `url(${step3Image})` }">
+            <div class="h-48 bg-contain bg-center relative" :style="{ backgroundImage: `url(${step3Image})` }">
               <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
             </div>
             <div class="p-6">
@@ -133,11 +133,11 @@
     </section>
 
     <!-- CTA Section - Soothing Gradient -->
-    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-background">
+    <section class="py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-background">
       <div class="max-w-5xl mx-auto rounded-3xl p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
         <!-- Background Image with Overlay -->
         <div 
-          class="absolute inset-0 scale-105 bg-cover bg-center transition-transform duration-700 group-hover:scale-100"
+          class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-100"
           :style="{ backgroundImage: `url(${ctaImg})` }"
         >
           <div class="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
@@ -195,7 +195,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && filteredTirths.length === 0" class="text-center py-12 md:py-16 px-4">
+    <div v-if="!loading && filteredTirths.length === 0" class="text-center py-8 md:py-12 px-4">
       <Icon name="MapPin" :size="48" class="text-text-muted mx-auto mb-4" />
       <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-text-main mb-2">No Temples Found</h3>
       <p class="text-text-muted text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
@@ -211,8 +211,13 @@ import { BaseCard } from '~/components/shared'
 import Icon from '~/components/common/Icon.vue'
 
 // Import images from assets
-import heroImg from '~/assets/images/Jain _Temple_Landing_Page.png'
-import ctaImg from '~/assets/images/start_your_journey.png'
+import heroImg from '~/assets/images/hero-jain-temple.png'
+import ctaImg from '~/assets/images/cta-start-your-journey.png'
+// Hero & section images
+import step1Image from '~/assets/images/discover.png' // Temple discovery
+import step2Image from '~/assets/images/explore.png' // Ancient architecture
+import step3Image from '~/assets/images/stay.png' // Accommodation/facility
+
 
 definePageMeta({
   layout: 'default',
@@ -233,10 +238,6 @@ const loading = computed(() => tithStore.loading)
 const error = computed(() => tithStore.error)
 const filteredTirths = computed(() => tithStore.filteredTirths)
 
-// Hero & section images
-const step1Image = 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=400&h=300&fit=crop' // Temple discovery
-const step2Image = 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=400&h=300&fit=crop' // Ancient architecture
-const step3Image = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=300&fit=crop' // Accommodation/facility
 
 // Data is fetched and stores hydrated on the server via useAsyncData
 </script>

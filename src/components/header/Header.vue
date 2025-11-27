@@ -269,7 +269,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 // Logo asset
-import tirthlokLogo from '~/assets/images/TirthLok.jpeg'
+import tirthlokLogo from '~/assets/images/logo-tirthlok.jpeg'
 
 const tithStore = useTirthStore()
 const dStore = useDharamshalaStore()

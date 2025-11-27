@@ -7,7 +7,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="tirth.festivals.length === 0" class="text-center py-16 bg-gradient-to-r from-gray-50 to-yellow-50 rounded-2xl border-2 border-dashed border-gray-300">
+    <div v-if="tirth.festivals.length === 0" class="text-center py-8 md:py-12 bg-gradient-to-r from-gray-50 to-yellow-50 rounded-2xl border-2 border-dashed border-gray-300">
       <Icon name="Calendar" :size="64" class="text-gray-300 mx-auto mb-4" />
       <p class="text-gray-600 font-semibold text-lg">No festivals recorded</p>
       <p class="text-gray-500 text-sm mt-2">Check back soon for festival updates</p>
