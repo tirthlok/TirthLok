@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full overflow-hidden bg-gray-200" :style="{ height: imageHeight }">
+  <div class="relative w-full overflow-hidden bg-gray-200" :class="imageHeightClass" :style="imageHeightStyle">
     <!-- Image Display -->
     <img
       :src="currentImage"
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Title Overlay (Optional) -->
-    <div v-if="title && showTitleOverlay" class="absolute bottom-0 left-0 right-0 p-4 text-white">
+    <div v-if="title && showTitleOverlay" :class="titleOverlayClass">
       <h3 class="text-lg font-bold line-clamp-2">{{ title }}</h3>
       <p v-if="subtitle" class="text-sm text-gray-200 mt-1 line-clamp-1">{{ subtitle }}</p>
     </div>
@@ -64,6 +64,7 @@ interface Props {
   showGradient?: boolean
   showDots?: boolean
   showTitleOverlay?: boolean
+  titleOverlayClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,8 +76,20 @@ const props = withDefaults(defineProps<Props>(), {
   showGradient: true,
   showDots: true,
   showTitleOverlay: true,
+  titleOverlayClass: 'absolute bottom-0 left-0 right-0 p-4 text-white',
 })
 
 const { currentImageIndex, imagesArr, currentImage, hasMultipleImages, nextImage, prevImage, goToImage } =
   useImageCarousel(props.images)
+
+// Support passing either a Tailwind height class (e.g. 'h-72') or a CSS height value (e.g. '300px' or '18rem')
+const imageHeightClass = computed(() => {
+  if (!props.imageHeight) return ''
+  return props.imageHeight.startsWith('h-') ? props.imageHeight : ''
+})
+
+const imageHeightStyle = computed(() => {
+  if (!props.imageHeight) return {}
+  return props.imageHeight.startsWith('h-') ? {} : { height: props.imageHeight }
+})
 </script>

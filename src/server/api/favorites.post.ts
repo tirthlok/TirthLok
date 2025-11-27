@@ -1,12 +1,23 @@
-const userFavorites = new Map<string, Set<string>>()
+import { readBody } from 'h3'
+import { userFavorites, ensureUser } from './_favoritesStore'
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { userId, tithId, action } = body
-  if (!userId || !tithId) throw createError({ statusCode: 400, message: 'userId and tithId are required' })
-  if (!userFavorites.has(userId)) userFavorites.set(userId, new Set())
+  // Support both shapes: { userId, tithId, action } (old) and { itemId, entityType } (client)
+  const userIdFromBody = body.userId as string | undefined
+  const itemId = (body.itemId || body.tithId) as string | undefined
+  const action = (body.action as string | undefined) || (itemId ? 'add' : undefined)
+
+  if (!userIdFromBody) {
+    // allow anonymous guest operations
+  }
+  if (!itemId) throw createError({ statusCode: 400, message: 'itemId (or tithId) is required' })
+
+  const userId = ensureUser(userIdFromBody)
   const favs = userFavorites.get(userId)!
-  if (action === 'add') favs.add(tithId)
-  else if (action === 'remove') favs.delete(tithId)
+  if (action === 'add') favs.add(itemId)
+  else if (action === 'remove') favs.delete(itemId)
+
   // Return the updated favorites array for client compatibility
   return Array.from(favs)
 })

@@ -184,7 +184,9 @@
                 :item="tirth"
                 card-type="tirth"
                 :show-wishlist="true"
-                :show-details="true"
+                :show-details="false"
+                variant="featured"
+                :image-height="'h-72'"
                 route-prefix="/tirth"
                 :tag-fields="[tirth.sect, tirth.type]"
               />
