@@ -18,7 +18,7 @@
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Search temples, cities..."
+                :placeholder="searchPlaceholder"
                 class="flex-1 bg-transparent text-gray-800 placeholder-gray-400 outline-none text-sm font-medium"
                 @input="handleSearch"
                 @focus="showSuggestions = true"
@@ -295,6 +295,15 @@ const suggestionsSource = computed(() => {
   if (p.startsWith('/bhojanshala')) return bStore.bhojanshalaNames || []
   // default: landing or tirth pages => tirths
   return tithStore.tirthNames || []
+})
+
+// Route-aware placeholder text for the main header search input
+const searchPlaceholder = computed(() => {
+  const p = route.path || ''
+  if (p.startsWith('/dharamshala')) return 'Search dharamshala by name, city or amenities...'
+  if (p.startsWith('/bhojanshala')) return 'Search bhojanshala by name, city'
+  // Default for landing/tirth pages
+  return 'Search tirth by name, city or state...'
 })
 
 // When user types, call the appropriate store filter for the current page
