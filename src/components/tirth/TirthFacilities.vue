@@ -3,7 +3,7 @@
     <!-- Header with Icon -->
     <div class="flex items-center gap-3 mb-8">
       <Icon name="Home" :size="32" class="text-blue-600" />
-      <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Facilities & Amenities</h2>
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Facilities & Amenities</h2>
     </div>
 
     <!-- Filter Tabs with Modern Styling -->

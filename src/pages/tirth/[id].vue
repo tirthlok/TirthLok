@@ -1,11 +1,11 @@
 <template>
-  <div id="top" class="min-h-screen bg-gradient-to-b from-amber-50 via-white to-blue-50 py-4 sm:py-8 md:py-12">
+  <div id="top" class="min-h-screen bg-gradient-to-b from-red-50 via-white to-blue-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <!-- Back Button -->
       <div class="mb-6 sm:mb-8">
         <NuxtLink
           to="/tirth"
-          class="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-bold transition-all"
+          class="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-bold transition-all"
         >
           <Icon name="ArrowLeft" :size="22" />
           <span class="text-base sm:text-lg">Back to Tirth List</span>
@@ -16,7 +16,7 @@
       <div v-if="loading" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6">
           <div class="relative w-16 h-16 mx-auto">
-            <div class="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
+            <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
             <div class="absolute inset-2 bg-white rounded-full" />
           </div>
           <p class="text-gray-600 font-semibold text-lg">Loading temple data...</p>
@@ -36,6 +36,14 @@
 
       <!-- Temple Content -->
       <div v-else-if="tirth" class="space-y-6 sm:space-y-8">
+              <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <span class="text-gray-900 font-medium truncate">{{ tirth.name }}</span>
+        </div>
         <!-- Header -->
         <HeaderWithImage
           :title="tirth.name"

@@ -3,7 +3,7 @@
     <!-- Header with Icon -->
     <div class="flex items-center gap-3 mb-8">
       <Icon name="Sparkles" :size="32" class="text-yellow-600 animate-pulse" />
-      <h2 class="text-3xl font-bold bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">Festivals & Events</h2>
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-red-700 bg-clip-text text-transparent">Festivals & Events</h2>
     </div>
 
     <!-- Empty State -->

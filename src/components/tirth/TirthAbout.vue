@@ -48,7 +48,7 @@
     <div>
       <div class="flex items-center gap-3 mb-6">
         <Icon name="Gem" :size="28" class="text-yellow-600" />
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">Mool Nayak (Main Idols)</h3>
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Mool Nayak (Main Idols)</h3>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,7 +87,7 @@
     <div v-if="tirth.specialFacts.length > 0">
       <div class="flex items-center gap-3 mb-6">
         <Icon name="Sparkles" :size="28" class="text-indigo-600" />
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Special Facts</h3>
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Special Facts</h3>
       </div>
       
       <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200">

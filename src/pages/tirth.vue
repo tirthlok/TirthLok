@@ -1,30 +1,43 @@
 <template>
-
     <router-view v-if="hasId" />
-    <div v-else class="min-h-screen bg-gray-50 py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+    <div v-else :class="[
+      'min-h-screen py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8',
+      themeStore?.isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'
+    ]">
       <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="mb-8">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2">All Tirth Locations</h1>
-        <p class="text-gray-600 text-base md:text-lg">Explore sacred Jain pilgrimage sites</p>
+        <h1 :class="[
+          'text-3xl sm:text-4xl md:text-5xl font-bold mb-2',
+          themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
+        ]">All Tirth Locations</h1>
+        <p :class="[
+          'text-base md:text-lg',
+          themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600'
+        ]">Explore sacred Jain pilgrimage sites</p>
       </div>
 
-      <!-- Search & Filter Section -->
-      <div class="mb-8 space-y-4">
-      
-
-        <!-- Filter Chips (All / Wishlist) -->
-        <div class="flex items-center gap-3 overflow-x-auto pb-2">
-          <TagButton
+       <!-- Sticky Filter Bar -->
+    <div class="sticky top-[57px] z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100 mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+          <button
             v-for="filter in filterOptions"
             :key="filter.id"
-            :tag="filter.id"
-            :label="filter.label"
-            :is-selected="selectedFilter === filter.id"
-            @toggle="(tag: string) => selectedFilter = (tag as 'all' | 'wishlist')"
-          />
+            @click="selectedFilter = filter.id"
+            :class="[
+              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
+              selectedFilter === filter.id
+                ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            ]"
+          >
+            <Icon :name="getFilterIcon(filter.id)" :size="16" />
+            <span>{{ filter.label }}</span>
+          </button>
         </div>
       </div>
+    </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-20">
@@ -32,9 +45,17 @@
       </div>
 
       <!-- Error State -->
-      <div v-if="error" class="mb-6 p-4 sm:p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
-        <p class="text-red-700 text-sm md:text-base font-semibold">Error loading tirths</p>
-        <p class="text-red-600 text-xs md:text-sm mt-1">{{ error }}</p>
+      <div v-if="error" :class="[
+        'mb-6 p-4 sm:p-6 border-l-4 rounded-lg',
+        themeStore?.isDarkMode 
+          ? 'bg-red-900/20 border-red-500 text-red-300' 
+          : 'bg-red-50 border-red-500 text-red-700'
+      ]">
+        <p class="text-sm md:text-base font-semibold">Error loading tirths</p>
+        <p :class="[
+          'text-xs md:text-sm mt-1',
+          themeStore?.isDarkMode ? 'text-red-400' : 'text-red-600'
+        ]">{{ error }}</p>
       </div>
 
       <!-- Tirth Cards Grid - Using BaseCard -->
@@ -53,13 +74,25 @@
 
       <!-- Empty State -->
       <div v-if="!loading && displayedTirths.length === 0" class="text-center py-8 md:py-12">
-        <Icon name="MapPin" :size="48" class="text-gray-400 mx-auto mb-4" />
-        <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2">No Tirths Found</h3>
-        <p class="text-gray-600 text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
+        <Icon name="MapPin" :size="48" :class="[
+          'mx-auto mb-4',
+          themeStore?.isDarkMode ? 'text-gray-600' : 'text-gray-400'
+        ]" />
+        <h3 :class="[
+          'text-lg sm:text-xl md:text-2xl font-semibold mb-2',
+          themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
+        ]">No Tirths Found</h3>
+        <p :class="[
+          'text-sm md:text-base mb-6',
+          themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
+        ]">Try adjusting your search or filter criteria</p>
       </div>
 
       <!-- Results Info -->
-      <div v-if="!loading && displayedTirths.length > 0" class="mt-8 text-center text-sm text-gray-600">
+      <div v-if="!loading && displayedTirths.length > 0" :class="[
+        'mt-8 text-center text-sm',
+        themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
+      ]">
         Showing {{ displayedTirths.length }} of {{ filteredTirths.length }} tirth locations
       </div>
     </div>
@@ -71,6 +104,7 @@ import { computed, ref } from 'vue'
 import type { Tirth } from '~/types/models'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
+import { useThemeStore } from '~/stores/theme'
 import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
 
 definePageMeta({
@@ -78,6 +112,7 @@ definePageMeta({
 })
 
 const tirthStore = useTirthStore()
+const themeStore = useThemeStore()
 const route = useRoute()
 const hasId = computed(() => !!(route && route.params && route.params.id))
 const favoritesStore = useFavoritesStore()
@@ -91,13 +126,20 @@ type SearchResult = { id: string; name: string; subtitle: string }
 const searchQuery = ref('')
 const searchLoading = ref(false)
 const searchResults = ref<SearchResult[]>([])
-const selectedFilter = ref<'all' | 'wishlist'>('all')
 
-// Filter options (computed so labels update reactively)
+const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
-  { id: 'all', label: `All (${(filteredTirths.value || []).length})` },
-  { id: 'wishlist', label: `Wishlist (${favoritesStore.getFavoriteCount})` },
+  { id: 'all', label: 'All' },
+  { id: 'wishlist', label: `Favorites (${favoritesStore.getFavoriteCount})` },
 ])
+
+const getFilterIcon = (id: string) => {
+  switch (id) {
+    case 'all': return 'Grid3X3'
+    case 'wishlist': return 'Heart'
+    default: return 'Circle'
+  }
+}
 
 // Display tirths based on filter
 const displayedTirths = computed(() => {
