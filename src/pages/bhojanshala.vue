@@ -3,7 +3,7 @@
     <router-view v-if="hasId" />
     <div v-else :class="[
       'min-h-screen py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8',
-      themeStore?.isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'
+      themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="max-w-7xl mx-auto">
       <!-- Header -->
@@ -19,7 +19,12 @@
       </div>
 
      <!-- Sticky Filter Bar -->
-    <div class="sticky top-[57px] z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100 mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300">
+    <div :class="[
+      'sticky top-[57px] z-30 backdrop-blur-sm border-b mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300',
+      themeStore?.isDarkMode 
+        ? 'bg-gray-950/95 border-gray-800' 
+        : 'bg-white/95 border-gray-100'
+    ]">
       <div class="max-w-7xl mx-auto">
         <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
           <button
@@ -29,8 +34,10 @@
             :class="[
               'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
               selectedFilter === filter.id
-                ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ? 'bg-green-500 text-white border-green-500 shadow-md'
+                : (themeStore?.isDarkMode 
+                  ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
             ]"
           >
             <Icon :name="getFilterIcon(filter.id)" :size="16" />
