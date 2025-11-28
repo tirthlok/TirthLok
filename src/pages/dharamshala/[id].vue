@@ -36,6 +36,14 @@
 
       <!-- Content -->
       <div v-else-if="dharamshala" class="space-y-8 sm:space-y-10">
+              <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <span class="text-gray-900 font-medium truncate">{{ dharamshala.name }}</span>
+        </div>
         <!-- Header Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           <!-- Image Gallery -->

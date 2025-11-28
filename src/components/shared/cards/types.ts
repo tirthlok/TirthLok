@@ -67,6 +67,43 @@ export interface CardConfig {
 
 export const DEFAULT_COLOR_SCHEMES: Record<CardType, ColorScheme> = {
   tirth: {
+    border: 'border-red-900/30',
+    borderHover: 'border-red-700/50',
+    accentColor: 'text-red-400',
+    tagBg: 'bg-red-900/30',
+    tagText: 'text-red-300',
+    heart: 'text-red-400',
+    heartFilled: 'bg-red-500',
+    dot: 'bg-red-400',
+    badge: 'bg-red-600',
+  },
+  dharamshala: {
+    border: 'border-blue-900/30',
+    borderHover: 'border-blue-700/50',
+    accentColor: 'text-blue-400',
+    tagBg: 'bg-blue-900/30',
+    tagText: 'text-blue-300',
+    heart: 'text-blue-400',
+    heartFilled: 'bg-blue-600',
+    dot: 'bg-blue-400',
+    badge: 'bg-blue-600',
+  },
+  bhojanshala: {
+    border: 'border-green-900/30',
+    borderHover: 'border-green-700/50',
+    accentColor: 'text-green-400',
+    tagBg: 'bg-green-900/30',
+    tagText: 'text-green-300',
+    heart: 'text-red-400',
+    heartFilled: 'bg-red-500',
+    dot: 'bg-green-400',
+    badge: 'bg-green-600',
+  },
+}
+
+// Light theme color schemes
+export const DEFAULT_COLOR_SCHEMES_LIGHT: Record<CardType, ColorScheme> = {
+  tirth: {
     border: 'border-red-100',
     borderHover: 'border-red-300',
     accentColor: 'text-red-600',
