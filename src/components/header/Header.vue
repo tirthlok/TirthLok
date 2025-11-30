@@ -512,7 +512,6 @@ const resetFilters = () => {
 const signOut = () => {
   mobileMenuOpen.value = false
   profileOpen.value = false
-  console.log('User signed out')
   navigateTo('/')
 }
 
