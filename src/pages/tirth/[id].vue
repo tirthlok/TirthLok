@@ -1,25 +1,15 @@
 <template>
-  <div id="top" class="min-h-screen bg-gradient-to-b from-red-50 via-white to-blue-50 py-4 sm:py-8 md:py-12">
+  <div id="top" class="min-h-screen bg-gradient-to-b from-amber-50 via-white to-orange-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/tirth"
-          class="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-bold transition-all"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Tirth List</span>
-        </NuxtLink>
-      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6">
           <div class="relative w-16 h-16 mx-auto">
-            <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
             <div class="absolute inset-2 bg-white rounded-full" />
           </div>
-          <p class="text-gray-600 font-semibold text-lg">Loading temple data...</p>
+          <p class="text-gray-600 font-semibold text-lg">Loading tirth details...</p>
         </div>
       </div>
 
@@ -34,8 +24,8 @@
         </div>
       </div>
 
-      <!-- Temple Content -->
-      <div v-else-if="tirth" class="space-y-6 sm:space-y-8">
+      <!-- Content -->
+      <div v-else-if="tirth" class="space-y-8 sm:space-y-10">
               <!-- Breadcrumb -->
         <div class="flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
@@ -43,20 +33,136 @@
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ tirth.name }}</span>
-        </div>
-        <!-- Header -->
-        <HeaderWithImage
-          :title="tirth.name"
-          :subtitle="`${tirth.location.city}, ${tirth.location.state}`"
-          :images="tirth.images"
-          :metadata="{
-            location: `${tirth.location.city}, ${tirth.location.state}`,
-            rating: tirth.rating ? `${tirth.rating} (${tirth.reviews || 0} reviews)` : undefined,
-            type: tirth.type,
-          }"
-          :accent-dot-color="'bg-amber-400'"
-          :show-back-button="false"
-        />
+        </div>
+        <!-- Header Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          <!-- Image Gallery -->
+          <div class="space-y-4">
+            <div class="relative group overflow-hidden rounded-2xl shadow-2xl bg-gradient-to-br from-amber-100 to-orange-100 h-96 lg:h-[500px]">
+              <img
+                :src="currentImage"
+                :alt="tirth.name"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <!-- Image Counter -->
+              <div v-if="tirth.images && tirth.images.length > 1" class="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full text-white text-sm font-semibold">
+                {{ currentImageIndex + 1 }} / {{ tirth.images.length }}
+              </div>
+
+              <!-- Navigation Dots -->
+              <div v-if="tirth.images && tirth.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                <button
+                  v-for="(_, index) in tirth.images"
+                  :key="index"
+                  @click="currentImageIndex = index"
+                  :class="[
+                    'transition-all duration-300 backdrop-blur-sm',
+                    index === currentImageIndex 
+                      ? 'w-8 h-3 bg-white rounded-full' 
+                      : 'w-3 h-3 bg-white/50 hover:bg-white/75 rounded-full'
+                  ]"
+                />
+              </div>
+
+              <!-- Arrow Navigation -->
+              <button
+                v-if="tirth.images && tirth.images.length > 1"
+                @click="previousImage"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                v-if="tirth.images && tirth.images.length > 1"
+                @click="nextImage"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Thumbnails -->
+            <div v-if="tirth.images && tirth.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
+              <button
+                v-for="(image, index) in tirth.images"
+                :key="index"
+                @click="currentImageIndex = index"
+                :class="[
+                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:shadow-lg transform hover:scale-105',
+                  index === currentImageIndex 
+                    ? 'border-amber-500 ring-2 ring-amber-300 shadow-lg' 
+                    : 'border-gray-200 hover:border-amber-400'
+                ]"
+              >
+                <img :src="image" :alt="`${tirth.name} ${index + 1}`" class="w-full h-full object-cover" />
+              </button>
+            </div>
+          </div>          <!-- Info Section -->
+          <div class="space-y-6 flex flex-col justify-center">
+            <!-- Header -->
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
+                <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-orange-600 bg-clip-text text-transparent">
+                  {{ tirth?.name || '' }}
+                </h1>
+              </div>
+              <p class="text-lg text-gray-600 flex items-center gap-2 ml-5">
+                <Icon name="MapPin" :size="18" class="text-amber-600" />
+                {{ tirth?.location?.city || '' }}, {{ tirth?.location?.state || '' }}
+              </p>
+            </div>
+
+            <!-- Rating & Badges -->
+            <div class="flex flex-wrap items-center gap-3 pb-4 border-b-2 border-gradient-to-r from-amber-200 to-transparent">
+              <div class="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-4 py-2 rounded-xl border border-yellow-200 shadow-sm">
+                <Icon name="Star" :size="20" class="fill-yellow-400 text-yellow-400 animate-pulse" />
+                <span class="font-bold text-gray-900">{{ tirth?.rating ?? '-' }}</span>
+                <span class="text-xs text-gray-600">({{ tirth?.reviews ?? 0 }} reviews)</span>
+              </div>
+              <span class="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 rounded-xl text-sm font-bold border border-amber-300 shadow-sm">
+                {{ tirth?.type || '' }}
+              </span>
+            </div>
+
+            <!-- Key Info Grid -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 hover:shadow-lg transition-all">
+                <Icon name="MapPin" :size="20" class="text-amber-600 mb-2" />
+                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Type</p>
+                <p class="text-sm font-bold text-amber-900">{{ tirth?.type ?? '-' }}</p>
+              </div>
+              <div class="bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-xl border border-orange-200 hover:shadow-lg transition-all">
+                <Icon name="Users" :size="20" class="text-orange-600 mb-2" />
+                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Sect</p>
+                <p class="text-sm font-bold text-orange-900">{{ tirth?.sect || '-' }}</p>
+              </div>
+              <div class="bg-gradient-to-br from-red-50 to-rose-50 p-4 rounded-xl border border-red-200 hover:shadow-lg transition-all">
+                <Icon name="Calendar" :size="20" class="text-red-600 mb-2" />
+                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Founded</p>
+                <p class="text-sm font-bold text-red-900">{{ tirth?.foundingYear ?? '-' }}</p>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 pt-2">
+              <button class="flex-1 py-3 px-4 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-bold hover:from-amber-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 group">
+                <Icon name="Phone" :size="20" class="group-hover:animate-bounce" />
+                <span>Call Now</span>
+              </button>
+              <button class="flex-1 py-3 px-4 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold hover:from-red-700 hover:to-rose-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 group">
+                <Icon name="MapPin" :size="20" class="group-hover:animate-pulse" />
+                <span>Directions</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
         <!-- Tabs Navigation -->
         <div class="border-b-2 border-gray-200 -mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto">
@@ -137,10 +243,8 @@ import type { Tirth } from '~/types/models'
 import { ref, computed } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useTirthStore } from '~/stores/tirth'
-import { BaseCard, HeaderWithImage } from '~/components/shared'
-import TirthAbout from '~/components/tirth/TirthAbout.vue'
-import TirthFacilities from '~/components/tirth/TirthFacilities.vue'
-import TirthFestivals from '~/components/tirth/TirthFestivals.vue'
+import { BaseCard } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 
 definePageMeta({
   layout: 'default',
@@ -149,10 +253,30 @@ definePageMeta({
 const route = useRoute()
 const tirthStore = useTirthStore()
 
+const currentImageIndex = ref(0)
 const activeTab = ref('about')
 const tirth = ref<Tirth | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+const currentImage = computed(() => {
+  if (!tirth.value?.images || tirth.value.images.length === 0) {
+    return 'https://via.placeholder.com/500x500'
+  }
+  return tirth.value.images[currentImageIndex.value] || 'https://via.placeholder.com/500x500'
+})
+
+const nextImage = () => {
+  if (tirth.value?.images && tirth.value.images.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value + 1) % tirth.value.images.length
+  }
+}
+
+const previousImage = () => {
+  if (tirth.value?.images && tirth.value.images.length > 0) {
+    currentImageIndex.value = (currentImageIndex.value - 1 + tirth.value.images.length) % tirth.value.images.length
+  }
+}
 
 const tabs = [
   { id: 'about', label: 'About' },
@@ -174,19 +298,19 @@ const idParam = (route.params.id ?? '') as string
 const { data: serverTirth } = await useAsyncData(`tirth-${idParam}`, () => tirthStore.fetchTirthById(idParam))
 if (serverTirth?.value) {
   tirth.value = serverTirth.value as any
-  activeTab.value = 'about'
+  currentImageIndex.value = 0
 } else if (tirthStore.tirths.length > 0) {
   // fallback to local store if available
   const found = tirthStore.getTirthById(idParam)
   if (found) {
     tirth.value = found
-    activeTab.value = 'about'
+    currentImageIndex.value = 0
   } else {
-    error.value = `Temple with ID "${idParam}" not found`
+    error.value = `Tirth with ID "${idParam}" not found`
   }
 } else {
   // If there is nothing available, mark not found
-  error.value = `Temple with ID "${idParam}" not found`
+  error.value = `Tirth with ID "${idParam}" not found`
 }
 
 // Client navigation: fetch when route param changes
@@ -200,7 +324,7 @@ const loadData = async (idParam?: string) => {
     const foundLocal = tirthStore.getTirthById(id)
     if (foundLocal) {
       tirth.value = foundLocal
-      activeTab.value = 'about'
+      currentImageIndex.value = 0
       return
     }
 
@@ -208,12 +332,12 @@ const loadData = async (idParam?: string) => {
     const found = tirthStore.getTirthById(id)
     if (found) {
       tirth.value = found
-      activeTab.value = 'about'
+      currentImageIndex.value = 0
     } else {
-      error.value = `Temple with ID "${id}" not found`
+      error.value = `Tirth with ID "${id}" not found`
     }
   } catch (err) {
-    error.value = 'Failed to load temple data'
+    error.value = 'Failed to load tirth data'
     console.error('Error loading tirth:', err)
   } finally {
     loading.value = false
