@@ -134,7 +134,7 @@
 
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useTirthStore } from '~/stores/tirth'
 import { BaseCard, HeaderWithImage } from '~/components/shared'
@@ -169,17 +169,42 @@ const relatedTirths = computed(() => {
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
+// Server-side initial fetch: hydrate store and selected tirth during SSR
+const idParam = (route.params.id ?? '') as string
+const { data: serverTirth } = await useAsyncData(`tirth-${idParam}`, () => tirthStore.fetchTirthById(idParam))
+if (serverTirth?.value) {
+  tirth.value = serverTirth.value as any
+  activeTab.value = 'about'
+} else if (tirthStore.tirths.length > 0) {
+  // fallback to local store if available
+  const found = tirthStore.getTirthById(idParam)
+  if (found) {
+    tirth.value = found
+    activeTab.value = 'about'
+  } else {
+    error.value = `Temple with ID "${idParam}" not found`
+  }
+} else {
+  // If there is nothing available, mark not found
+  error.value = `Temple with ID "${idParam}" not found`
+}
+
+// Client navigation: fetch when route param changes
 const loadData = async (idParam?: string) => {
   try {
     loading.value = true
     error.value = null
     const id = (idParam ?? route.params.id) as string
 
-    // Fetch data if not in store
-    if (tirthStore.tirths.length === 0) {
-      await tirthStore.fetchTirths()
+    // Try store first, then remote
+    const foundLocal = tirthStore.getTirthById(id)
+    if (foundLocal) {
+      tirth.value = foundLocal
+      activeTab.value = 'about'
+      return
     }
 
+    await tirthStore.fetchTirthById(id)
     const found = tirthStore.getTirthById(id)
     if (found) {
       tirth.value = found
@@ -194,10 +219,6 @@ const loadData = async (idParam?: string) => {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  loadData()
-})
 
 // React to route param updates when the same component instance is reused
 onBeforeRouteUpdate((to) => {

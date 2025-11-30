@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // TODO: Replace with actual database calls
   const tirth = sampleTirths.find((t) => t.id === id)
 
   if (!tirth) {

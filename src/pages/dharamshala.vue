@@ -19,7 +19,7 @@
 
      <!-- Sticky Filter Bar -->
     <div :class="[
-      'sticky top-[57px] z-30 backdrop-blur-sm border-b mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300',
+      'sticky top-[84px] z-30 backdrop-blur-sm border-b mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300',
       themeStore?.isDarkMode 
         ? 'bg-gray-950/95 border-gray-800' 
         : 'bg-white/95 border-gray-100'

@@ -245,7 +245,7 @@
 
 <script setup lang="ts">
 import type { Dharamshala } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import Icon from '~/components/common/Icon.vue'
@@ -283,17 +283,39 @@ const previousImage = () => {
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
+// Server-side initial fetch
+const routeId = (route.params.id ?? '') as string
+const { data: serverDh } = await useAsyncData(`dharamshala-${routeId}`, () => dharamshalaStore.fetchDharamshalaById(routeId))
+if (serverDh?.value) {
+  dharamshala.value = serverDh.value as any
+  currentImageIndex.value = 0
+} else if (dharamshalaStore.dharamshalas.length > 0) {
+  const found = dharamshalaStore.getDharamshalaById(routeId)
+  if (found) {
+    dharamshala.value = found
+    currentImageIndex.value = 0
+  } else {
+    error.value = `Dharamshala with ID "${routeId}" not found`
+  }
+} else {
+  error.value = `Dharamshala with ID "${routeId}" not found`
+}
+
+// Client navigation handler
 const loadData = async (idParam?: string) => {
   try {
     loading.value = true
     error.value = null
     const id = (idParam ?? route.params.id) as string
 
-    // Fetch data if not in store
-    if (dharamshalaStore.dharamshalas.length === 0) {
-      await dharamshalaStore.fetchDharamshalas()
+    const local = dharamshalaStore.getDharamshalaById(id)
+    if (local) {
+      dharamshala.value = local
+      currentImageIndex.value = 0
+      return
     }
 
+    await dharamshalaStore.fetchDharamshalaById(id)
     const found = dharamshalaStore.getDharamshalaById(id)
     if (found) {
       dharamshala.value = found
@@ -308,10 +330,6 @@ const loadData = async (idParam?: string) => {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  loadData()
-})
 
 onBeforeRouteUpdate((to) => {
   const nextId = to.params.id as string

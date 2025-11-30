@@ -9,8 +9,7 @@
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div 
-        class="flex justify-between gap-4 transition-all duration-300 items-start"
-        :class="isScrolled ? 'py-2' : 'py-4'"
+        class="flex py-4 sm:items-center sm:justify-around md:justify-between gap-4 md:items-start transition-all duration-300"
       >
         
         <!-- Left: Logo -->
@@ -19,7 +18,7 @@
           class="flex items-center gap-2 flex-shrink-0 group transition-all duration-300"
           :class="isScrolled ? 'pt-2' : 'pt-1'"
         >
-          <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300">
+          <div class="w-10 h-10 overflow-hidden transition-all duration-300">
             <img :src="tirthlokLogo" alt="TirthLok" class="w-full h-full object-cover" />
           </div>
           <span :class="[
@@ -31,9 +30,9 @@
         <!-- Middle: Nav & Search -->
         <div class="flex-1 flex flex-col items-center max-w-3xl mx-auto w-full transition-all duration-300">
           
-          <!-- Navigation -->
+          <!-- Navigation (hidden on small screens) -->
           <nav 
-            class="flex items-center gap-2 transition-all duration-300 ease-in-out overflow-hidden"
+            class="hidden sm:flex items-center gap-2 transition-all duration-300 ease-in-out overflow-hidden"
             :class="isScrolled ? 'h-0 opacity-0 mb-0' : 'h-10 opacity-100 mb-3'"
           >
             <NuxtLink 
@@ -52,11 +51,10 @@
               <Icon 
                 :name="link.icon" 
                 :size="18"
-                :class="{
-                  'text-red-500': !isActive(link.path) && link.color === 'red',
+                :class="[ { 'text-red-500': !isActive(link.path) && link.color === 'red',
                   'text-blue-500': !isActive(link.path) && link.color === 'blue',
-                  'text-green-500': !isActive(link.path) && link.color === 'green',
-                }"
+                  'text-green-500': !isActive(link.path) && link.color === 'green', }]
+                "
               />
               {{ link.name }}
             </NuxtLink>
@@ -70,7 +68,7 @@
                   type="text"
                   :placeholder="searchPlaceholder"
                   :class="[
-                    'w-full border-2 rounded-full py-2.5 pl-11 pr-12 text-sm transition-all duration-300 outline-none shadow-sm hover:shadow-md focus:shadow-lg truncate',
+                    'w-full border-2 rounded-full py-3 pl-11 pr-12 text-sm transition-all duration-300 outline-none shadow-sm hover:shadow-md focus:shadow-lg truncate',
                     themeStore?.isDarkMode 
                       ? getSearchBorderColorDark()
                       : 'bg-gray-100 focus:bg-white placeholder-gray-500 text-gray-900 border-transparent focus:border-primary/30 focus:ring-4 focus:ring-primary/10'
@@ -414,7 +412,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
-import tirthlokLogo from '~/assets/images/logo-tirthlok.jpeg'
+import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
 const tithStore = useTirthStore()
 const dStore = useDharamshalaStore()
@@ -437,9 +435,9 @@ const selectedSect = ref('')
 const selectedFacilities = ref<string[]>([])
 
 const navLinks = [
-  { name: 'Tirth', path: '/tirth', emoji: '🏛️', icon: 'Building2', color: 'red' },
-  { name: 'Dharamshala', path: '/dharamshala', emoji: '🏨', icon: 'Building', color: 'blue' },
-  { name: 'Bhojanshala', path: '/bhojanshala', emoji: '🍽️', icon: 'UtensilsCrossed', color: 'green' },
+  { name: 'Tirth', path: '/tirth', icon: 'Building2', color: 'red' },
+  { name: 'Dharamshala', path: '/dharamshala', icon: 'Building', color: 'blue' },
+  { name: 'Bhojanshala', path: '/bhojanshala', icon: 'UtensilsCrossed', color: 'green' },
 ]
 
 const facilitiesList = [

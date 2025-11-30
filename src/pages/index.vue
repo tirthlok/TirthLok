@@ -41,11 +41,7 @@
       <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
           <div class="flex-1">
-            <!-- <div class="inline-block mb-3 px-3 py-1 bg-accent/10 rounded-full">
-              <span class="text-sm font-semibold text-accent">✨ Curated Collection</span>
-            </div> -->
             <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif mb-2">Featured Tirths</h3>
-            <!-- <p class="text-text-muted text-sm">Discover the most visited sacred destinations worldwide</p> -->
           </div>
           <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-2 text-sm sm:text-base px-5 py-2.5 rounded-full hover:bg-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/50">
             Explore All <Icon name="ArrowRight" :size="18" />

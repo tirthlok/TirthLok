@@ -1,4 +1,3 @@
-export * from './useApi'
 export * from './useTirthApi'
 export * from './useDharamshalaApi'
 export * from './useBhojanshalaApi'
