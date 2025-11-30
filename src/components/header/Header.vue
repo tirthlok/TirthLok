@@ -404,7 +404,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '~/components/common/Icon.vue'
 import SearchSuggestions from '~/components/header/SearchSuggestions.vue'
@@ -428,6 +428,7 @@ const profileOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
 const isScrolled = ref(false)
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Filter state
 const selectedState = ref('')
@@ -523,7 +524,11 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
+  // Debounce scroll handler to reduce flickering
+  if (scrollTimeout) clearTimeout(scrollTimeout)
+  scrollTimeout = setTimeout(() => {
+    isScrolled.value = window.scrollY > 20
+  }, 16) // ~60fps debounce
 }
 
 const getSearchBorderColorDark = () => {
@@ -537,13 +542,20 @@ const getSearchBorderColorDark = () => {
   return 'bg-gray-800 focus:bg-gray-700 placeholder-gray-500 text-white border-red-500 focus:border-red-400 focus:ring-4 focus:ring-red-500/20'
 }
 
+// Watch route changes and reset scroll state
+watch(() => route.path, () => {
+  isScrolled.value = false
+  if (scrollTimeout) clearTimeout(scrollTimeout)
+})
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('scroll', handleScroll)
+  if (scrollTimeout) clearTimeout(scrollTimeout)
 })
 </script>
