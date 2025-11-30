@@ -6,6 +6,12 @@
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="max-w-7xl mx-auto">
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <NuxtLink to="/bhojanshala" class="hover:text-gray-900 transition-colors">Bhojanshala</NuxtLink>
+        </div>
       <!-- Header -->
       <div class="mb-8">
         <h1 :class="[
@@ -105,12 +111,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import type { Bhojanshala } from '~/types/models'
-import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
+import { BaseCard, Icon } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
 
 definePageMeta({
@@ -139,11 +145,6 @@ const loading = computed(() => bhojanshalaStore.loading)
 const error = computed(() => bhojanshalaStore.error)
 const filteredBhojanShalas = computed(() => bhojanshalaStore.filteredBhojanshalas)
 
-// Search & Filter State
-type SearchResult = { id: string; name: string; subtitle: string }
-const searchQuery = ref('')
-const searchLoading = ref(false)
-const searchResults = ref<SearchResult[]>([])
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
@@ -172,44 +173,6 @@ const displayedBhojanShalas = computed(() => {
 
   return all
 })
-
-// Handle search
-const handleSearch = (query: string) => {
-  if (!query.trim()) {
-    searchResults.value = []
-    return
-  }
-
-  searchLoading.value = true
-  try {
-    const term = query.toLowerCase()
-    const results = (filteredBhojanShalas.value || [])
-      .filter(
-        (b: CardItem) =>
-          b.name.toLowerCase().includes(term) ||
-          b.location.city.toLowerCase().includes(term) ||
-          b.location.state.toLowerCase().includes(term) ||
-          ((b.cuisines as string[]) && (b.cuisines as string[]).some((c: string) => c.toLowerCase().includes(term)))
-      )
-      .slice(0, 5)
-      .map((b: CardItem) => ({
-        id: b.id,
-        name: b.name,
-        subtitle: `${b.location.city}, ${b.location.state}`,
-      }))
-
-    searchResults.value = results
-  } finally {
-    searchLoading.value = false
-  }
-}
-
-// Handle search result selection
-const handleSelectResult = (result: any) => {
-  const selected = bhojanshalaStore.getBhojanshalAById(result.id)
-  bhojanshalaStore.setSelectedBhojanshala(selected || null)
-  navigateTo(`/bhojanshala/${result.id}`)
-}
 
 // Data is fetched and stores hydrated on the server via useAsyncData
 </script>

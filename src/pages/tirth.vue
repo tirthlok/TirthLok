@@ -5,6 +5,12 @@
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="max-w-7xl mx-auto">
+         <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+        </div>
       <!-- Header -->
       <div class="mb-8">
         <h1 :class="[
@@ -128,11 +134,6 @@ const loading = computed(() => tirthStore.loading)
 const error = computed(() => tirthStore.error)
 const filteredTirths = computed(() => tirthStore.filteredTirths)
 
-// Search & Filter State
-type SearchResult = { id: string; name: string; subtitle: string }
-const searchLoading = ref(false)
-const searchResults = ref<SearchResult[]>([])
-
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
@@ -159,42 +160,6 @@ const displayedTirths = computed(() => {
 
   return all
 })
-
-// Handle search
-const handleSearch = (query: string) => {
-  if (!query.trim()) {
-    searchResults.value = []
-    return
-  }
-
-  searchLoading.value = true
-  try {
-    const term = query.toLowerCase()
-    const results = (filteredTirths.value || [])
-      .filter(
-        (t) =>
-          t.name.toLowerCase().includes(term) ||
-          t.location.city.toLowerCase().includes(term) ||
-          t.location.state.toLowerCase().includes(term)
-      )
-      .slice(0, 5)
-      .map((t) => ({
-        id: t.id,
-        name: t.name,
-        subtitle: `${t.location.city}, ${t.location.state}`,
-      }))
-
-    searchResults.value = results
-  } finally {
-    searchLoading.value = false
-  }
-}
-
-// Handle search result selection
-const handleSelectResult = (result: any) => {
-  tirthStore.setSelectedTirth(tirthStore.getTirthById(result.id) || null)
-  navigateTo(`/tirth/${result.id}`)
-}
 
 // Server-side data fetching (runs during SSR) and store hydration
 const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))
