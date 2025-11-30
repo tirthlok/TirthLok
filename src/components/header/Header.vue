@@ -7,7 +7,7 @@
         : (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm shadow-sm' : 'bg-white/95 backdrop-blur-sm shadow-sm')
     ]"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6">
       <div 
         class="flex py-4 sm:items-center sm:justify-around md:justify-between gap-4 md:items-start transition-all duration-300"
       >
@@ -49,12 +49,9 @@
               }"
             >
               <Icon 
-                :name="link.icon" 
+                :name="link.icon as any" 
                 :size="18"
-                :class="[ { 'text-red-500': !isActive(link.path) && link.color === 'red',
-                  'text-blue-500': !isActive(link.path) && link.color === 'blue',
-                  'text-green-500': !isActive(link.path) && link.color === 'green', }]
-                "
+                :class="`${!isActive(link.path) && link.color === 'red' ? 'text-red-500' : ''} ${!isActive(link.path) && link.color === 'blue' ? 'text-blue-500' : ''} ${!isActive(link.path) && link.color === 'green' ? 'text-green-500' : ''}`"
               />
               {{ link.name }}
             </NuxtLink>
@@ -77,10 +74,7 @@
                   @blur="handleBlur"
                   @input="handleSearch"
                 />
-                <Icon name="Search" :size="18" :class="[
-                  'absolute left-4 group-focus-within:text-primary transition-colors',
-                  themeStore?.isDarkMode ? 'text-gray-500 group-focus-within:text-primary' : 'text-gray-400 group-focus-within:text-primary'
-                ]" />
+                <Icon name="Search" :size="18" class="absolute left-4 group-focus-within:text-primary transition-colors text-gray-500 group-focus-within:text-primary dark:text-gray-400" />
                 
                 <!-- Filter Button inside Search -->
                 <button 
@@ -143,11 +137,7 @@
                 <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                   SS
                 </div>
-                <Icon name="ChevronDown" :size="14" :class="[
-                  'transition-transform duration-200',
-                  profileOpen ? 'rotate-180' : '',
-                  themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                ]" />
+                <Icon name="ChevronDown" :size="14" :class="`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''} ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
               </button>
 
               <!-- Profile Dropdown Menu -->
@@ -327,10 +317,7 @@
                   <option value="Karnataka">Karnataka</option>
                   <option value="Maharashtra">Maharashtra</option>
                 </select>
-                <Icon name="ChevronDown" :size="16" :class="[
-                  'absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none',
-                  themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                ]" />
+                <Icon name="ChevronDown" :size="16" :class="`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
               </div>
             </div>
 

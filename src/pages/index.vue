@@ -3,7 +3,7 @@
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
     <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
-      <div class="max-w-7xl mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
+      <div class="max-w-full mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
         <div 
           class="absolute inset-0 md:scale-110 transition-transform duration-700 group-hover:scale-105"
@@ -37,8 +37,8 @@
     </div>
 
     <!-- Tirth Cards Horizontal Scroll -->
-    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
-      <div class="max-w-7xl mx-auto relative z-10">
+    <div v-if="!loading && filteredTirths.length > 0" class="px-3 sm:px-4 lg:px-6 py-8 md:py-12 bg-background">
+      <div class="max-w-full mx-auto relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
           <div class="flex-1">
             <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif mb-2">Featured Tirths</h3>
@@ -48,7 +48,7 @@
           </NuxtLink>
         </div>
         
-        <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 scroll-smooth">
+        <div class="overflow-x-auto no-scrollbar -mx-3 sm:-mx-4 lg:-mx-6 px-3 sm:px-4 lg:px-6 py-6 scroll-smooth">
           <div class="flex gap-6 w-max snap-x snap-mandatory">
             <div
               v-for="tirth in filteredTirths"
@@ -77,8 +77,8 @@
 
 
     <!-- Key Features Section - "Enhance your travel Experiences" style -->
-    <section class="px-4 sm:px-6 lg:px-8 py-8 md:py-8 bg-background">
-      <div class="max-w-7xl mx-auto">
+    <section class="px-3 sm:px-4 lg:px-6 py-8 md:py-8 bg-background">
+      <div class="max-w-full mx-auto">
         <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-2 font-serif">Your Spiritual Companion</h2>
           <p class="text-text-muted text-base sm:text-lg">Discover ancient temples, find accommodations, and get answers.</p>
@@ -144,7 +144,7 @@
 
     <!-- How It Works Section - Soothing Style -->
     <section class="py-8 md:py-12 bg-surface-muted">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6">
         <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-3 font-serif">How It Works</h2>
           <p class="text-text-muted text-base sm:text-lg">A simple path to planning your Derasar/Tirth Yatra.</p>
@@ -194,7 +194,7 @@
     </section>
 
     <!-- CTA Section - Soothing Gradient -->
-    <section class="py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-background">
+    <section class="py-8 md:py-12 px-3 sm:px-4 lg:px-6 bg-background">
       <div class="max-w-5xl mx-auto rounded-3xl p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
         <!-- Background Image with Overlay -->
         <div 
