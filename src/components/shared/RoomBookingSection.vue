@@ -222,6 +222,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   bookingCreated: [bookingId: string]
+  checkedOut: [bookingId: string]
 }>()
 
 const roomsStore = useRoomsStore()
@@ -291,7 +292,22 @@ const handleCheckIn = async (bookingId: string) => {
 }
 
 const handleCheckOut = async (bookingId: string) => {
+  const { useStaysStore } = await import('~/stores/stays')
+  const staysStore = useStaysStore()
+
+  const booking = roomsStore.bookings.find((b) => b.id === bookingId)
+  if (booking) {
+    const stay = staysStore.stays.find(
+      (s) => s.dharamshalaId === booking.dharamshalaId && s.status === 'active'
+    )
+
+    if (stay) {
+      await staysStore.completeStay(stay.id, new Date().toISOString().split('T')[0])
+    }
+  }
+
   await roomsStore.updateBookingStatus(bookingId, 'checkedOut')
+  emit('checkedOut', bookingId)
   alert('✅ You have checked out! Thank you for your stay. Please rate your experience.')
 }
 
@@ -305,10 +321,11 @@ const handleCancelBooking = async (bookingId: string) => {
 onMounted(async () => {
   loading.value = true
   try {
-    // Load bookings first
-    roomsStore.loadBookingsFromLocalStorage()
+    const { useStaysStore } = await import('~/stores/stays')
+    const staysStore = useStaysStore()
+    staysStore.loadStaysFromLocalStorage()
 
-    // Load sample rooms for this dharamshala
+    roomsStore.loadBookingsFromLocalStorage()
     roomsStore.loadSampleRooms(props.dharamshalaId)
     rooms.value = roomsStore.getRoomsByDharamshal(props.dharamshalaId)
   } catch (error) {

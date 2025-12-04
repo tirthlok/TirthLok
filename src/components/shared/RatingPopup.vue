@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import type { DharamshalStay } from '~/types/models'
 import Icon from '~/components/common/Icon.vue'
 
@@ -111,6 +111,11 @@ const isVisible = ref(props.isOpen)
 const userRating = ref(0)
 const userFeedback = ref('')
 const hoverRating = ref(0)
+
+// Watch for changes to isOpen prop
+watch(() => props.isOpen, (newVal) => {
+  isVisible.value = newVal
+})
 
 const getRatingLabel = (rating: number): string => {
   const labels: { [key: number]: string } = {

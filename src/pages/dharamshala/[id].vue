@@ -134,9 +134,13 @@
             <!-- Rating & Badges -->
             <div class="flex flex-wrap items-center gap-3 pb-4 border-b-2 border-gradient-to-r from-blue-200 to-transparent">
               <div class="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-4 py-2 rounded-xl border border-yellow-200 shadow-sm">
-                <Icon name="Star" :size="20" class="fill-yellow-400 text-yellow-400 animate-pulse" />
-                <span class="font-bold text-gray-900">{{ dharamshala?.rating ?? '-' }}</span>
-                <span class="text-xs text-gray-600">({{ dharamshala?.reviews ?? 0 }} reviews)</span>
+                <Icon 
+                  name="Star" 
+                  :size="20" 
+                  :class="reviewCount === 0 ? 'fill-yellow-400 text-yellow-400 animate-pulse' : 'fill-yellow-400 text-yellow-400'"
+                />
+                <span class="font-bold text-gray-900">{{ averageRating > 0 ? averageRating : '0' }}</span>
+                <span class="text-xs text-gray-600">({{ reviewCount }} {{ reviewCount === 1 ? 'review' : 'reviews' }})</span>
               </div>
               <span class="px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 rounded-xl text-sm font-bold border border-blue-300 shadow-sm">
                 {{ dharamshala?.type || '' }}
@@ -215,6 +219,7 @@
           :dharamshala-id="dharamshala.id"
           :dharamshala-name="dharamshala.name"
           @booking-created="handleNewBooking"
+          @checked-out="handleCheckedOut"
         />
 
         <!-- Rating & Feedback Section -->
@@ -265,7 +270,7 @@
 
 <script setup lang="ts">
 import type { Dharamshala } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useStaysStore } from '~/stores/stays'
@@ -286,6 +291,24 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const showRatingPopup = ref(false)
 const completedStay = ref<any>(null)
+
+// Computed properties for user ratings
+const userRatings = computed(() => {
+  if (!dharamshala.value?.id) return []
+  return staysStore.stays.filter(
+    (s) => s.dharamshalaId === dharamshala.value?.id && s.ratingSubmitted && s.rating
+  )
+})
+
+const averageRating = computed(() => {
+  if (userRatings.value.length === 0) return 0
+  const sum = userRatings.value.reduce((acc, stay) => acc + (stay.rating || 0), 0)
+  return Math.round((sum / userRatings.value.length) * 10) / 10
+})
+
+const reviewCount = computed(() => {
+  return userRatings.value.length
+})
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
@@ -336,15 +359,25 @@ const loadData = async (idParam?: string) => {
 
 onMounted(() => {
   loadData()
-  // Load stays from localStorage and check if any need rating
   staysStore.loadStaysFromLocalStorage()
   
-  // If there's a completed stay awaiting rating, show popup
   if (staysStore.completedStayAwaitingRating) {
     completedStay.value = staysStore.completedStayAwaitingRating
     showRatingPopup.value = true
   }
 })
+
+// Watch for completed stays that need rating
+watch(
+  () => staysStore.completedStayAwaitingRating,
+  (newCompletedStay) => {
+    if (newCompletedStay) {
+      completedStay.value = newCompletedStay
+      showRatingPopup.value = true
+    }
+  },
+  { deep: true }
+)
 
 onBeforeRouteUpdate((to) => {
   const nextId = to.params.id as string
@@ -354,11 +387,13 @@ onBeforeRouteUpdate((to) => {
 const handleRatingSubmitted = () => {
   showRatingPopup.value = false
   completedStay.value = null
-  // Rating has been submitted via the store
 }
 
-const handleNewBooking = (bookingId: string) => {
-  console.log('New booking created:', bookingId)
-  // You can add additional logic here like showing a success message or updating UI
+const handleNewBooking = () => {
+  // Booking created successfully
+}
+
+const handleCheckedOut = () => {
+  staysStore.loadStaysFromLocalStorage()
 }
 </script>

@@ -23,9 +23,6 @@ export const useStaysStore = defineStore('stays', {
   }),
 
   getters: {
-    getActiveStay: (state) => state.activeStay,
-    getCompletedStayAwaitingRating: (state) => state.completedStayAwaitingRating,
-    getAllStays: (state) => state.stays,
     getStaysByStatus: (state) => (status: 'active' | 'completed' | 'cancelled') => {
       return state.stays.filter((s) => s.status === status)
     },
@@ -71,14 +68,12 @@ export const useStaysStore = defineStore('stays', {
       stay.checkOutDate = checkOutDate
       stay.checkOutTime = checkOutTime
       
-      // Mark for rating if not already submitted
       if (!stay.ratingSubmitted) {
         this.completedStayAwaitingRating = stay
       }
 
       this.activeStay = null
       this.saveStaysToLocalStorage()
-      
       return stay
     },
 
@@ -95,10 +90,8 @@ export const useStaysStore = defineStore('stays', {
       stay.rating = rating
       stay.feedback = feedback
       stay.ratingSubmitted = true
-      
       this.completedStayAwaitingRating = null
       this.saveStaysToLocalStorage()
-      
       return stay
     },
 
@@ -120,13 +113,11 @@ export const useStaysStore = defineStore('stays', {
           const data = JSON.parse(stored)
           this.stays = data.stays || []
           
-          // Find active stay
           const active = this.stays.find((s) => s.status === 'active')
           if (active) {
             this.activeStay = active
           }
 
-          // Find completed stay awaiting rating
           const completed = this.stays.find((s) => s.status === 'completed' && !s.ratingSubmitted)
           if (completed) {
             this.completedStayAwaitingRating = completed
@@ -143,29 +134,25 @@ export const useStaysStore = defineStore('stays', {
     saveStaysToLocalStorage() {
       try {
         const key = 'dharamshala_stays'
-        localStorage.setItem(key, JSON.stringify({ stays: this.stays }))
+        const data = { stays: this.stays }
+        localStorage.setItem(key, JSON.stringify(data))
       } catch (e) {
         console.error('Failed to save stays to localStorage:', e)
       }
     },
 
     /**
-     * Cancel a stay
+     * Reset all stays data
      */
-    cancelStay(stayId: string) {
-      const stay = this.stays.find((s) => s.id === stayId)
-      if (!stay) {
-        this.error = 'Stay not found'
-        return
+    resetAllStays() {
+      this.stays = []
+      this.activeStay = null
+      this.completedStayAwaitingRating = null
+      try {
+        localStorage.removeItem('dharamshala_stays')
+      } catch (e) {
+        console.error('Failed to clear localStorage:', e)
       }
-
-      stay.status = 'cancelled'
-      if (this.activeStay?.id === stayId) {
-        this.activeStay = null
-      }
-      this.saveStaysToLocalStorage()
-      
-      return stay
     },
   },
 })

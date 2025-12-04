@@ -159,14 +159,30 @@ export const useRoomsStore = defineStore('rooms', {
         this.bookings.push(newBooking)
         this.saveBookingsToLocalStorage()
 
-        // Try to sync with server
+        try {
+          const { useStaysStore } = await import('~/stores/stays')
+          const staysStore = useStaysStore()
+          
+          let dharamshalaName = booking.dharamshalaId
+          const { useDharamshalaStore } = await import('~/stores/dharamshala')
+          const dharamshalaStore = useDharamshalaStore()
+          const dharamshala = dharamshalaStore.getDharamshalaById(booking.dharamshalaId)
+          if (dharamshala) {
+            dharamshalaName = dharamshala.name
+          }
+          
+          await staysStore.startStay(booking.dharamshalaId, dharamshalaName, booking.checkInDate)
+        } catch (e) {
+          console.error('Failed to create stay record:', e)
+        }
+
         try {
           await $fetch('/api/bookings', {
             method: 'POST',
             body: newBooking,
           })
         } catch (e) {
-          console.log('Booking saved locally but failed to sync with server')
+          console.error('Booking failed to sync with server')
         }
 
         return newBooking
@@ -193,7 +209,7 @@ export const useRoomsStore = defineStore('rooms', {
           body: { status },
         })
       } catch (e) {
-        console.log('Booking status updated locally but failed to sync with server')
+        console.error('Booking status update failed to sync with server')
       }
     },
 
@@ -231,6 +247,17 @@ export const useRoomsStore = defineStore('rooms', {
 
     calculateTotalPrice(pricePerNight: number, nights: number): number {
       return pricePerNight * nights
+    },
+
+    resetAllBookings() {
+      this.bookings = []
+      this.rooms = []
+      this.selectedRoom = null
+      try {
+        localStorage.removeItem('dharamshala_bookings')
+      } catch (e) {
+        console.error('Failed to clear localStorage:', e)
+      }
     },
   },
 })
