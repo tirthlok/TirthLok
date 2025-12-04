@@ -1,5 +1,5 @@
 <template>
-  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
+  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12 will-change-auto">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <!-- Back Button -->
       <div class="mb-6 sm:mb-8">
@@ -52,7 +52,7 @@
               <img
                 :src="currentImage"
                 :alt="dharamshala.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 will-change-transform"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -62,13 +62,13 @@
               </div>
 
               <!-- Navigation Dots -->
-              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 will-change-auto">
                 <button
                   v-for="(_, index) in dharamshala.images"
                   :key="index"
                   @click="currentImageIndex = index"
                   :class="[
-                    'transition-all duration-300 backdrop-blur-sm',
+                    'transition-all duration-200 backdrop-blur-sm will-change-auto',
                     index === currentImageIndex 
                       ? 'w-8 h-3 bg-white rounded-full' 
                       : 'w-3 h-3 bg-white/50 hover:bg-white/75 rounded-full'
@@ -98,16 +98,16 @@
             </div>
 
             <!-- Thumbnails -->
-            <div v-if="dharamshala.images && dharamshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
+            <div v-if="dharamshala.images && dharamshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth will-change-auto">
               <button
                 v-for="(image, index) in dharamshala.images"
                 :key="index"
                 @click="currentImageIndex = index"
                 :class="[
-                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:shadow-lg transform hover:scale-105',
+                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 hover:shadow-lg',
                   index === currentImageIndex 
-                    ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg' 
-                    : 'border-gray-200 hover:border-blue-400'
+                    ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg scale-100' 
+                    : 'border-gray-200 hover:border-blue-400 scale-100 hover:scale-105'
                 ]"
               >
                 <img :src="image" :alt="`${dharamshala.name} ${index + 1}`" class="w-full h-full object-cover" />
@@ -375,8 +375,7 @@ watch(
       completedStay.value = newCompletedStay
       showRatingPopup.value = true
     }
-  },
-  { deep: true }
+  }
 )
 
 onBeforeRouteUpdate((to) => {

@@ -50,12 +50,12 @@
       </div>
 
       <!-- Content -->
-      <div class="flex-1 p-5 flex flex-col">
+      <div class="flex-1 p-5 flex flex-col min-h-[300px]">
         <!-- Room Info -->
         <div class="mb-3">
           <div class="flex items-center justify-between mb-2">
             <h3 class="font-black text-lg text-gray-900">Room {{ room.roomNumber }}</h3>
-            <div class="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+            <div class="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 flex-shrink-0">
               <Icon name="Users" :size="16" class="text-blue-600" />
               <span class="font-bold text-sm text-blue-900">{{ room.capacity }}</span>
             </div>
@@ -64,12 +64,12 @@
         </div>
 
         <!-- Amenities -->
-        <div class="mb-4 pb-4 border-b-2 border-gray-100">
+        <div class="mb-4 pb-4 border-b-2 border-gray-100 flex-grow">
           <div class="flex flex-wrap gap-2">
-            <span v-for="(amenity, idx) in room.amenities.slice(0, 3)" :key="idx" class="text-xs bg-gradient-to-r from-emerald-50 to-cyan-50 text-gray-700 px-2.5 py-1.5 rounded-lg font-semibold border border-emerald-200">
+            <span v-for="(amenity, idx) in room.amenities.slice(0, 3)" :key="idx" class="text-xs bg-gradient-to-r from-emerald-50 to-cyan-50 text-gray-700 px-2.5 py-1.5 rounded-lg font-semibold border border-emerald-200 whitespace-nowrap">
               ✓ {{ amenity }}
             </span>
-            <span v-if="room.amenities.length > 3" class="text-xs bg-gray-100 text-gray-600 px-2.5 py-1.5 rounded-lg font-bold">
+            <span v-if="room.amenities.length > 3" class="text-xs bg-gray-100 text-gray-600 px-2.5 py-1.5 rounded-lg font-bold whitespace-nowrap">
               +{{ room.amenities.length - 3 }} more
             </span>
           </div>
@@ -79,21 +79,21 @@
         <div class="mb-4 p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200">
           <div class="flex items-baseline gap-2 mb-1">
             <span class="text-3xl font-black text-transparent bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text">₹{{ room.pricePerNight }}</span>
-            <span class="text-gray-600 font-semibold">/night</span>
+            <span class="text-gray-600 font-semibold text-sm whitespace-nowrap">/night</span>
           </div>
-          <p v-if="numberOfNights > 0" class="text-sm text-gray-600 font-semibold">
-            Total: <span class="font-black text-gray-900">₹{{ calculatedTotal }}</span> ({{ numberOfNights }} night{{ numberOfNights !== 1 ? 's' : '' }})
+          <p v-if="numberOfNights > 0" class="text-sm text-gray-600 font-semibold whitespace-nowrap">
+            Total: <span class="font-black text-gray-900">₹{{ calculatedTotal }}</span> ({{ numberOfNights }}n)
           </p>
         </div>
 
-        <!-- Book Button -->
+        <!-- Book Button - Single Line -->
         <button
           @click="toggleBookingForm"
           :class="{ 'ring-4 ring-blue-300': showBookingForm }"
-          class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-black shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+          class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-black shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0"
         >
           <Icon name="Calendar" :size="18" />
-          {{ showBookingForm ? 'Hide' : 'Book Now' }}
+          <span>{{ showBookingForm ? 'Hide' : 'Book Now' }}</span>
         </button>
       </div>
 

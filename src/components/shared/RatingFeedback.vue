@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
+  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200 will-change-auto">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-8">
       <Icon name="Star" :size="28" class="text-yellow-500" />
@@ -7,8 +7,8 @@
     </div>
 
     <!-- Submitted Ratings Display (if any) -->
-    <div v-if="submittedRatings.length > 0" class="space-y-4 max-h-96 overflow-y-auto">
-      <div v-for="(rating, index) in submittedRatings" :key="index" class="p-4 bg-white rounded-xl border-2 border-yellow-100 hover:shadow-md transition-all">
+    <div v-if="submittedRatings.length > 0" class="space-y-4 max-h-96 overflow-y-auto will-change-auto">
+      <div v-for="(rating, index) in submittedRatings" :key="index" class="p-4 bg-white rounded-xl border-2 border-yellow-100 hover:shadow-md transition-shadow will-change-auto">
         <div class="flex items-start justify-between mb-3">
           <div class="flex gap-2">
             <span v-for="star in 5" :key="star">
@@ -86,11 +86,10 @@ onMounted(() => {
 
 // Watch for changes in stays to update ratings in real-time
 watch(
-  () => staysStore.stays,
+  () => staysStore.stays.length,
   () => {
     loadRatings()
-  },
-  { deep: true }
+  }
 )
 </script>
 
