@@ -9,7 +9,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
             <div class="absolute inset-2 bg-white rounded-full" />
           </div>
-          <p class="text-gray-600 font-semibold text-lg">Loading tirth details...</p>
+          <p class="text-gray-600 font-semibold text-base">Loading tirth details...</p>
         </div>
       </div>
 
@@ -17,7 +17,7 @@
       <div v-else-if="error" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6 max-w-md">
           <Icon name="AlertTriangle" :size="48" class="text-red-500 mx-auto" />
-          <p class="text-red-600 font-semibold text-lg">{{ error }}</p>
+          <p class="text-red-600 font-semibold text-base">{{ error }}</p>
           <NuxtLink to="/tirth" class="inline-block px-6 py-3 bg-amber-600 text-white rounded-lg font-bold hover:bg-amber-700">
             Return to List
           </NuxtLink>
@@ -109,11 +109,11 @@
             <div>
               <div class="flex items-center gap-3 mb-3">
                 <div class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
-                <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-orange-600 bg-clip-text text-transparent">
+                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-orange-600 bg-clip-text text-transparent">
                   {{ tirth?.name || '' }}
                 </h1>
               </div>
-              <p class="text-lg text-gray-600 flex items-center gap-2 ml-5">
+              <p class="text-sm text-gray-600 flex items-center gap-2 ml-5">
                 <Icon name="MapPin" :size="18" class="text-amber-600" />
                 {{ tirth?.location?.city || '' }}, {{ tirth?.location?.state || '' }}
               </p>
@@ -172,7 +172,7 @@
               :key="tab.id"
               @click="activeTab = tab.id"
               :class="[
-                'pb-4 px-1 font-bold transition-all duration-300 border-b-4 whitespace-nowrap text-sm sm:text-base',
+                'pb-4 px-1 font-bold transition-all duration-300 border-b-4 whitespace-nowrap text-xs md:text-sm',
                 activeTab === tab.id
                   ? 'border-amber-600 text-amber-700'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -196,7 +196,7 @@
 
         <!-- Related Tirths -->
         <div v-if="relatedTirths.length > 0" class="border-t-2 pt-8 sm:pt-12 mt-8 sm:mt-12">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+          <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-8">
             Explore Similar Locations
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
@@ -228,7 +228,7 @@
       <!-- Not Found -->
       <div v-else class="flex justify-center items-center py-32">
         <div class="text-center space-y-6 max-w-md">
-          <p class="text-gray-600 font-semibold text-lg">Temple not found</p>
+          <p class="text-gray-600 font-semibold text-base">Temple not found</p>
           <NuxtLink to="/tirth" class="inline-block px-6 py-3 bg-amber-600 text-white rounded-lg font-bold hover:bg-amber-700">
             Return to List
           </NuxtLink>

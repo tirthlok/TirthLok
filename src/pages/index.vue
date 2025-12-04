@@ -15,11 +15,11 @@
 
         <!-- Content Overlay -->
         <div class="relative h-full flex flex-col justify-center px-8 md:px-16 max-w-2xl">
-          <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 leading-tight font-serif">
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
             Explore Sacred <br/>
             <span class="text-accent">Jain Tirths</span>
           </h1>
-          <p class="text-base sm:text-lg md:text-xl text-white mb-8 font-medium max-w-lg">
+          <p class="text-sm sm:text-base md:text-lg text-white mb-8 font-medium max-w-lg">
             Your comprehensive guide to discovering Jain Derasars across the world.
           </p>
           
@@ -41,7 +41,7 @@
       <div class="max-w-full mx-auto relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
           <div class="flex-1">
-            <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif mb-2">Featured Tirths</h3>
+            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-text-main mb-2">Featured Tirths</h2>
           </div>
           <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-2 text-sm sm:text-base px-5 py-2.5 rounded-full hover:bg-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/50">
             Explore All <Icon name="ArrowRight" :size="18" />
@@ -80,8 +80,8 @@
     <section class="px-3 sm:px-4 lg:px-6 py-8 md:py-8 bg-background">
       <div class="max-w-full mx-auto">
         <div class="text-center mb-12">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-2 font-serif">Your Spiritual Companion</h2>
-          <p class="text-text-muted text-base sm:text-lg">Discover ancient temples, find accommodations, and get answers.</p>
+          <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-text-main mb-2">Your Spiritual Companion</h2>
+          <p class="text-text-muted text-sm sm:text-base">Discover ancient temples, find accommodations, and get answers.</p>
         </div>
 
          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -95,8 +95,8 @@
               <div class="w-14 h-14 rounded-xl bg-primary-light flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
                 <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏛️</span>
               </div>
-              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Explore Tirths</h3>
-              <p class="text-text-muted leading-relaxed text-sm sm:text-base mb-4">
+              <h3 class="text-base sm:text-lg font-bold text-text-main mb-3">Explore Tirths</h3>
+              <p class="text-text-muted leading-relaxed text-xs sm:text-sm mb-4">
                 Browse a vast directory of Jain Tirths. Filter by sect, type, location, and more to find your next destination.
               </p>
               <button class="text-primary text-sm font-semibold hover:gap-2 transition-all flex items-center gap-1">
@@ -112,8 +112,8 @@
               <div class="w-14 h-14 rounded-xl bg-secondary-light flex items-center justify-center mb-6 group-hover:bg-secondary transition-colors duration-300">
                 <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏨</span>
               </div>
-              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">Find Facilities</h3>
-              <p class="text-text-muted leading-relaxed text-sm sm:text-base mb-4">
+              <h3 class="text-base sm:text-lg font-bold text-text-main mb-3">Find Facilities</h3>
+              <p class="text-text-muted leading-relaxed text-xs sm:text-sm mb-4">
                 Easily locate Bhojanshalas and Dharmashalas. View details, timings, and contact information all in one place.
               </p>
               <button class="text-primary text-sm font-semibold hover:gap-2 transition-all flex items-center gap-1">
@@ -129,8 +129,8 @@
               <div class="w-14 h-14 rounded-xl bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors duration-300">
                 <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🤖</span>
               </div>
-              <h3 class="text-lg sm:text-xl font-bold text-text-main mb-3">AI Tirth Assistant</h3>
-              <p class="text-text-muted leading-relaxed text-sm sm:text-base mb-4">
+              <h3 class="text-base sm:text-lg font-bold text-text-main mb-3">AI Tirth Assistant</h3>
+              <p class="text-text-muted leading-relaxed text-xs sm:text-sm mb-4">
                 Have questions about history, rituals, or facilities? Our AI assistant has the answers you need.
               </p>
               <button class="text-primary text-sm font-semibold hover:gap-2 transition-all flex items-center gap-1">
@@ -146,8 +146,8 @@
     <section class="py-8 md:py-12 bg-surface-muted">
       <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6">
         <div class="text-center mb-12">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-3 font-serif">How It Works</h2>
-          <p class="text-text-muted text-base sm:text-lg">A simple path to planning your Derasar/Tirth Yatra.</p>
+          <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-text-main mb-3">How It Works</h2>
+          <p class="text-text-muted text-sm sm:text-base">A simple path to planning your Derasar/Tirth Yatra.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -171,7 +171,7 @@
             <div class="p-6">
               <div class="flex items-center gap-3 mb-3">
                 <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold text-sm">2</div>
-                <h4 class="font-bold text-base sm:text-lg text-text-main">Explore Details</h4>
+                <h4 class="font-bold text-sm sm:text-base text-text-main">Explore Details</h4>
               </div>
               <p class="text-text-muted text-sm leading-relaxed">Dive deep into a Derasar's/Tirth's page. Learn about its history, architecture, and timings.</p>
             </div>
@@ -204,7 +204,7 @@
           <div class="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
         </div>
         
-        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white relative z-10 font-serif mb-">Begin Your Spiritual Journey Today</h3>
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-white relative z-10 mb-4">Begin Your Spiritual Journey Today</h3>
         <p class="text-gray-100 mb-8 text-base sm:text-lg relative z-10 max-w-2xl mx-auto">Let us guide you to the sacred Derasar's/Tirth's that call to your heart.</p>
         
         <NuxtLink to="/tirth" class="inline-block bg-white text-primary px-8 py-3 sm:px-10 sm:py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all relative z-10 text-base sm:text-lg">

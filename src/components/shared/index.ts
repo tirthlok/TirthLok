@@ -25,6 +25,14 @@ export type {
 // Header Components
 export { default as HeaderWithImage } from './headers/HeaderWithImage.vue'
 
+// Rating Components
+export { default as RatingFeedback } from './RatingFeedback.vue'
+export { default as RatingPopup } from './RatingPopup.vue'
+
+// Room & Booking Components
+export { default as RoomCard } from './RoomCard.vue'
+export { default as RoomBookingSection } from './RoomBookingSection.vue'
+
 // Filter Components
 export { default as FilterPanel } from './filters/FilterPanel.vue'
 export { default as SearchBox } from './filters/SearchBox.vue'

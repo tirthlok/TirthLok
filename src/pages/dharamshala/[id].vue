@@ -42,7 +42,7 @@
               <img
                 :src="currentImage"
                 :alt="dharamshala.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 will-change-transform"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
@@ -52,13 +52,13 @@
               </div>
 
               <!-- Navigation Dots -->
-              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 will-change-auto">
                 <button
                   v-for="(_, index) in dharamshala.images"
                   :key="index"
                   @click="currentImageIndex = index"
                   :class="[
-                    'transition-all duration-300 backdrop-blur-sm',
+                    'transition-all duration-200 backdrop-blur-sm will-change-auto',
                     index === currentImageIndex 
                       ? 'w-8 h-3 bg-white rounded-full' 
                       : 'w-3 h-3 bg-white/50 hover:bg-white/75 rounded-full'
@@ -88,16 +88,16 @@
             </div>
 
             <!-- Thumbnails -->
-            <div v-if="dharamshala.images && dharamshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
+            <div v-if="dharamshala.images && dharamshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth will-change-auto">
               <button
                 v-for="(image, index) in dharamshala.images"
                 :key="index"
                 @click="currentImageIndex = index"
                 :class="[
-                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:shadow-lg transform hover:scale-105',
+                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 hover:shadow-lg',
                   index === currentImageIndex 
-                    ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg' 
-                    : 'border-gray-200 hover:border-blue-400'
+                    ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg scale-100' 
+                    : 'border-gray-200 hover:border-blue-400 scale-100 hover:scale-105'
                 ]"
               >
                 <img :src="image" :alt="`${dharamshala.name} ${index + 1}`" class="w-full h-full object-cover" />
@@ -124,9 +124,13 @@
             <!-- Rating & Badges -->
             <div class="flex flex-wrap items-center gap-3 pb-4 border-b-2 border-gradient-to-r from-blue-200 to-transparent">
               <div class="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-4 py-2 rounded-xl border border-yellow-200 shadow-sm">
-                <Icon name="Star" :size="20" class="fill-yellow-400 text-yellow-400 animate-pulse" />
-                <span class="font-bold text-gray-900">{{ dharamshala?.rating ?? '-' }}</span>
-                <span class="text-xs text-gray-600">({{ dharamshala?.reviews ?? 0 }} reviews)</span>
+                <Icon 
+                  name="Star" 
+                  :size="20" 
+                  :class="reviewCount === 0 ? 'fill-yellow-400 text-yellow-400 animate-pulse' : 'fill-yellow-400 text-yellow-400'"
+                />
+                <span class="font-bold text-gray-900">{{ averageRating > 0 ? averageRating : '0' }}</span>
+                <span class="text-xs text-gray-600">({{ reviewCount }} {{ reviewCount === 1 ? 'review' : 'reviews' }})</span>
               </div>
               <span class="px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 rounded-xl text-sm font-bold border border-blue-300 shadow-sm">
                 {{ dharamshala?.type || '' }}
@@ -200,6 +204,27 @@
           </div>
         </div>
 
+        <!-- Room Booking Section -->
+        <RoomBookingSection
+          :dharamshala-id="dharamshala.id"
+          :dharamshala-name="dharamshala.name"
+          @booking-created="handleNewBooking"
+          @checked-out="handleCheckedOut"
+        />
+
+        <!-- Rating & Feedback Section -->
+        <RatingFeedback
+          :facility-id="dharamshala.id"
+        />
+
+        <!-- Rating Popup for Checkout -->
+        <RatingPopup
+          :stay="completedStay"
+          :is-open="showRatingPopup"
+          @rating-submitted="handleRatingSubmitted"
+          @closed="showRatingPopup = false"
+        />
+
         <!-- Location Map Section -->
         <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -235,10 +260,12 @@
 
 <script setup lang="ts">
 import type { Dharamshala } from '~/types/models'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useStaysStore } from '~/stores/stays'
 import Icon from '~/components/common/Icon.vue'
+import { RatingFeedback, RatingPopup, RoomBookingSection } from '~/components/shared'
 
 definePageMeta({
   layout: 'default',
@@ -246,11 +273,32 @@ definePageMeta({
 
 const route = useRoute()
 const dharamshalaStore = useDharamshalaStore()
+const staysStore = useStaysStore()
 
 const currentImageIndex = ref(0)
 const dharamshala = ref<Dharamshala | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+const showRatingPopup = ref(false)
+const completedStay = ref<any>(null)
+
+// Computed properties for user ratings
+const userRatings = computed(() => {
+  if (!dharamshala.value?.id) return []
+  return staysStore.stays.filter(
+    (s) => s.dharamshalaId === dharamshala.value?.id && s.ratingSubmitted && s.rating
+  )
+})
+
+const averageRating = computed(() => {
+  if (userRatings.value.length === 0) return 0
+  const sum = userRatings.value.reduce((acc, stay) => acc + (stay.rating || 0), 0)
+  return Math.round((sum / userRatings.value.length) * 10) / 10
+})
+
+const reviewCount = computed(() => {
+  return userRatings.value.length
+})
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
@@ -321,8 +369,42 @@ const loadData = async (idParam?: string) => {
   }
 }
 
+onMounted(() => {
+  loadData()
+  staysStore.loadStaysFromLocalStorage()
+  
+  if (staysStore.completedStayAwaitingRating) {
+    completedStay.value = staysStore.completedStayAwaitingRating
+    showRatingPopup.value = true
+  }
+})
+
+// Watch for completed stays that need rating
+watch(
+  () => staysStore.completedStayAwaitingRating,
+  (newCompletedStay) => {
+    if (newCompletedStay) {
+      completedStay.value = newCompletedStay
+      showRatingPopup.value = true
+    }
+  }
+)
+
 onBeforeRouteUpdate((to) => {
   const nextId = to.params.id as string
   loadData(nextId)
 })
+
+const handleRatingSubmitted = () => {
+  showRatingPopup.value = false
+  completedStay.value = null
+}
+
+const handleNewBooking = () => {
+  // Booking created successfully
+}
+
+const handleCheckedOut = () => {
+  staysStore.loadStaysFromLocalStorage()
+}
 </script>

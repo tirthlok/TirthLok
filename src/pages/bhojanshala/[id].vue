@@ -9,7 +9,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
             <div class="absolute inset-2 bg-white rounded-full" />
           </div>
-          <p class="text-gray-600 font-semibold text-lg">Loading bhojanshala details...</p>
+          <p class="text-gray-600 font-semibold text-base">Loading bhojanshala details...</p>
         </div>
       </div>
 
@@ -17,7 +17,7 @@
       <div v-else-if="error" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6 max-w-md">
           <Icon name="AlertTriangle" :size="48" class="text-red-500 mx-auto" />
-          <p class="text-red-600 font-semibold text-lg">{{ error }}</p>
+          <p class="text-red-600 font-semibold text-base">{{ error }}</p>
           <NuxtLink to="/bhojanshala" class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700">
             Return to List
           </NuxtLink>

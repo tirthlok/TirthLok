@@ -19,7 +19,7 @@
       <div class="mb-8">
         <h1
           :class="[
-            'text-3xl sm:text-4xl md:text-5xl font-bold mb-2',
+            'text-2xl sm:text-3xl md:text-4xl font-bold mb-2',
             themeStore?.isDarkMode ? 'text-white' : 'text-gray-900',
           ]"
         >
@@ -27,7 +27,7 @@
         </h1>
         <p
           :class="[
-            'text-base md:text-lg',
+            'text-xs md:text-sm',
             themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600',
           ]"
         >
@@ -49,7 +49,7 @@
               :key="filter.id"
               @click="emit('update:selectedFilter', filter.id)"
               :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
+                'flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all whitespace-nowrap border',
                 getFilterButtonClass(filter.id),
               ]"
             >
@@ -74,7 +74,7 @@
           themeStore?.isDarkMode ? 'bg-red-900/20 border-red-500 text-red-300' : 'bg-red-50 border-red-500 text-red-700',
         ]"
       >
-        <p class="text-sm md:text-base font-semibold">Error loading {{ pageType }}</p>
+        <p class="text-xs md:text-sm font-semibold">Error loading {{ pageType }}</p>
         <p :class="[`text-xs md:text-sm mt-1`, themeStore?.isDarkMode ? 'text-red-400' : 'text-red-600']">{{ error }}</p>
       </div>
 
@@ -111,13 +111,13 @@
         />
         <h3
           :class="[
-            'text-lg sm:text-xl md:text-2xl font-semibold mb-2',
+            'text-base sm:text-lg md:text-xl font-semibold mb-2',
             themeStore?.isDarkMode ? 'text-gray-200' : 'text-gray-900',
           ]"
         >
           {{ pageStrings.emptyTitle }}
         </h3>
-        <p class="text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
+        <p class="text-xs md:text-sm mb-6">Try adjusting your search or filter criteria</p>
       </div>
 
       <!-- Results Info -->

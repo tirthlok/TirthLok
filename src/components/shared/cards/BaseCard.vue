@@ -146,15 +146,15 @@ const detailsBgClass = computed(() => {
 // Description class
 const descriptionClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'text-sm text-gray-300 line-clamp-2 leading-relaxed'
-    : 'text-sm text-gray-600 line-clamp-2'
+    ? 'text-xs text-gray-300 line-clamp-2 leading-relaxed'
+    : 'text-xs text-gray-600 line-clamp-2'
 })
 
 // Fields container class
 const fieldsContainerClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'space-y-2 text-sm pt-2'
-    : 'space-y-2 text-sm border-t border-gray-200 pt-3'
+    ? 'space-y-2 text-xs pt-2'
+    : 'space-y-2 text-xs border-t border-gray-200 pt-3'
 })
 
 // Field item class

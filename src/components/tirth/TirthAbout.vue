@@ -5,8 +5,8 @@
       <div class="flex items-start gap-4">
         <Icon name="BookOpen" :size="28" class="text-blue-600 flex-shrink-0 mt-1" />
         <div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Description</h3>
-          <p class="text-gray-700 leading-relaxed text-lg">{{ tirth.description }}</p>
+          <h3 class="text-sm font-bold text-gray-900 mb-3">Description</h3>
+          <p class="text-gray-700 leading-relaxed text-xs">{{ tirth.description }}</p>
         </div>
       </div>
     </div>
@@ -16,8 +16,8 @@
       <div class="flex items-start gap-4">
         <Icon name="History" :size="28" class="text-amber-600 flex-shrink-0 mt-1" />
         <div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Historical Background</h3>
-          <p class="text-gray-700 leading-relaxed text-lg">{{ tirth.historicalBackground }}</p>
+          <h3 class="text-sm font-bold text-gray-900 mb-3">Historical Background</h3>
+          <p class="text-gray-700 leading-relaxed text-xs">{{ tirth.historicalBackground }}</p>
         </div>
       </div>
     </div>
@@ -27,8 +27,8 @@
       <div class="flex items-start gap-4">
         <Icon name="Landmark" :size="28" class="text-purple-600 flex-shrink-0 mt-1" />
         <div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Founding Details</h3>
-          <p class="text-gray-700 leading-relaxed text-lg">{{ tirth.foundingDetails }}</p>
+          <h3 class="text-sm font-bold text-gray-900 mb-3">Founding Details</h3>
+          <p class="text-gray-700 leading-relaxed text-xs">{{ tirth.foundingDetails }}</p>
         </div>
       </div>
     </div>
@@ -38,8 +38,8 @@
       <div class="flex items-start gap-4">
         <Icon name="Building" :size="28" class="text-green-600 flex-shrink-0 mt-1" />
         <div>
-          <h3 class="text-xl font-bold text-gray-900 mb-3">Architecture</h3>
-          <p class="text-gray-700 leading-relaxed text-lg">{{ tirth.architecture }}</p>
+          <h3 class="text-sm font-bold text-gray-900 mb-3">Architecture</h3>
+          <p class="text-gray-700 leading-relaxed text-xs">{{ tirth.architecture }}</p>
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@
             <div class="flex-shrink-0 p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg group-hover:shadow-lg transition-all transform group-hover:scale-110">
               <Icon name="CheckCircle2" :size="20" class="text-white" />
             </div>
-            <p class="text-gray-700 leading-relaxed text-lg pt-1">{{ fact }}</p>
+            <p class="text-gray-700 leading-relaxed text-xs pt-1">{{ fact }}</p>
           </div>
         </div>
       </div>

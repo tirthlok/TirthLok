@@ -22,7 +22,7 @@
             <img :src="tirthlokLogo" alt="TirthLok" class="w-full h-full object-cover" />
           </div>
           <span :class="[
-            'text-lg font-bold hidden md:block font-serif tracking-tight group-hover:text-primary transition-colors',
+            'text-lg font-bold hidden md:block tracking-tight group-hover:text-primary transition-colors',
             themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
           ]">TirthLok</span>
         </NuxtLink>
