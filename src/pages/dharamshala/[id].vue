@@ -210,6 +210,26 @@
           </div>
         </div>
 
+        <!-- Room Booking Section -->
+        <RoomBookingSection
+          :dharamshala-id="dharamshala.id"
+          :dharamshala-name="dharamshala.name"
+          @booking-created="handleNewBooking"
+        />
+
+        <!-- Rating & Feedback Section -->
+        <RatingFeedback
+          :facility-id="dharamshala.id"
+        />
+
+        <!-- Rating Popup for Checkout -->
+        <RatingPopup
+          :stay="completedStay"
+          :is-open="showRatingPopup"
+          @rating-submitted="handleRatingSubmitted"
+          @closed="showRatingPopup = false"
+        />
+
         <!-- Location Map Section -->
         <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -248,7 +268,9 @@ import type { Dharamshala } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useStaysStore } from '~/stores/stays'
 import Icon from '~/components/common/Icon.vue'
+import { RatingFeedback, RatingPopup, RoomBookingSection } from '~/components/shared'
 
 definePageMeta({
   layout: 'default',
@@ -256,11 +278,14 @@ definePageMeta({
 
 const route = useRoute()
 const dharamshalaStore = useDharamshalaStore()
+const staysStore = useStaysStore()
 
 const currentImageIndex = ref(0)
 const dharamshala = ref<Dharamshala | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+const showRatingPopup = ref(false)
+const completedStay = ref<any>(null)
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
@@ -311,10 +336,29 @@ const loadData = async (idParam?: string) => {
 
 onMounted(() => {
   loadData()
+  // Load stays from localStorage and check if any need rating
+  staysStore.loadStaysFromLocalStorage()
+  
+  // If there's a completed stay awaiting rating, show popup
+  if (staysStore.completedStayAwaitingRating) {
+    completedStay.value = staysStore.completedStayAwaitingRating
+    showRatingPopup.value = true
+  }
 })
 
 onBeforeRouteUpdate((to) => {
   const nextId = to.params.id as string
   loadData(nextId)
 })
+
+const handleRatingSubmitted = () => {
+  showRatingPopup.value = false
+  completedStay.value = null
+  // Rating has been submitted via the store
+}
+
+const handleNewBooking = (bookingId: string) => {
+  console.log('New booking created:', bookingId)
+  // You can add additional logic here like showing a success message or updating UI
+}
 </script>

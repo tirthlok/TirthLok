@@ -119,3 +119,59 @@ export interface Bhojanshala {
   speciality?: string
   vegetarianOnly?: boolean
 }
+
+export interface DharamshalStay {
+  id: string
+  dharamshalaId: string
+  dharamshalaName: string
+  userId: string
+  checkInDate: string
+  checkOutDate: string
+  checkOutTime?: string
+  status: 'active' | 'completed' | 'cancelled'
+  ratingSubmitted: boolean
+  rating?: number
+  feedback?: string
+}
+
+export interface UserStay {
+  stays: DharamshalStay[]
+}
+
+export interface Room {
+  id: string
+  dharamshalaId: string
+  roomNumber: string
+  roomType: 'single' | 'double' | 'dorm' | 'family'
+  capacity: number
+  price: number
+  pricePerNight: number
+  amenities: string[]
+  images: string[]
+  description?: string
+  totalRooms: number
+  availableRooms: number
+}
+
+export interface RoomBooking {
+  id: string
+  roomId: string
+  dharamshalaId: string
+  userId: string
+  userName: string
+  userEmail: string
+  userPhone: string
+  checkInDate: string
+  checkOutDate: string
+  numberOfGuests: number
+  numberOfNights: number
+  totalPrice: number
+  status: 'pending' | 'confirmed' | 'checkedIn' | 'checkedOut' | 'cancelled'
+  bookingDate: string
+  notes?: string
+}
+
+export interface DharamshalRoom {
+  dharamshalaId: string
+  rooms: Room[]
+}
