@@ -1,16 +1,6 @@
 <template>
   <div id="top" class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/bhojanshala"
-          class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-bold transition-all"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Bhojanshala List</span>
-        </NuxtLink>
-      </div>
+    <div class="px-3 sm:px-4 lg:px-6 max-w-full mx-auto">
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
@@ -19,7 +9,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
             <div class="absolute inset-2 bg-white rounded-full" />
           </div>
-          <p class="text-gray-600 font-semibold text-lg">Loading bhojanshala details...</p>
+          <p class="text-gray-600 font-semibold text-base">Loading bhojanshala details...</p>
         </div>
       </div>
 
@@ -27,7 +17,7 @@
       <div v-else-if="error" class="flex justify-center items-center py-32">
         <div class="text-center space-y-6 max-w-md">
           <Icon name="AlertTriangle" :size="48" class="text-red-500 mx-auto" />
-          <p class="text-red-600 font-semibold text-lg">{{ error }}</p>
+          <p class="text-red-600 font-semibold text-base">{{ error }}</p>
           <NuxtLink to="/bhojanshala" class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700">
             Return to List
           </NuxtLink>
@@ -40,7 +30,7 @@
         <div class="flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
-          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+          <NuxtLink to="/bhojanshala" class="hover:text-gray-900 transition-colors">Bhojanshala</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ bhojanshala.name }}</span>
         </div>
@@ -255,7 +245,7 @@
 
 <script setup lang="ts">
 import type { Bhojanshala } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import Icon from '~/components/common/Icon.vue'
@@ -293,17 +283,50 @@ const previousImage = () => {
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
+// Server-side initial fetch
+const routeId = (route.params.id ?? '') as string
+const { data: serverBh } = await useAsyncData(`bhojanshala-${routeId}`, () => bhojanshalaStore.fetchBhojanshalas())
+if (serverBh?.value && Array.isArray((serverBh.value as any)) && (serverBh.value as any).length > 0) {
+  const found = bhojanshalaStore.getBhojanshalAById(routeId)
+  if (found) {
+    bhojanshala.value = found
+    currentImageIndex.value = 0
+  }
+} else if (bhojanshalaStore.bhojanshalas.length > 0) {
+  const found = bhojanshalaStore.getBhojanshalAById(routeId)
+  if (found) {
+    bhojanshala.value = found
+    currentImageIndex.value = 0
+  } else {
+    error.value = `Bhojanshala with ID "${routeId}" not found`
+  }
+} else {
+  // attempt a direct fetch-by-id if list fetch didn't populate
+  await bhojanshalaStore.fetchBhojanshalas()
+  const found = bhojanshalaStore.getBhojanshalAById(routeId)
+  if (found) {
+    bhojanshala.value = found
+    currentImageIndex.value = 0
+  } else {
+    error.value = `Bhojanshala with ID "${routeId}" not found`
+  }
+}
+
+// Client navigation handler
 const loadData = async (idParam?: string) => {
   try {
     loading.value = true
     error.value = null
     const id = (idParam ?? route.params.id) as string
 
-    // Fetch data if not in store
-    if (bhojanshalaStore.bhojanshalas.length === 0) {
-      await bhojanshalaStore.fetchBhojanshalas()
+    const local = bhojanshalaStore.getBhojanshalAById(id)
+    if (local) {
+      bhojanshala.value = local
+      currentImageIndex.value = 0
+      return
     }
 
+    await bhojanshalaStore.fetchBhojanshalas()
     const found = bhojanshalaStore.getBhojanshalAById(id)
     if (found) {
       bhojanshala.value = found
@@ -318,10 +341,6 @@ const loadData = async (idParam?: string) => {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  loadData()
-})
 
 onBeforeRouteUpdate((to) => {
   const nextId = to.params.id as string

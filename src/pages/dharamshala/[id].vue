@@ -1,16 +1,6 @@
 <template>
-  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12 will-change-auto">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/dharamshala"
-          class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold transition-all"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Dharamshala List</span>
-        </NuxtLink>
-      </div>
+  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
+    <div class="px-3 sm:px-4 lg:px-6 max-w-full mx-auto">
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
@@ -40,7 +30,7 @@
         <div class="flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
-          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+          <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ dharamshala.name }}</span>
         </div>
@@ -331,17 +321,39 @@ const previousImage = () => {
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
+// Server-side initial fetch
+const routeId = (route.params.id ?? '') as string
+const { data: serverDh } = await useAsyncData(`dharamshala-${routeId}`, () => dharamshalaStore.fetchDharamshalaById(routeId))
+if (serverDh?.value) {
+  dharamshala.value = serverDh.value as any
+  currentImageIndex.value = 0
+} else if (dharamshalaStore.dharamshalas.length > 0) {
+  const found = dharamshalaStore.getDharamshalaById(routeId)
+  if (found) {
+    dharamshala.value = found
+    currentImageIndex.value = 0
+  } else {
+    error.value = `Dharamshala with ID "${routeId}" not found`
+  }
+} else {
+  error.value = `Dharamshala with ID "${routeId}" not found`
+}
+
+// Client navigation handler
 const loadData = async (idParam?: string) => {
   try {
     loading.value = true
     error.value = null
     const id = (idParam ?? route.params.id) as string
 
-    // Fetch data if not in store
-    if (dharamshalaStore.dharamshalas.length === 0) {
-      await dharamshalaStore.fetchDharamshalas()
+    const local = dharamshalaStore.getDharamshalaById(id)
+    if (local) {
+      dharamshala.value = local
+      currentImageIndex.value = 0
+      return
     }
 
+    await dharamshalaStore.fetchDharamshalaById(id)
     const found = dharamshalaStore.getDharamshalaById(id)
     if (found) {
       dharamshala.value = found

@@ -1,8 +1,8 @@
 <template>
-  <!-- Show bottom nav on all sizes (removed md:hidden) so it's visible during development/testing -->
-  <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
+  <!-- Mobile bottom nav: hide on desktop (md and above) -->
+  <nav class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 md:hidden">
     <div
-      class="inline-flex items-center justify-center gap-2 px-4 py-2 pb-4 bg-white/85 backdrop-blur-md border border-gray-200 rounded-full shadow-lg safe-area-bottom"
+      class="inline-flex items-center justify-center gap-2 p-2 bg-white/85 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg"
       role="navigation"
       aria-label="Bottom navigation"
     >

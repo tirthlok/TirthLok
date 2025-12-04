@@ -3,7 +3,7 @@
     <!-- Header with Icon -->
     <div class="flex items-center gap-3 mb-8">
       <Icon name="Home" :size="32" class="text-blue-600" />
-      <h2 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Facilities & Amenities</h2>
+      <h2 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Facilities & Amenities</h2>
     </div>
 
     <!-- Filter Tabs with Modern Styling -->
@@ -39,7 +39,7 @@
     <!-- Facilities Grid -->
     <div v-if="filteredItems.length === 0" class="text-center py-8 md:py-12 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
       <Icon name="Home" :size="64" class="text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-600 font-semibold text-lg">No facilities found for this category</p>
+      <p class="text-gray-600 font-semibold text-sm">No facilities found for this category</p>
       <p class="text-gray-500 text-sm mt-2">Try selecting a different filter</p>
     </div>
 
@@ -74,7 +74,7 @@
         <!-- Facility Info -->
         <div class="p-5">
           <!-- Title -->
-          <h3 class="font-bold text-xl text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+          <h3 class="font-bold text-sm text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
             {{ facility.name }}
           </h3>
 

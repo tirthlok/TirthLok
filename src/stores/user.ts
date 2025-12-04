@@ -43,9 +43,16 @@ export const useUserStore = defineStore('user', {
 
     async loadFavorites() {
       try {
-        const { data } = await useFetch(`/api/favorites?userId=${this.userId}`)
+        const { data } = await useFetch<string[]>(`/api/favorites?userId=${this.userId}`)
         if (data.value && this.user) {
-          this.user.favorites = data.value.favorites || []
+          // API returns either an array of favorite IDs or an object containing `favorites`.
+          if (Array.isArray(data.value)) {
+            this.user.favorites = data.value
+          } else if ((data.value as any).favorites) {
+            this.user.favorites = (data.value as any).favorites || []
+          } else {
+            this.user.favorites = []
+          }
         }
       } catch (error) {
         console.error('Failed to load favorites:', error)
