@@ -210,6 +210,24 @@
           </div>
         </div>
 
+        <!-- Available Rooms Section -->
+        <div v-if="dharamshala?.rooms && dharamshala.rooms.length > 0" class="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-2xl border-2 border-amber-200">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Icon name="Home" :size="28" class="text-amber-600" />
+            Available Rooms
+          </h2>
+          <p class="text-gray-600 mb-6">Book your accommodation with our Airbnb-like room booking system</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <RoomCard
+              v-for="room in dharamshala.rooms"
+              :key="room.id"
+              :room="room"
+              :dharamshala-id="dharamshala.id"
+              @select-room="openBookingModal"
+            />
+          </div>
+        </div>
+
         <!-- Location Map Section -->
         <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -240,15 +258,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Room Booking Modal -->
+    <RoomBookingModal
+      :is-open="isBookingModalOpen"
+      :room="selectedRoom || undefined"
+      :dharamshala-id="dharamshala?.id || ''"
+      @close="closeBookingModal"
+      @booking-confirmed="handleBookingConfirmed"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Dharamshala } from '~/types/models'
+import type { Dharamshala, Room, Booking } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import Icon from '~/components/common/Icon.vue'
+import RoomCard from '~/components/tirth/RoomCard.vue'
+import RoomBookingModal from '~/components/tirth/RoomBookingModal.vue'
 
 definePageMeta({
   layout: 'default',
@@ -261,6 +290,8 @@ const currentImageIndex = ref(0)
 const dharamshala = ref<Dharamshala | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+const isBookingModalOpen = ref(false)
+const selectedRoom = ref<Room | null>(null)
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
@@ -279,6 +310,21 @@ const previousImage = () => {
   if (dharamshala.value?.images && dharamshala.value.images.length > 0) {
     currentImageIndex.value = (currentImageIndex.value - 1 + dharamshala.value.images.length) % dharamshala.value.images.length
   }
+}
+
+const openBookingModal = (room: Room) => {
+  selectedRoom.value = room
+  isBookingModalOpen.value = true
+}
+
+const closeBookingModal = () => {
+  isBookingModalOpen.value = false
+  selectedRoom.value = null
+}
+
+const handleBookingConfirmed = (booking: Booking) => {
+  console.log('Booking confirmed:', booking)
+  // Handle booking confirmation - server stores it, no client-side storage
 }
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
