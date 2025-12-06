@@ -1,16 +1,6 @@
 <template>
   <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/dharamshala"
-          class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold transition-all"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Dharamshala List</span>
-        </NuxtLink>
-      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
@@ -40,7 +30,7 @@
         <div class="flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
-          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+          <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ dharamshala.name }}</span>
         </div>

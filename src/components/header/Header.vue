@@ -7,10 +7,9 @@
         : (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm shadow-sm' : 'bg-white/95 backdrop-blur-sm shadow-sm')
     ]"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6">
       <div 
-        class="flex justify-between gap-4 transition-all duration-300 items-start"
-        :class="isScrolled ? 'py-2' : 'py-4'"
+        class="flex py-4 sm:items-center sm:justify-around md:justify-between gap-4 md:items-start transition-all duration-300"
       >
         
         <!-- Left: Logo -->
@@ -19,11 +18,11 @@
           class="flex items-center gap-2 flex-shrink-0 group transition-all duration-300"
           :class="isScrolled ? 'pt-2' : 'pt-1'"
         >
-          <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300">
+          <div class="w-10 h-10 overflow-hidden transition-all duration-300">
             <img :src="tirthlokLogo" alt="TirthLok" class="w-full h-full object-cover" />
           </div>
           <span :class="[
-            'text-lg font-bold hidden md:block font-serif tracking-tight group-hover:text-primary transition-colors',
+            'text-lg font-bold hidden md:block tracking-tight group-hover:text-primary transition-colors',
             themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
           ]">TirthLok</span>
         </NuxtLink>
@@ -31,9 +30,9 @@
         <!-- Middle: Nav & Search -->
         <div class="flex-1 flex flex-col items-center max-w-3xl mx-auto w-full transition-all duration-300">
           
-          <!-- Navigation -->
+          <!-- Navigation (hidden on small screens) -->
           <nav 
-            class="flex items-center gap-2 transition-all duration-300 ease-in-out overflow-hidden"
+            class="hidden sm:flex items-center gap-2 transition-all duration-300 ease-in-out overflow-hidden"
             :class="isScrolled ? 'h-0 opacity-0 mb-0' : 'h-10 opacity-100 mb-3'"
           >
             <NuxtLink 
@@ -50,13 +49,9 @@
               }"
             >
               <Icon 
-                :name="link.icon" 
+                :name="link.icon as any" 
                 :size="18"
-                :class="{
-                  'text-red-500': !isActive(link.path) && link.color === 'red',
-                  'text-blue-500': !isActive(link.path) && link.color === 'blue',
-                  'text-green-500': !isActive(link.path) && link.color === 'green',
-                }"
+                :class="`${!isActive(link.path) && link.color === 'red' ? 'text-red-500' : ''} ${!isActive(link.path) && link.color === 'blue' ? 'text-blue-500' : ''} ${!isActive(link.path) && link.color === 'green' ? 'text-green-500' : ''}`"
               />
               {{ link.name }}
             </NuxtLink>
@@ -70,7 +65,7 @@
                   type="text"
                   :placeholder="searchPlaceholder"
                   :class="[
-                    'w-full border-2 rounded-full py-2.5 pl-11 pr-12 text-sm transition-all duration-300 outline-none shadow-sm hover:shadow-md focus:shadow-lg truncate',
+                    'w-full border-2 rounded-full py-3 pl-11 pr-12 text-sm transition-all duration-300 outline-none shadow-sm hover:shadow-md focus:shadow-lg truncate',
                     themeStore?.isDarkMode 
                       ? getSearchBorderColorDark()
                       : 'bg-gray-100 focus:bg-white placeholder-gray-500 text-gray-900 border-transparent focus:border-primary/30 focus:ring-4 focus:ring-primary/10'
@@ -79,10 +74,7 @@
                   @blur="handleBlur"
                   @input="handleSearch"
                 />
-                <Icon name="Search" :size="18" :class="[
-                  'absolute left-4 group-focus-within:text-primary transition-colors',
-                  themeStore?.isDarkMode ? 'text-gray-500 group-focus-within:text-primary' : 'text-gray-400 group-focus-within:text-primary'
-                ]" />
+                <Icon name="Search" :size="18" class="absolute left-4 group-focus-within:text-primary transition-colors text-gray-500 group-focus-within:text-primary dark:text-gray-400" />
                 
                 <!-- Filter Button inside Search -->
                 <button 
@@ -145,11 +137,7 @@
                 <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                   SS
                 </div>
-                <Icon name="ChevronDown" :size="14" :class="[
-                  'transition-transform duration-200',
-                  profileOpen ? 'rotate-180' : '',
-                  themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                ]" />
+                <Icon name="ChevronDown" :size="14" :class="`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''} ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
               </button>
 
               <!-- Profile Dropdown Menu -->
@@ -329,10 +317,7 @@
                   <option value="Karnataka">Karnataka</option>
                   <option value="Maharashtra">Maharashtra</option>
                 </select>
-                <Icon name="ChevronDown" :size="16" :class="[
-                  'absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none',
-                  themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                ]" />
+                <Icon name="ChevronDown" :size="16" :class="`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
               </div>
             </div>
 
@@ -406,7 +391,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '~/components/common/Icon.vue'
 import SearchSuggestions from '~/components/header/SearchSuggestions.vue'
@@ -414,7 +399,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
-import tirthlokLogo from '~/assets/images/logo-tirthlok.jpeg'
+import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
 const tithStore = useTirthStore()
 const dStore = useDharamshalaStore()
@@ -430,6 +415,7 @@ const profileOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
 const isScrolled = ref(false)
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Filter state
 const selectedState = ref('')
@@ -437,9 +423,9 @@ const selectedSect = ref('')
 const selectedFacilities = ref<string[]>([])
 
 const navLinks = [
-  { name: 'Tirth', path: '/tirth', emoji: '🏛️', icon: 'Building2', color: 'red' },
-  { name: 'Dharamshala', path: '/dharamshala', emoji: '🏨', icon: 'Building', color: 'blue' },
-  { name: 'Bhojanshala', path: '/bhojanshala', emoji: '🍽️', icon: 'UtensilsCrossed', color: 'green' },
+  { name: 'Tirth', path: '/tirth', icon: 'Building2', color: 'red' },
+  { name: 'Dharamshala', path: '/dharamshala', icon: 'Building', color: 'blue' },
+  { name: 'Bhojanshala', path: '/bhojanshala', icon: 'UtensilsCrossed', color: 'green' },
 ]
 
 const facilitiesList = [
@@ -514,7 +500,6 @@ const resetFilters = () => {
 const signOut = () => {
   mobileMenuOpen.value = false
   profileOpen.value = false
-  console.log('User signed out')
   navigateTo('/')
 }
 
@@ -526,7 +511,11 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
+  // Debounce scroll handler to reduce flickering
+  if (scrollTimeout) clearTimeout(scrollTimeout)
+  scrollTimeout = setTimeout(() => {
+    isScrolled.value = window.scrollY > 20
+  }, 16) // ~60fps debounce
 }
 
 const getSearchBorderColorDark = () => {
@@ -540,13 +529,20 @@ const getSearchBorderColorDark = () => {
   return 'bg-gray-800 focus:bg-gray-700 placeholder-gray-500 text-white border-red-500 focus:border-red-400 focus:ring-4 focus:ring-red-500/20'
 }
 
+// Watch route changes and reset scroll state
+watch(() => route.path, () => {
+  isScrolled.value = false
+  if (scrollTimeout) clearTimeout(scrollTimeout)
+})
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('scroll', handleScroll)
+  if (scrollTimeout) clearTimeout(scrollTimeout)
 })
 </script>

@@ -6,6 +6,11 @@
     ]">
       <div class="max-w-7xl mx-auto">
       <!-- Header -->
+       <div class="flex items-center gap-2 text-sm text-gray-500">
+          <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
+          <Icon name="ChevronRight" :size="14" />
+          <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
+       </div>
       <div class="mb-8">
         <h1 :class="[
           'text-3xl sm:text-4xl md:text-5xl font-bold mb-2',
