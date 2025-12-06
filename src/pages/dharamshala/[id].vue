@@ -211,9 +211,9 @@
         </div>
 
         <!-- Available Rooms Section -->
-        <div v-if="dharamshala?.rooms && dharamshala.rooms.length > 0" class="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-2xl border-2 border-amber-200">
+        <div v-if="dharamshala?.rooms && dharamshala.rooms.length > 0" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Icon name="Home" :size="28" class="text-amber-600" />
+            <Icon name="Home" :size="28" class="text-blue-600" />
             Available Rooms
           </h2>
           <p class="text-gray-600 mb-6">Book your accommodation with our Airbnb-like room booking system</p>

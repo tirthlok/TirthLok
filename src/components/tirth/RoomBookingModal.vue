@@ -1,45 +1,48 @@
 <template>
   <Teleport to="body">
     <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <!-- Header -->
-        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-6 flex justify-between items-center">
-          <h2 class="text-2xl font-bold text-white">Book Room {{ room?.roomNumber }}</h2>
-          <button @click="closeDialog" class="text-white hover:text-gray-200 transition">
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-8 flex justify-between items-center rounded-t-2xl shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="w-1 h-8 bg-white rounded-full opacity-75" />
+            <h2 class="text-2xl font-bold text-white">Book Room {{ room?.roomNumber }}</h2>
+          </div>
+          <button @click="closeDialog" class="text-white hover:text-blue-100 transition transform hover:scale-110">
             <Icon name="X" :size="28" />
           </button>
         </div>
 
         <!-- Content -->
-        <div class="p-6 space-y-6">
+        <div class="p-8 space-y-6">
           <!-- Room Info -->
-          <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+          <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-2xl border-2 border-blue-200">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <p class="text-xs text-gray-600 uppercase font-bold">Type</p>
-                <p class="text-lg font-bold text-blue-600 capitalize">{{ room?.type }}</p>
+              <div class="bg-white p-4 rounded-xl border border-blue-100 hover:shadow-lg transition-all">
+                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Type</p>
+                <p class="text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent capitalize">{{ room?.type }}</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-600 uppercase font-bold">Price/Night</p>
+              <div class="bg-white p-4 rounded-xl border border-green-100 hover:shadow-lg transition-all">
+                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Price/Night</p>
                 <p class="text-lg font-bold text-green-600">₹{{ room?.price }}</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-600 uppercase font-bold">Capacity</p>
+              <div class="bg-white p-4 rounded-xl border border-blue-100 hover:shadow-lg transition-all">
+                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Capacity</p>
                 <p class="text-lg font-bold text-blue-600">{{ room?.capacity }}</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-600 uppercase font-bold">Bed Type</p>
-                <p class="text-sm font-bold text-gray-700">{{ room?.bedType }}</p>
+              <div class="bg-white p-4 rounded-xl border border-cyan-100 hover:shadow-lg transition-all">
+                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Bed Type</p>
+                <p class="text-sm font-bold text-cyan-600">{{ room?.bedType }}</p>
               </div>
             </div>
           </div>
 
           <!-- Booking Form -->
-          <form @submit.prevent="submitBooking" class="space-y-4">
+          <form @submit.prevent="submitBooking" class="space-y-5">
             <!-- Guest Name -->
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <Icon name="User" :size="16" class="inline mr-2" />
+              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Icon name="User" :size="18" class="text-blue-600" />
                 Full Name *
               </label>
               <input
@@ -47,14 +50,14 @@
                 type="text"
                 placeholder="Enter your full name"
                 required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
               />
             </div>
 
             <!-- Email -->
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <Icon name="Mail" :size="16" class="inline mr-2" />
+              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Icon name="Mail" :size="18" class="text-blue-600" />
                 Email Address *
               </label>
               <input
@@ -62,14 +65,14 @@
                 type="email"
                 placeholder="your.email@example.com"
                 required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
               />
             </div>
 
             <!-- Phone -->
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <Icon name="Phone" :size="16" class="inline mr-2" />
+              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Icon name="Phone" :size="18" class="text-blue-600" />
                 Phone Number *
               </label>
               <input
@@ -77,15 +80,15 @@
                 type="tel"
                 placeholder="+91-XXXXXXXXXX"
                 required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
               />
             </div>
 
             <!-- Check-in & Check-out -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                  <Icon name="Calendar" :size="16" class="inline mr-2" />
+                <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Icon name="Calendar" :size="18" class="text-blue-600" />
                   Check-in Date *
                 </label>
                 <input
@@ -93,12 +96,12 @@
                   type="date"
                   required
                   :min="today"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                  class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
                 />
               </div>
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                  <Icon name="Calendar" :size="16" class="inline mr-2" />
+                <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Icon name="Calendar" :size="18" class="text-blue-600" />
                   Check-out Date *
                 </label>
                 <input
@@ -106,22 +109,22 @@
                   type="date"
                   required
                   :min="checkOutMinDate"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                  class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
                 />
               </div>
             </div>
 
             <!-- Number of Guests -->
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <Icon name="Users" :size="16" class="inline mr-2" />
+              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Icon name="Users" :size="18" class="text-blue-600" />
                 Number of Guests *
               </label>
               <select
                 v-model.number="formData.numberOfGuests"
                 required
                 :max="room?.maxGuests"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition"
+                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
               >
                 <option v-for="n in room?.maxGuests" :key="n" :value="n">
                   {{ n }} Guest{{ n > 1 ? 's' : '' }}
@@ -131,43 +134,43 @@
 
             <!-- Special Requests -->
             <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">
-                <Icon name="MessageSquare" :size="16" class="inline mr-2" />
+              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Icon name="MessageSquare" :size="18" class="text-blue-600" />
                 Special Requests (Optional)
               </label>
               <textarea
                 v-model="formData.notes"
                 placeholder="Any special requests or notes..."
                 rows="3"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none transition resize-none"
+                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition resize-none"
               />
             </div>
 
             <!-- Price Calculation -->
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border-2 border-green-200">
-              <div class="space-y-2">
-                <div class="flex justify-between">
-                  <span class="text-gray-700">Price per night:</span>
-                  <span class="font-bold text-gray-900">₹{{ room?.price }}</span>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl border-2 border-green-200">
+              <div class="space-y-3">
+                <div class="flex justify-between items-center pb-2">
+                  <span class="text-gray-700 font-semibold">Price per night:</span>
+                  <span class="font-bold text-gray-900 text-lg">₹{{ room?.price }}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-700">Number of nights:</span>
-                  <span class="font-bold text-gray-900">{{ nights }}</span>
+                <div class="flex justify-between items-center pb-2 border-b-2 border-green-200">
+                  <span class="text-gray-700 font-semibold">Number of nights:</span>
+                  <span class="font-bold text-gray-900 text-lg">{{ nights }}</span>
                 </div>
-                <div class="border-t-2 border-green-200 pt-2 flex justify-between items-center">
+                <div class="flex justify-between items-center pt-2">
                   <span class="text-lg font-bold text-gray-900">Total Amount:</span>
-                  <span class="text-2xl font-bold text-green-600">₹{{ totalPrice }}</span>
+                  <span class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">₹{{ totalPrice }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Terms -->
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <label class="flex items-start gap-3">
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+              <label class="flex items-start gap-3 cursor-pointer">
                 <input
                   v-model="agreedToTerms"
                   type="checkbox"
-                  class="mt-1 w-4 h-4 accent-blue-600 cursor-pointer"
+                  class="mt-1 w-5 h-5 accent-blue-600 cursor-pointer rounded"
                 />
                 <span class="text-sm text-gray-700">
                   I agree to the dharamshala's
@@ -177,7 +180,7 @@
             </div>
 
             <!-- Error Message -->
-            <div v-if="errorMessage" class="bg-red-50 p-4 rounded-lg border border-red-200">
+            <div v-if="errorMessage" class="bg-red-50 p-4 rounded-xl border-2 border-red-200">
               <p class="text-red-700 font-semibold flex items-center gap-2">
                 <Icon name="AlertCircle" :size="18" />
                 {{ errorMessage }}
@@ -185,20 +188,20 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex gap-3 pt-4">
+            <div class="flex gap-3 pt-6 border-t-2 border-blue-200">
               <button
                 type="button"
                 @click="closeDialog"
-                class="flex-1 py-3 px-4 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300 transition"
+                class="flex-1 py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition transform hover:scale-105 duration-300"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 :disabled="!agreedToTerms || isSubmitting"
-                class="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition transform hover:scale-105 duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                <Icon v-if="!isSubmitting" name="CheckCircle" :size="18" class="inline mr-2" />
+                <Icon v-if="!isSubmitting" name="CheckCircle" :size="18" />
                 <span v-if="isSubmitting">Booking...</span>
                 <span v-else>Confirm Booking</span>
               </button>
