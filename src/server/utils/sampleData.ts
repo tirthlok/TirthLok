@@ -350,6 +350,78 @@ export const sampleDharamshalas = [
       'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1611142351537-a3c87d3364e9?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop'
+    ],
+    rooms: [
+      {
+        id: 'shanti-001',
+        roomNumber: '101',
+        type: 'dormitory',
+        capacity: 4,
+        price: 200,
+        currency: 'INR',
+        amenities: ['Shared Bathroom', 'WiFi', 'Locker'],
+        description: '4-bed dormitory room with shared amenities',
+        available: true,
+        maxGuests: 4,
+        bedType: '4 Single Beds',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'shanti-002',
+        roomNumber: '102',
+        type: 'double',
+        capacity: 2,
+        price: 350,
+        currency: 'INR',
+        amenities: ['Private Bathroom', 'WiFi', 'Fan', 'Prayer Mat'],
+        description: 'Comfortable double room with private bathroom',
+        available: true,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1611142351537-a3c87d3364e9?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'shanti-003',
+        roomNumber: '103',
+        type: 'single',
+        capacity: 1,
+        price: 250,
+        currency: 'INR',
+        amenities: ['Private Bathroom', 'WiFi', 'Fan'],
+        description: 'Budget-friendly single room',
+        available: true,
+        maxGuests: 1,
+        bedType: '1 Single Bed',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'shanti-004',
+        roomNumber: '201',
+        type: 'double',
+        capacity: 2,
+        price: 400,
+        currency: 'INR',
+        amenities: ['Private Bathroom', 'WiFi', 'AC', 'Prayer Mat', 'TV'],
+        description: 'AC double room with premium amenities',
+        available: true,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'shanti-005',
+        roomNumber: '202',
+        type: 'suite',
+        capacity: 3,
+        price: 500,
+        currency: 'INR',
+        amenities: ['Private Bathroom', 'WiFi', 'AC', 'Prayer Room', 'Living Area', 'TV'],
+        description: 'Spacious suite with living area and prayer space',
+        available: false,
+        maxGuests: 3,
+        bedType: '1 Double + 1 Single Bed',
+        image: 'https://images.unsplash.com/photo-1611142351537-a3c87d3364e9?w=600&h=400&fit=crop'
+      }
     ]
   },
   {
@@ -377,6 +449,78 @@ export const sampleDharamshalas = [
     images: [
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1540932239986-310128078ceb?w=600&h=400&fit=crop'
+    ],
+    rooms: [
+      {
+        id: 'divya-001',
+        roomNumber: '101',
+        type: 'double',
+        capacity: 2,
+        price: 600,
+        currency: 'INR',
+        amenities: ['AC', 'Private Bathroom', 'WiFi', 'TV', 'Prayer Mat'],
+        description: 'AC double room with modern amenities',
+        available: true,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'divya-002',
+        roomNumber: '102',
+        type: 'double',
+        capacity: 2,
+        price: 600,
+        currency: 'INR',
+        amenities: ['AC', 'Private Bathroom', 'WiFi', 'TV', 'Prayer Mat'],
+        description: 'AC double room with modern amenities',
+        available: true,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1540932239986-310128078ceb?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'divya-003',
+        roomNumber: '103',
+        type: 'suite',
+        capacity: 3,
+        price: 850,
+        currency: 'INR',
+        amenities: ['AC', 'Private Bathroom', 'WiFi', 'TV', 'Prayer Room', 'Living Area', 'Conference Facility'],
+        description: 'Luxury suite with conference facilities',
+        available: true,
+        maxGuests: 3,
+        bedType: '1 Double + 1 Single Bed',
+        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'divya-004',
+        roomNumber: '201',
+        type: 'single',
+        capacity: 1,
+        price: 500,
+        currency: 'INR',
+        amenities: ['AC', 'Private Bathroom', 'WiFi', 'Prayer Mat'],
+        description: 'Single AC room with premium finish',
+        available: true,
+        maxGuests: 1,
+        bedType: '1 Single Bed',
+        image: 'https://images.unsplash.com/photo-1540932239986-310128078ceb?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'divya-005',
+        roomNumber: '202',
+        type: 'double',
+        capacity: 2,
+        price: 750,
+        currency: 'INR',
+        amenities: ['AC', 'Private Bathroom', 'WiFi', 'TV', 'Prayer Mat', 'Balcony'],
+        description: 'Premium double room with balcony view',
+        available: false,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop'
+      }
     ]
   },
   {
@@ -403,6 +547,64 @@ export const sampleDharamshalas = [
     },
     images: [
       'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+    ],
+    rooms: [
+      {
+        id: 'jain-001',
+        roomNumber: '101',
+        type: 'dormitory',
+        capacity: 6,
+        price: 150,
+        currency: 'INR',
+        amenities: ['Shared Bathroom', 'Prayer Room Access', 'Locker'],
+        description: '6-bed dormitory with basic amenities',
+        available: true,
+        maxGuests: 6,
+        bedType: '6 Single Beds',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'jain-002',
+        roomNumber: '102',
+        type: 'single',
+        capacity: 1,
+        price: 200,
+        currency: 'INR',
+        amenities: ['Shared Bathroom', 'Prayer Mat', 'Fan'],
+        description: 'Simple single room for pilgrims',
+        available: true,
+        maxGuests: 1,
+        bedType: '1 Single Bed',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'jain-003',
+        roomNumber: '103',
+        type: 'double',
+        capacity: 2,
+        price: 300,
+        currency: 'INR',
+        amenities: ['Shared Bathroom', 'Prayer Mat', 'Fan', 'WiFi'],
+        description: 'Affordable double room with basic facilities',
+        available: true,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      },
+      {
+        id: 'jain-004',
+        roomNumber: '201',
+        type: 'double',
+        capacity: 2,
+        price: 280,
+        currency: 'INR',
+        amenities: ['Shared Bathroom', 'Prayer Mat', 'Fan'],
+        description: 'Budget double room',
+        available: false,
+        maxGuests: 2,
+        bedType: '1 Double Bed',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+      }
     ]
   }
 ]

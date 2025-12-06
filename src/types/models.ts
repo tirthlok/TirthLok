@@ -85,6 +85,37 @@ export interface AdminUser extends User {
   permissions: string[]
 }
 
+export interface Room {
+  id: string
+  roomNumber: string
+  type: 'single' | 'double' | 'dormitory' | 'suite'
+  capacity: number
+  price: number
+  currency?: string
+  amenities: string[]
+  image?: string
+  description?: string
+  available: boolean
+  maxGuests: number
+  bedType: string
+}
+
+export interface Booking {
+  id: string
+  roomId: string
+  dharamshalaId: string
+  guestName: string
+  guestEmail: string
+  guestPhone: string
+  checkInDate: string
+  checkOutDate: string
+  numberOfGuests: number
+  totalPrice: number
+  status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled'
+  createdAt: string
+  notes?: string
+}
+
 export interface Dharamshala {
   id: string
   name: string
@@ -100,6 +131,7 @@ export interface Dharamshala {
   images: string[]
   operatingHours?: string
   rules?: string[]
+  rooms?: Room[]
 }
 
 export interface Bhojanshala {

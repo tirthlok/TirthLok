@@ -1,16 +1,6 @@
 <template>
   <div id="top" class="min-h-screen bg-gradient-to-b from-red-50 via-white to-blue-50 py-4 sm:py-8 md:py-12">
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <!-- Back Button -->
-      <div class="mb-6 sm:mb-8">
-        <NuxtLink
-          to="/tirth"
-          class="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-bold transition-all"
-        >
-          <Icon name="ArrowLeft" :size="22" />
-          <span class="text-base sm:text-lg">Back to Tirth List</span>
-        </NuxtLink>
-      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
