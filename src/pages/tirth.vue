@@ -112,12 +112,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Tirth } from '~/types/models'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
-import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
+import { BaseCard, Icon } from '~/components/shared'
 
 definePageMeta({
   layout: 'default'
@@ -132,12 +132,6 @@ const favoritesStore = useFavoritesStore()
 const loading = computed(() => tirthStore.loading)
 const error = computed(() => tirthStore.error)
 const filteredTirths = computed(() => tirthStore.filteredTirths)
-
-// Search & Filter State
-type SearchResult = { id: string; name: string; subtitle: string }
-const searchQuery = ref('')
-const searchLoading = ref(false)
-const searchResults = ref<SearchResult[]>([])
 
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
@@ -165,42 +159,6 @@ const displayedTirths = computed(() => {
 
   return all
 })
-
-// Handle search
-const handleSearch = (query: string) => {
-  if (!query.trim()) {
-    searchResults.value = []
-    return
-  }
-
-  searchLoading.value = true
-  try {
-    const term = query.toLowerCase()
-    const results = (filteredTirths.value || [])
-      .filter(
-        (t) =>
-          t.name.toLowerCase().includes(term) ||
-          t.location.city.toLowerCase().includes(term) ||
-          t.location.state.toLowerCase().includes(term)
-      )
-      .slice(0, 5)
-      .map((t) => ({
-        id: t.id,
-        name: t.name,
-        subtitle: `${t.location.city}, ${t.location.state}`,
-      }))
-
-    searchResults.value = results
-  } finally {
-    searchLoading.value = false
-  }
-}
-
-// Handle search result selection
-const handleSelectResult = (result: any) => {
-  tirthStore.setSelectedTirth(tirthStore.getTirthById(result.id) || null)
-  navigateTo(`/tirth/${result.id}`)
-}
 
 // Server-side data fetching (runs during SSR) and store hydration
 const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))

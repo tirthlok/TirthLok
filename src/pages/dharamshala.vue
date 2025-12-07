@@ -109,12 +109,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import type { Dharamshala } from '~/types/models'
-import { BaseCard, SearchBox, TagButton, Icon } from '~/components/shared'
+import { BaseCard, Icon } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
 
 definePageMeta({
@@ -145,12 +145,6 @@ const loading = computed(() => dharamshalaStore.loading)
 const error = computed(() => dharamshalaStore.error)
 const filteredDharamshalas = computed(() => dharamshalaStore.filteredDharamshalas)
 
-// Search & Filter State
-type SearchResult = { id: string; name: string; subtitle: string }
-const searchQuery = ref('')
-const searchLoading = ref(false)
-const searchResults = ref<SearchResult[]>([])
-
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
@@ -176,44 +170,4 @@ const displayedDharamshalas = computed(() => {
 
   return all
 })
-
-// Handle search
-const handleSearch = (query: string) => {
-  if (!query.trim()) {
-    searchResults.value = []
-    return
-  }
-
-  searchLoading.value = true
-  try {
-    const term = query.toLowerCase()
-    const results = (filteredDharamshalas.value || [])
-      .filter(
-        (d: CardItem) =>
-          d.name.toLowerCase().includes(term) ||
-          d.location.city.toLowerCase().includes(term) ||
-          d.location.state.toLowerCase().includes(term) ||
-          ((d.amenities as string[]) && (d.amenities as string[]).some((a: string) => a.toLowerCase().includes(term)))
-      )
-      .slice(0, 5)
-      .map((d: CardItem) => ({
-        id: d.id,
-        name: d.name,
-        subtitle: `${d.location.city}, ${d.location.state}`,
-      }))
-
-    searchResults.value = results
-  } finally {
-    searchLoading.value = false
-  }
-}
-
-// Handle search result selection
-const handleSelectResult = (result: any) => {
-  const selected = dharamshalaStore.getDharamshalaById(result.id)
-  dharamshalaStore.setSelectedDharmadhala(selected || null)
-  navigateTo(`/dharamshala/${result.id}`)
-}
-
-// Data is fetched and stores hydrated on the server via useAsyncData
 </script>
