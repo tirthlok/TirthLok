@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 py-2 sm:py-6 md:py-8">
-    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Back Button -->
       <NuxtLink 
         to="/" 

@@ -1,9 +1,9 @@
 <template>
   <div class="bg-background min-h-screen font-sans">
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
-    <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6">
+    <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6 max-w-[1920px] mx-auto">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
-      <div class="max-w-7xl mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
+      <div class="max-w-[1920px] mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
         <div 
           class="absolute inset-0 md:scale-110 transition-transform duration-700 group-hover:scale-105"
@@ -37,8 +37,8 @@
     </div>
 
     <!-- Tirth Cards Horizontal Scroll -->
-    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
-      <div class="max-w-7xl mx-auto relative z-10">
+    <div v-if="!loading && filteredTirths.length > 0" class="py-8 md:py-12 bg-background">
+      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
           <div class="flex-1">
             <!-- <div class="inline-block mb-3 px-3 py-1 bg-accent/10 rounded-full">

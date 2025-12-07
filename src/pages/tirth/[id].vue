@@ -1,6 +1,6 @@
 <template>
   <div id="top" class="min-h-screen bg-gradient-to-b from-red-50 via-white to-blue-50 py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">

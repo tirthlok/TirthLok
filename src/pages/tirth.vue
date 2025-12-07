@@ -1,10 +1,10 @@
 <template>
     <router-view v-if="hasId" />
     <div v-else :class="[
-      'min-h-screen py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8',
+      'min-h-screen py-4 sm:py-8 md:py-12',
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
-      <div class="max-w-7xl mx-auto">
+      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
        <div class="flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
@@ -24,12 +24,12 @@
 
        <!-- Sticky Filter Bar -->
     <div :class="[
-      'sticky top-[57px] z-30 backdrop-blur-sm border-b mb-1 py-3 px-4 sm:px-6 lg:px-8 transition-all duration-300',
+      'sticky top-[84px] z-40 backdrop-blur-sm border-b mb-4 py-3 px-2 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8',
       themeStore?.isDarkMode 
         ? 'bg-gray-950/95 border-gray-800' 
         : 'bg-white/95 border-gray-100'
     ]">
-      <div class="max-w-7xl mx-auto">
+      <div class="max-w-[1920px] mx-auto">
         <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
           <button
             v-for="filter in filterOptions"
