@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-2xl border-2 border-amber-200">
+  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <div>
         <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
-          <Icon name="Star" :size="28" class="text-amber-500 fill-amber-500" />
+          <Icon name="Star" :size="28" class="text-blue-500 fill-blue-500" />
           Guest Reviews
         </h2>
         <p class="text-gray-600">{{ ratingCount }} {{ ratingCount === 1 ? 'guest' : 'guests' }} have rated this dharamshala</p>
@@ -12,17 +12,25 @@
 
       <!-- Overall Stats -->
       <div class="text-center">
-        <div class="text-5xl font-bold text-amber-600">{{ averageRating }}</div>
+        <div class="text-5xl font-bold text-blue-600">{{ averageRating }}</div>
         <div class="flex gap-1 justify-center mt-2">
           <Icon
             v-for="i in 5"
             :key="i"
             name="Star"
             :size="20"
-            :class="i <= Math.round(averageRating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'"
+            :class="i <= Math.round(averageRating) ? 'text-blue-500 fill-blue-500' : 'text-gray-300'"
           />
         </div>
         <p class="text-sm text-gray-600 mt-2">out of 5</p>
+        
+        <!-- Add Rating Button -->
+        <button 
+          @click="$emit('open-rating')"
+          class="mt-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 text-sm"
+        >
+          + Add Rating
+        </button>
       </div>
     </div>
 
