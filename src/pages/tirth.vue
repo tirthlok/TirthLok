@@ -117,7 +117,8 @@ import type { Tirth } from '~/types/models'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
-import { BaseCard, Icon } from '~/components/shared'
+import { BaseCard } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 
 definePageMeta({
   layout: 'default'

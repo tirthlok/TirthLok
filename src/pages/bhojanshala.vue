@@ -115,8 +115,9 @@ import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import type { Bhojanshala } from '~/types/models'
-import { BaseCard, Icon } from '~/components/shared'
+import { BaseCard } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 
 definePageMeta({
   layout: 'default'

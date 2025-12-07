@@ -129,7 +129,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Room } from '~/types/models'
-import { Icon } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 
 interface Props {
   room: Room

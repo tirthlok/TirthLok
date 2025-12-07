@@ -218,6 +218,9 @@
           </div>
         </div>
 
+        <!-- Ratings & Reviews Section -->
+        <RatingDisplay :ratings="dharamshalaRatings" />
+
         <!-- Location Map Section -->
         <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -257,17 +260,30 @@
       @close="closeBookingModal"
       @booking-confirmed="handleBookingConfirmed"
     />
+
+    <!-- Rating Modal -->
+    <RatingModal
+      :is-open="isRatingModalOpen"
+      :booking="completedBooking"
+      :dharamshala-name="dharamshala?.name"
+      @close="closeRatingModal"
+      @rating-submitted="handleRatingSubmitted"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Dharamshala, Room, Booking } from '~/types/models'
+import type { Dharamshala, Room, Booking, Rating } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useRatingStore } from '~/stores/rating'
+import { useBookingRating } from '~/composables/useBookingRating'
 import Icon from '~/components/common/Icon.vue'
 import RoomCard from '~/components/tirth/RoomCard.vue'
 import RoomBookingModal from '~/components/tirth/RoomBookingModal.vue'
+import RatingModal from '~/components/rating/RatingModal.vue'
+import RatingDisplay from '~/components/rating/RatingDisplay.vue'
 
 definePageMeta({
   layout: 'default',
@@ -275,6 +291,7 @@ definePageMeta({
 
 const route = useRoute()
 const dharamshalaStore = useDharamshalaStore()
+const ratingStore = useRatingStore()
 
 const currentImageIndex = ref(0)
 const dharamshala = ref<Dharamshala | null>(null)
@@ -282,6 +299,9 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const isBookingModalOpen = ref(false)
 const selectedRoom = ref<Room | null>(null)
+const isRatingModalOpen = ref(false)
+const completedBooking = ref<any>(null)
+const dharamshalaRatings = ref<Rating[]>([])
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
@@ -317,6 +337,97 @@ const handleBookingConfirmed = (booking: Booking) => {
   // Handle booking confirmation - server stores it, no client-side storage
 }
 
+const closeRatingModal = () => {
+  isRatingModalOpen.value = false
+  completedBooking.value = null
+}
+
+const handleRatingSubmitted = (rating: Rating) => {
+  console.log('Rating submitted:', rating)
+  dharamshalaRatings.value.push(rating)
+  closeRatingModal()
+}
+
+/**
+ * Opens rating modal for a specific booking
+ * Call this when user marks a booking as complete
+ */
+const openRatingModal = (booking: any) => {
+  completedBooking.value = booking
+  isRatingModalOpen.value = true
+}
+
+/**
+ * For developers: Complete a booking and show rating popup
+ * This can be called from developer console or admin panel
+ */
+const completeBookingManually = async (bookingId?: string) => {
+  try {
+    // Generate mock booking ID if not provided
+    const mockBookingId = bookingId && typeof bookingId === 'string' && bookingId.length > 0 
+      ? bookingId 
+      : `BOOKING-${Date.now()}-manual`
+
+    const { useRoomBookingApi } = await import('~/composables/api')
+    const { completeBooking } = useRoomBookingApi()
+    await completeBooking(mockBookingId)
+
+    // Trigger rating modal with mock booking data
+    openRatingModal({
+      id: mockBookingId,
+      dharamshalaId: dharamshala.value?.id || '',
+      guestName: 'Guest User',
+      guestEmail: 'guest@example.com',
+    })
+
+    console.log(`✅ Booking ${mockBookingId} marked as completed. Rating popup triggered.`)
+  } catch (error) {
+    console.error('❌ Error completing booking:', error)
+  }
+}
+
+/**
+ * Simulate a completed booking for testing auto-popup
+ * Creates a mock booking with check-out date in the past
+ */
+const simulateCompletedBooking = () => {
+  try {
+    const { storeCompletedBooking } = useBookingRating()
+
+    // Create mock completed booking
+    const checkOutDate = new Date()
+    checkOutDate.setDate(checkOutDate.getDate() - 1) // Yesterday
+
+    const completedBooking: any = {
+      id: `BOOKING-${Date.now()}-test`,
+      roomId: dharamshala.value?.rooms?.[0]?.id || 'test-room',
+      dharamshalaId: dharamshala.value?.id || '',
+      guestName: 'Test Guest',
+      guestEmail: 'test@example.com',
+      guestPhone: '+91-9999999999',
+      checkInDate: new Date(checkOutDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      checkOutDate: checkOutDate.toISOString().split('T')[0],
+      numberOfGuests: 1,
+      totalPrice: 500,
+      status: 'checked-out',
+      createdAt: new Date().toISOString(),
+    }
+
+    storeCompletedBooking(completedBooking)
+    console.log('✅ Simulated completed booking. Reload page to see rating popup.')
+    console.log('Booking:', completedBooking)
+  } catch (error) {
+    console.error('Error simulating booking:', error)
+  }
+}
+
+
+// Make these globally available for developers
+if (typeof window !== 'undefined') {
+  (window as any).completeBookingForRating = completeBookingManually
+  (window as any).simulateCompletedBooking = simulateCompletedBooking
+}
+
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
 const loadData = async (idParam?: string) => {
@@ -334,6 +445,31 @@ const loadData = async (idParam?: string) => {
     if (found) {
       dharamshala.value = found
       currentImageIndex.value = 0
+
+      // Load ratings for this dharamshala
+      try {
+        const { useRatingApi } = await import('~/composables/api')
+        const { fetchDharamshalaRatings } = useRatingApi()
+        const ratings = await fetchDharamshalaRatings(id)
+        dharamshalaRatings.value = ratings
+      } catch (err) {
+        console.warn('Error loading ratings:', err)
+        dharamshalaRatings.value = []
+      }
+
+      // Auto-check for completed bookings that need rating
+      try {
+        const { findBookingNeedingRating } = useBookingRating()
+        const bookingNeedingRating = await findBookingNeedingRating(id)
+        
+        if (bookingNeedingRating && !isRatingModalOpen.value) {
+          // Auto-trigger rating modal if booking needs rating
+          console.log('Auto-triggered rating popup for booking:', bookingNeedingRating.id)
+          openRatingModal(bookingNeedingRating)
+        }
+      } catch (err) {
+        console.warn('Error checking for bookings needing rating:', err)
+      }
     } else {
       error.value = `Dharamshala with ID "${id}" not found`
     }

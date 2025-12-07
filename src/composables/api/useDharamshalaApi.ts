@@ -32,7 +32,7 @@ export const useDharamshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Dharamshala[]>
 
-      return await fetchWithTimeout<Dharamshala[]>(promise, 500, [])
+      return await fetchWithTimeout<Dharamshala[]>(promise, 2000, [])
     } catch (error) {
       console.error('Error fetching dharamshalas:', error)
       return []

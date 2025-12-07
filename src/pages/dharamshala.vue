@@ -1,121 +1,130 @@
 <template>
     <router-view v-if="hasId" />
-    <div v-else :class="[
-      'min-h-screen py-4 sm:py-8 md:py-12',
-      themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
-    ]">
+    <div v-else id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
       <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2 text-sm text-gray-500">
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-gray-500 mb-8">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
-       </div>
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 :class="[
-          'text-3xl sm:text-4xl md:text-5xl font-bold mb-2',
-          themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-        ]">All Dharamshala</h1>
-        <p :class="[
-          'text-base md:text-lg',
-          themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600'
-        ]">Traditional lodging and accommodation facilities</p>
-      </div>
+       </div>
 
-     <!-- Sticky Filter Bar -->
-    <div :class="[
-      'sticky top-[84px] z-40 backdrop-blur-sm border-b mb-4 py-3 px-2 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8',
-      themeStore?.isDarkMode 
-        ? 'bg-gray-950/95 border-gray-800' 
-        : 'bg-white/95 border-gray-100'
-    ]">
-      <div class="max-w-[1920px] mx-auto">
-        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-          <button
-            v-for="filter in filterOptions"
-            :key="filter.id"
-            @click="selectedFilter = filter.id"
-            :class="[
-              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
-              selectedFilter === filter.id
-                ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                : (themeStore?.isDarkMode 
-                  ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
-            ]"
+        <!-- Header -->
+        <div class="mb-12">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            All Dharamshala
+          </h1>
+          <p class="text-lg md:text-xl text-gray-600">
+            Traditional lodging and accommodation facilities for pilgrims
+          </p>
+        </div>
+
+        <!-- Sticky Filter Bar -->
+        <div class="sticky top-[84px] z-40 backdrop-blur-md border-b mb-8 py-4 px-4 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8 bg-white/80 border-blue-100 shadow-sm">
+          <div class="max-w-[1920px] mx-auto">
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+              <button
+                v-for="filter in filterOptions"
+                :key="filter.id"
+                @click="selectedFilter = filter.id"
+                :class="[
+                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2',
+                  selectedFilter === filter.id
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-lg' 
+                    : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-md'
+                ]"
+              >
+                <Icon :name="getFilterIcon(filter.id)" :size="16" />
+                <span>{{ filter.label }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="loading" class="flex justify-center items-center py-32">
+          <div class="text-center space-y-6">
+            <div class="relative w-16 h-16 mx-auto">
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
+              <div class="absolute inset-2 bg-white rounded-full" />
+            </div>
+            <p class="text-gray-600 font-semibold text-lg">Loading dharamshala locations...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-if="error" class="flex justify-center items-center py-32">
+          <div class="text-center space-y-6 max-w-md bg-white p-8 rounded-2xl shadow-lg border-2 border-red-200">
+            <Icon name="AlertTriangle" :size="48" class="text-red-500 mx-auto" />
+            <div>
+              <p class="text-red-600 font-semibold text-lg mb-2">Error Loading Dharamshala</p>
+              <p class="text-red-500 text-sm">{{ error }}</p>
+            </div>
+            <NuxtLink to="/dharamshala" class="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition-all">
+              Try Again
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Dharamshala Cards Grid - Using BaseCard -->
+        <div v-if="!loading && displayedDharamshalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <BaseCard
+            v-for="dharamshala in displayedDharamshalas"
+            :key="dharamshala.id"
+            :item="dharamshala"
+            card-type="dharamshala"
+            :show-wishlist="true"
+            :show-details="true"
+            route-prefix="/dharamshala"
+            :tag-fields="(dharamshala.amenities as string[]) || []"
+          />
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="!loading && displayedDharamshalas.length === 0" class="flex justify-center items-center py-32">
+          <div class="text-center space-y-6 max-w-md bg-white p-8 rounded-2xl shadow-lg border-2 border-blue-100">
+            <Icon name="Home" :size="48" class="text-blue-400 mx-auto" />
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">No Dharamshala Found</h3>
+              <p class="text-gray-600">Try adjusting your search or filter criteria</p>
+            </div>
+            <button 
+              @click="selectedFilter = 'all'" 
+              class="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition-all"
+            >
+              Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Results Info -->
+        <div v-if="!loading && displayedDharamshalas.length > 0" class="mt-12 text-center">
+          <p class="text-gray-600 text-lg font-medium">
+            Showing <span class="font-bold text-blue-600">{{ displayedDharamshalas.length }}</span> of <span class="font-bold text-blue-600">{{ filteredDharamshalas.length }}</span> dharamshala locations
+          </p>
+        </div>
+
+        <!-- Back to Top Button -->
+        <div v-if="!loading && displayedDharamshalas.length > 0" class="flex justify-center pt-12 border-t border-blue-100">
+          <a
+            href="#top"
+            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-bold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
           >
-            <Icon :name="getFilterIcon(filter.id)" :size="16" />
-            <span>{{ filter.label }}</span>
-          </button>
+            <Icon name="ArrowUp" :size="20" />
+            <span>Back to Top</span>
+          </a>
         </div>
       </div>
     </div>
-
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-      </div>
-
-      <!-- Error State -->
-      <div v-if="error" :class="[
-        'mb-6 p-4 sm:p-6 border-l-4 rounded-lg',
-        themeStore?.isDarkMode 
-          ? 'bg-red-900/20 border-red-500 text-red-300' 
-          : 'bg-red-50 border-red-500 text-red-700'
-      ]">
-        <p class="text-sm md:text-base font-semibold">Error loading dharamshala</p>
-        <p :class="[
-          'text-xs md:text-sm mt-1',
-          themeStore?.isDarkMode ? 'text-red-400' : 'text-red-600'
-        ]">{{ error }}</p>
-      </div>
-
-      <!-- Dharamshala Cards Grid - Using BaseCard -->
-      <div v-if="!loading && displayedDharamshalas.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <BaseCard
-          v-for="dharamshala in displayedDharamshalas"
-          :key="dharamshala.id"
-          :item="dharamshala"
-          card-type="dharamshala"
-          :show-wishlist="true"
-          :show-details="true"
-          route-prefix="/dharamshala"
-          :tag-fields="(dharamshala.amenities as string[]) || []"
-        />
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="!loading && displayedDharamshalas.length === 0" :class="[
-        'text-center py-8 md:py-12',
-        themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <Icon name="Home" :size="48" :class="themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'" class="mx-auto mb-4" />
-        <h3 :class="[
-          'text-lg sm:text-xl md:text-2xl font-semibold mb-2',
-          themeStore?.isDarkMode ? 'text-gray-200' : 'text-gray-900'
-        ]">No Dharamshala Found</h3>
-        <p class="text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
-      </div>
-
-      <!-- Results Info -->
-      <div v-if="!loading && displayedDharamshalas.length > 0" :class="[
-        'mt-8 text-center text-sm',
-        themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        Showing {{ displayedDharamshalas.length }} of {{ filteredDharamshalas.length }} dharamshala locations
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
+  </template><script setup lang="ts">
 import { computed } from 'vue'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import type { Dharamshala } from '~/types/models'
-import { BaseCard, Icon } from '~/components/shared'
+import { BaseCard } from '~/components/shared'
 import type { CardItem } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 
 definePageMeta({
   layout: 'default'

@@ -133,6 +133,22 @@ export const useRoomBookingApi = () => {
     return Math.max(nights, 1)
   }
 
+  /**
+   * Complete a booking (mark as checked-out for rating popup)
+   * Used by developers to trigger rating popup
+   */
+  const completeBooking = async (bookingId: string): Promise<any> => {
+    try {
+      return await $fetch(`/api/bookings/${bookingId}/complete`, {
+        method: 'POST',
+        baseURL: config.public.apiBaseUrl,
+      })
+    } catch (error) {
+      console.error(`Error completing booking ${bookingId}:`, error)
+      throw error
+    }
+  }
+
   return {
     getAvailableRooms,
     checkRoomAvailability,
@@ -142,5 +158,7 @@ export const useRoomBookingApi = () => {
     getDharamshalaBookings,
     calculateBookingPrice,
     calculateNights,
+    completeBooking,
   }
 }
+

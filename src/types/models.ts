@@ -116,6 +116,22 @@ export interface Booking {
   notes?: string
 }
 
+export interface Rating {
+  id: string
+  dharamshalaId: string
+  guestName: string
+  guestEmail: string
+  bookingId: string
+  overallRating: number
+  cleanliness: number
+  comfort: number
+  hospitality: number
+  value: number
+  comment: string
+  visitDate: string
+  createdAt: string
+}
+
 export interface Dharamshala {
   id: string
   name: string

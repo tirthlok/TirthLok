@@ -216,7 +216,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Room, Booking } from '~/types/models'
-import { Icon } from '~/components/shared'
+import Icon from '~/components/common/Icon.vue'
 import { useRoomBookingApi } from '~/composables/api/useRoomBookingApi'
 
 interface Props {
