@@ -52,7 +52,6 @@ export const useFavoritesStore = defineStore('favorites', {
         this.favorites = await fetchFavorites()
       } catch (error) {
         this.error = 'Failed to fetch favorites'
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -73,7 +72,6 @@ export const useFavoritesStore = defineStore('favorites', {
         this.favorites = updatedFavorites
       } catch (error) {
         this.error = `Failed to add favorite: ${itemId}`
-        console.error(error)
         throw error
       }
     },
@@ -93,7 +91,6 @@ export const useFavoritesStore = defineStore('favorites', {
         this.favorites = updatedFavorites
       } catch (error) {
         this.error = `Failed to remove favorite: ${itemId}`
-        console.error(error)
         throw error
       }
     },
@@ -120,7 +117,6 @@ export const useFavoritesStore = defineStore('favorites', {
         this.favorites = []
       } catch (error) {
         this.error = 'Failed to clear favorites'
-        console.error(error)
         throw error
       }
     },

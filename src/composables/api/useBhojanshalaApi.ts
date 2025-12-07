@@ -32,9 +32,8 @@ export const useBhojanshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Bhojanshala[]>
 
-      return await fetchWithTimeout<Bhojanshala[]>(promise, 500, [])
+      return await fetchWithTimeout<Bhojanshala[]>(promise, 2000, [])
     } catch (error) {
-      console.error('Error fetching bhojanshalas:', error)
       return []
     }
   }
@@ -50,7 +49,6 @@ export const useBhojanshalaApi = () => {
 
       return await fetchWithTimeout<Bhojanshala>(promise, 500, {} as Bhojanshala)
     } catch (error) {
-      console.error(`Error fetching bhojanshala ${id}:`, error)
       return {} as Bhojanshala
     }
   }
@@ -66,7 +64,6 @@ export const useBhojanshalaApi = () => {
         body: data,
       })
     } catch (error) {
-      console.error('Error creating bhojanshala:', error)
       throw error
     }
   }
@@ -82,7 +79,6 @@ export const useBhojanshalaApi = () => {
         body: data,
       })
     } catch (error) {
-      console.error(`Error updating bhojanshala ${id}:`, error)
       throw error
     }
   }
@@ -97,7 +93,6 @@ export const useBhojanshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       })
     } catch (error) {
-      console.error(`Error deleting bhojanshala ${id}:`, error)
       throw error
     }
   }
@@ -112,7 +107,6 @@ export const useBhojanshalaApi = () => {
         query: { q: query },
       })
     } catch (error) {
-      console.error('Error searching bhojanshalas:', error)
       throw error
     }
   }
@@ -132,7 +126,6 @@ export const useBhojanshalaApi = () => {
         query: filters,
       })
     } catch (error) {
-      console.error('Error filtering bhojanshalas:', error)
       throw error
     }
   }

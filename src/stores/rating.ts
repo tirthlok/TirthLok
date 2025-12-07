@@ -81,7 +81,6 @@ export const useRatingStore = defineStore('rating', {
         this.ratings = response
       } catch (error) {
         this.error = 'Failed to fetch ratings'
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -100,7 +99,6 @@ export const useRatingStore = defineStore('rating', {
         this.selectedDharamshalaRatings = response
       } catch (error) {
         this.error = `Failed to fetch ratings for dharamshala ${dharamshalaId}`
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -120,7 +118,6 @@ export const useRatingStore = defineStore('rating', {
         return newRating
       } catch (error) {
         this.error = 'Failed to submit rating'
-        console.error(error)
         throw error
       } finally {
         this.loading = false
@@ -141,7 +138,6 @@ export const useRatingStore = defineStore('rating', {
         this.selectedDharamshalaRatings = this.selectedDharamshalaRatings.filter((r) => r.id !== ratingId)
       } catch (error) {
         this.error = `Failed to delete rating ${ratingId}`
-        console.error(error)
         throw error
       } finally {
         this.loading = false

@@ -34,7 +34,6 @@ export const useDharamshalaApi = () => {
 
       return await fetchWithTimeout<Dharamshala[]>(promise, 2000, [])
     } catch (error) {
-      console.error('Error fetching dharamshalas:', error)
       return []
     }
   }
@@ -51,7 +50,6 @@ export const useDharamshalaApi = () => {
       // on timeout return an empty object cast to Dharamshala to avoid hanging
       return await fetchWithTimeout<Dharamshala>(promise, 500, {} as Dharamshala)
     } catch (error) {
-      console.error(`Error fetching dharamshala ${id}:`, error)
       return {} as Dharamshala
     }
   }
@@ -67,7 +65,6 @@ export const useDharamshalaApi = () => {
         body: data,
       })
     } catch (error) {
-      console.error('Error creating dharamshala:', error)
       throw error
     }
   }
@@ -83,7 +80,6 @@ export const useDharamshalaApi = () => {
         body: data,
       })
     } catch (error) {
-      console.error(`Error updating dharamshala ${id}:`, error)
       throw error
     }
   }
@@ -98,7 +94,6 @@ export const useDharamshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       })
     } catch (error) {
-      console.error(`Error deleting dharamshala ${id}:`, error)
       throw error
     }
   }
@@ -113,7 +108,6 @@ export const useDharamshalaApi = () => {
         query: { q: query },
       })
     } catch (error) {
-      console.error('Error searching dharamshalas:', error)
       throw error
     }
   }
@@ -133,7 +127,6 @@ export const useDharamshalaApi = () => {
         query: filters,
       })
     } catch (error) {
-      console.error('Error filtering dharamshalas:', error)
       throw error
     }
   }

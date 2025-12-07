@@ -61,7 +61,6 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
         this.filteredBhojanshalas = response
       } catch (error) {
         this.error = 'Failed to fetch bhojanshala locations'
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -83,7 +82,6 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
         return response
       } catch (error) {
         this.error = `Failed to fetch bhojanshala: ${id}`
-        console.error(error)
       } finally {
         this.loading = false
       }

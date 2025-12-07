@@ -179,7 +179,6 @@ const loadData = async (idParam?: string) => {
     }
   } catch (err) {
     error.value = 'Failed to load temple data'
-    console.error('Error loading tirth:', err)
   } finally {
     loading.value = false
   }

@@ -56,7 +56,6 @@ export const useTirthStore = defineStore('tirth', {
         this.filteredTirths = response
       } catch (error) {
         this.error = 'Failed to fetch tirth locations'
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -78,7 +77,6 @@ export const useTirthStore = defineStore('tirth', {
         return response
       } catch (error) {
         this.error = `Failed to fetch tirth: ${id}`
-        console.error(error)
       } finally {
         this.loading = false
       }

@@ -333,7 +333,6 @@ const closeBookingModal = () => {
 }
 
 const handleBookingConfirmed = (booking: Booking) => {
-  console.log('Booking confirmed:', booking)
   // Handle booking confirmation - server stores it, no client-side storage
 }
 
@@ -343,7 +342,6 @@ const closeRatingModal = () => {
 }
 
 const handleRatingSubmitted = (rating: Rating) => {
-  console.log('Rating submitted:', rating)
   dharamshalaRatings.value.push(rating)
   closeRatingModal()
 }
@@ -381,7 +379,6 @@ const loadData = async (idParam?: string) => {
         const ratings = await fetchDharamshalaRatings(id)
         dharamshalaRatings.value = ratings
       } catch (err) {
-        console.warn('Error loading ratings:', err)
         dharamshalaRatings.value = []
       }
     } else {
@@ -389,7 +386,6 @@ const loadData = async (idParam?: string) => {
     }
   } catch (err) {
     error.value = 'Failed to load dharamshala data'
-    console.error('Error loading dharamshala:', err)
   } finally {
     loading.value = false
   }

@@ -61,7 +61,6 @@ export const useDharamshalaStore = defineStore('dharamshala', {
         this.filteredDharamshalas = response
       } catch (error) {
         this.error = 'Failed to fetch dharamshala locations'
-        console.error(error)
       } finally {
         this.loading = false
       }
@@ -83,7 +82,6 @@ export const useDharamshalaStore = defineStore('dharamshala', {
         return response
       } catch (error) {
         this.error = `Failed to fetch dharamshala: ${id}`
-        console.error(error)
       } finally {
         this.loading = false
       }

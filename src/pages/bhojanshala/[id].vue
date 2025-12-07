@@ -303,7 +303,6 @@ const loadData = async (idParam?: string) => {
     }
   } catch (err) {
     error.value = 'Failed to load bhojanshala data'
-    console.error('Error loading bhojanshala:', err)
   } finally {
     loading.value = false
   }

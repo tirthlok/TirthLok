@@ -318,7 +318,6 @@ const submitBooking = async () => {
     const message = `Booking confirmed! Booking ID: ${booking.id}`
     alert(message)
   } catch (error) {
-    console.error('Booking error:', error)
     errorMessage.value = 'Failed to create booking. Please try again.'
   } finally {
     isSubmitting.value = false
