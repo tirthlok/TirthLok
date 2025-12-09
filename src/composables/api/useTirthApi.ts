@@ -6,16 +6,135 @@
 import type { Tirth } from '~/types/models'
 
 export const useTirthApi = () => {
-  const config = useRuntimeConfig()
+
+  interface TirthApiResponse {
+    success: boolean
+    data: any[]
+    pagination: {
+      total: number
+      page: number
+      pages: number
+    }
+  }
 
   /**
-   * Fetch all tirth locations
+   * Transform API response to Tirth model (for list pages)
    */
-  const fetchTirths = async (): Promise<Tirth[]> => {
+  const transformTirthData = (raw: any): Tirth => ({
+    id: String(raw.tirth_id),
+    name: raw.tirth_name,
+    location: {
+      city: raw.city,
+      state: raw.state,
+      address: raw.address || '',
+      latitude: raw.latitude || 0,
+      longitude: raw.longitude || 0,
+    },
+    sect: raw.sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
+    type: raw.kshetra || 'Gyan-sthan',
+    description: raw.description || '',
+    historicalBackground: '',
+    foundingYear: 0,
+    foundingDetails: '',
+    pratisthaYear: 0,
+    acharya: '',
+    architecture: '',
+    moolnayak: [],
+    specialFacts: [],
+    poojaTimings: '',
+    darshanTimings: '',
+    festivals: raw.festivals || [],
+    images: raw.images || [],
+    rating: raw.rating || 0,
+    reviews: 0,
+    facilities: raw.facilities || [],
+  })
+
+  /**
+   * Transform detailed API response to Tirth model (for detail pages)
+   * Handles the new response format with details array
+   */
+  const transformTirthDetailData = (raw: any): Tirth => {
+    const details = raw.details && raw.details.length > 0 ? raw.details[0] : {}
+    
+    // Parse mul_nayak JSON string if it exists
+    let moolnayakArray: any[] = []
+    let acharya = ''
+    
+    if (details.mul_nayak) {
+      try {
+        const mulNayakData = typeof details.mul_nayak === 'string' 
+          ? JSON.parse(details.mul_nayak) 
+          : details.mul_nayak
+        
+        if (mulNayakData) {
+          moolnayakArray = [{
+            name: mulNayakData.name || '',
+            height: mulNayakData.height || '',
+            metal: mulNayakData.metal || '',
+            year: mulNayakData.year ? parseInt(mulNayakData.year) : undefined,
+          }]
+          acharya = mulNayakData.name || ''
+        }
+      } catch (e) {
+        // Fallback if JSON parsing fails
+        acharya = String(details.mul_nayak)
+        moolnayakArray = [{ name: acharya }]
+      }
+    }
+    
+    return {
+      id: String(raw.tirth_id),
+      name: raw.tirth_name,
+      location: {
+        city: raw.city,
+        state: raw.state,
+        address: raw.address || '',
+        latitude: raw.latitude || 0,
+        longitude: raw.longitude || 0,
+      },
+      sect: raw.sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
+      type: raw.kshetra || 'Gyan-sthan',
+      description: raw.description || '',
+      historicalBackground: details.historical_background || '',
+      foundingYear: 0,
+      foundingDetails: details.founding_details || '',
+      pratisthaYear: 0,
+      acharya: acharya,
+      architecture: details.architecture || '',
+      moolnayak: moolnayakArray,
+      specialFacts: details.special_facts ? [details.special_facts] : [],
+      poojaTimings: details.events || '',
+      darshanTimings: details.events || '',
+      festivals: details.festival ? [{ name: details.festival, date: '', month: '', description: '' }] : raw.festivals || [],
+      images: raw.images || [],
+      rating: raw.rating || 0,
+      reviews: 0,
+      facilities: raw.facilities || [],
+    }
+  }
+
+  /**
+   * Fetch all tirth locations with pagination
+   * Calls server-side endpoint which in turn calls backend
+   */
+  const fetchTirths = async (page = 1, limit = 10, filters?: { search?: string; sect?: string; type?: string }): Promise<{ tirths: Tirth[]; pagination: any }> => {
     try {
-      return await $fetch('/api/tirth', {
-        baseURL: config.public.apiBaseUrl,
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+        ...(filters?.search && { search: filters.search }),
+        ...(filters?.sect && { sect: filters.sect }),
+        ...(filters?.type && { type: filters.type }),
       })
+
+      // Call server-side endpoint (not backend directly)
+      const response = await $fetch<TirthApiResponse>(`/api/tirth?${params.toString()}`)
+
+      return {
+        tirths: (response.data || []).map(transformTirthData),
+        pagination: response.pagination,
+      }
     } catch (error) {
       console.error('Error fetching tirths:', error)
       throw error
@@ -23,73 +142,28 @@ export const useTirthApi = () => {
   }
 
   /**
-   * Fetch single tirth by ID
+   * Fetch single tirth by name with full details
+   * Calls server-side endpoint which in turn calls backend with includeDetails=true
    */
   const fetchTirthById = async (id: string): Promise<Tirth> => {
     try {
-      return await $fetch(`/api/tirth/${id}`, {
-        baseURL: config.public.apiBaseUrl,
-      })
+      // Call server-side endpoint (not backend directly)
+      // The id should be the tirth_name (e.g., "Palitana")
+      const response = await $fetch<{ success: boolean; data: any }>(`/api/tirth/${id}`)
+      return transformTirthDetailData(response.data)
     } catch (error) {
       console.error(`Error fetching tirth ${id}:`, error)
       throw error
     }
   }
 
-  /**
-   * Create new tirth
-   */
-  const createTirth = async (data: Partial<Tirth>): Promise<Tirth> => {
-    try {
-      return await $fetch('/api/tirth', {
-        method: 'POST',
-        baseURL: config.public.apiBaseUrl,
-        body: data,
-      })
-    } catch (error) {
-      console.error('Error creating tirth:', error)
-      throw error
-    }
-  }
-
-  /**
-   * Update existing tirth
-   */
-  const updateTirth = async (id: string, data: Partial<Tirth>): Promise<Tirth> => {
-    try {
-      return await $fetch(`/api/tirth/${id}`, {
-        method: 'PUT',
-        baseURL: config.public.apiBaseUrl,
-        body: data,
-      })
-    } catch (error) {
-      console.error(`Error updating tirth ${id}:`, error)
-      throw error
-    }
-  }
-
-  /**
-   * Delete tirth
-   */
-  const deleteTirth = async (id: string): Promise<void> => {
-    try {
-      await $fetch(`/api/tirth/${id}`, {
-        method: 'DELETE',
-        baseURL: config.public.apiBaseUrl,
-      })
-    } catch (error) {
-      console.error(`Error deleting tirth ${id}:`, error)
-      throw error
-    }
-  }
-
-  /**
+/**
    * Search tirths
    */
   const searchTirths = async (query: string): Promise<Tirth[]> => {
     try {
-      return await $fetch('/api/tirth/search', {
-        baseURL: config.public.apiBaseUrl,
+      return await $fetch('/api/v1/tirth/search', {
+        baseURL: 'http://localhost:5000',
         query: { q: query },
       })
     } catch (error) {
@@ -108,8 +182,8 @@ export const useTirthApi = () => {
     facilities?: string[]
   }): Promise<Tirth[]> => {
     try {
-      return await $fetch('/api/tirth/filter', {
-        baseURL: config.public.apiBaseUrl,
+      return await $fetch('/api/v1/tirth/filter', {
+        baseURL: 'http://localhost:5000',
         query: filters,
       })
     } catch (error) {
@@ -121,9 +195,6 @@ export const useTirthApi = () => {
   return {
     fetchTirths,
     fetchTirthById,
-    createTirth,
-    updateTirth,
-    deleteTirth,
     searchTirths,
     filterTirths,
   }

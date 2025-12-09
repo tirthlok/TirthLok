@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Tirth, Facility, User } from '~/types/models'
-import { sampleTirths } from '~/server/utils/sampleData'
+import type { Tirth } from '~/types/models'
 
 interface TirthState {
   tirths: Tirth[]
@@ -8,15 +7,33 @@ interface TirthState {
   filteredTirths: Tirth[]
   loading: boolean
   error: string | null
+  pagination: {
+    total: number
+    page: number
+    pages: number
+    limit: number
+  }
+  currentFilters: {
+    search?: string
+    sect?: string
+    type?: string
+  }
 }
 
 export const useTirthStore = defineStore('tirth', {
   state: (): TirthState => ({
-    tirths: sampleTirths as Tirth[],
+    tirths: [],
     selectedTirth: null,
-    filteredTirths: sampleTirths as Tirth[],
+    filteredTirths: [],
     loading: false,
     error: null,
+    pagination: {
+      total: 0,
+      page: 1,
+      pages: 1,
+      limit: 10,
+    },
+    currentFilters: {},
   }),
 
   getters: {
@@ -40,48 +57,49 @@ export const useTirthStore = defineStore('tirth', {
   },
 
   actions: {
-    async fetchTirths() {
-      // If we already have seeded data, use it and skip remote fetch
-      if (this.tirths && this.tirths.length > 0) {
-        this.filteredTirths = [...this.tirths]
-        return
-      }
-
+    async fetchTirths(page = 1, filters?: { search?: string; sect?: string; type?: string }) {
       this.loading = true
       this.error = null
+      this.currentFilters = filters || {}
+
       try {
-        const config = useRuntimeConfig()
-        const response = await $fetch<Tirth[]>(`${config.public.apiBaseUrl}/tirths`)
-        this.tirths = response
-        this.filteredTirths = response
+        const { useTirthApi } = await import('~/composables/api/useTirthApi')
+        const api = useTirthApi()
+        
+        const { tirths, pagination } = await api.fetchTirths(page, this.pagination.limit, filters)
+        
+        this.tirths = tirths
+        this.filteredTirths = tirths
+        this.pagination = {
+          total: pagination.total,
+          page: pagination.page,
+          pages: pagination.pages,
+          limit: this.pagination.limit,
+        }
       } catch (error) {
         this.error = 'Failed to fetch tirth locations'
-        console.error(error)
+        console.error('Fetch error:', error)
+        this.filteredTirths = []
       } finally {
         this.loading = false
       }
     },
 
     async fetchTirthById(id: string) {
-      // Try local store first
-      const local = this.tirths.find((t) => t.id === id)
-      if (local) {
-        this.selectedTirth = local
-        return local
-      }
-
-      this.loading = true
       try {
-        const config = useRuntimeConfig()
-        const response = await $fetch<Tirth>(`${config.public.apiBaseUrl}/tirths/${id}`)
-        this.selectedTirth = response
-        return response
+        const { useTirthApi } = await import('~/composables/api/useTirthApi')
+        const api = useTirthApi()
+        const tirth = await api.fetchTirthById(id)
+        this.selectedTirth = tirth
+        return tirth
       } catch (error) {
-        this.error = `Failed to fetch tirth: ${id}`
-        console.error(error)
-      } finally {
-        this.loading = false
+        console.error(`Error fetching tirth ${id}:`, error)
+        throw error
       }
+    },
+
+    setPage(page: number) {
+      this.fetchTirths(page, this.currentFilters)
     },
 
     filterTirths(filters: {

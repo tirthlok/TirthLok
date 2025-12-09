@@ -86,10 +86,7 @@
 
       <!-- Empty State -->
       <div v-if="!loading && displayedTirths.length === 0" class="text-center py-8 md:py-12">
-        <Icon name="MapPin" :size="48" :class="[
-          'mx-auto mb-4',
-          themeStore?.isDarkMode ? 'text-gray-600' : 'text-gray-400'
-        ]" />
+        <Icon name="MapPin" :size="48" class="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
         <h3 :class="[
           'text-lg sm:text-xl md:text-2xl font-semibold mb-2',
           themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
@@ -100,20 +97,55 @@
         ]">Try adjusting your search or filter criteria</p>
       </div>
 
+      <!-- Pagination Controls -->
+      <div v-if="!loading && displayedTirths.length > 0 && pagination.pages > 1" class="mt-8 flex items-center justify-center gap-4">
+        <button
+          @click="previousPage"
+          :disabled="pagination.page <= 1"
+          :class="[
+            'px-4 py-2 rounded-lg font-medium transition-all',
+            pagination.page <= 1
+              ? (themeStore?.isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+              : (themeStore?.isDarkMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white')
+          ]"
+        >
+          ← Previous
+        </button>
+
+        <div :class="[
+          'text-sm font-medium',
+          themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600'
+        ]">
+          Page {{ pagination.page }} of {{ pagination.pages }}
+        </div>
+
+        <button
+          @click="nextPage"
+          :disabled="pagination.page >= pagination.pages"
+          :class="[
+            'px-4 py-2 rounded-lg font-medium transition-all',
+            pagination.page >= pagination.pages
+              ? (themeStore?.isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+              : (themeStore?.isDarkMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white')
+          ]"
+        >
+          Next →
+        </button>
+      </div>
+
       <!-- Results Info -->
       <div v-if="!loading && displayedTirths.length > 0" :class="[
         'mt-8 text-center text-sm',
         themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
       ]">
-        Showing {{ displayedTirths.length }} of {{ filteredTirths.length }} tirth locations
+        Showing {{ displayedTirths.length }} of {{ pagination.total }} tirth locations
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Tirth } from '~/types/models'
+import { computed, onMounted } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
@@ -132,6 +164,7 @@ const favoritesStore = useFavoritesStore()
 const loading = computed(() => tirthStore.loading)
 const error = computed(() => tirthStore.error)
 const filteredTirths = computed(() => tirthStore.filteredTirths)
+const pagination = computed(() => tirthStore.pagination)
 
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
@@ -160,17 +193,23 @@ const displayedTirths = computed(() => {
   return all
 })
 
-// Server-side data fetching (runs during SSR) and store hydration
-const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))
-if (serverTirths?.value) {
-  tirthStore.$patch((state) => {
-    state.tirths = serverTirths.value as Tirth[]
-    state.filteredTirths = serverTirths.value as Tirth[]
-  })
+// Pagination methods
+const nextPage = () => {
+  if (pagination.value.page < pagination.value.pages) {
+    tirthStore.setPage(pagination.value.page + 1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 
-const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
-if (serverFavorites?.value) {
-  favoritesStore.setFavorites(serverFavorites.value as string[])
+const previousPage = () => {
+  if (pagination.value.page > 1) {
+    tirthStore.setPage(pagination.value.page - 1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
+
+// Load initial data
+onMounted(async () => {
+  await tirthStore.fetchTirths(1)
+})
 </script>

@@ -165,17 +165,18 @@ const loadData = async (idParam?: string) => {
     error.value = null
     const id = (idParam ?? route.params.id) as string
 
-    // Fetch data if not in store
-    if (tirthStore.tirths.length === 0) {
-      await tirthStore.fetchTirths()
-    }
-
-    const found = tirthStore.getTirthById(id)
-    if (found) {
-      tirth.value = found
+    // The id parameter is the tirth_name (e.g., "Palitana")
+    // Call the API composable to fetch from server endpoint
+    const { useTirthApi } = await import('~/composables/api/useTirthApi')
+    const api = useTirthApi()
+    
+    try {
+      const tirthData = await api.fetchTirthById(id)
+      tirth.value = tirthData
       activeTab.value = 'about'
-    } else {
-      error.value = `Temple with ID "${id}" not found`
+    } catch (err) {
+      error.value = `Temple "${id}" not found`
+      console.error('Error fetching tirth details:', err)
     }
   } catch (err) {
     error.value = 'Failed to load temple data'

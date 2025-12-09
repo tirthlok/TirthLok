@@ -11,19 +11,23 @@ export function useCard(item: CardItem) {
 
   /**
    * Navigate to detail page based on card type
-   * Routes: /tirth/:id, /dharamshala/:id, /bhojanshala/:id
+   * For tirth cards, use item.name (tirth_name) instead of item.id
+   * Routes: /tirth/{name}, /dharamshala/:id, /bhojanshala/:id
    */
   const navigateToDetail = (routePrefix: string) => {
+    // Use item.name for tirth routing, item.id for others
+    const identifier = routePrefix === '/tirth' ? item.name : item.id
+    
     // Use Nuxt's navigateTo when available to ensure full Nuxt navigation lifecycle
     try {
       // navigateTo is globally available in Nuxt pages/components
       // @ts-ignore
-      if (typeof navigateTo === 'function') return navigateTo(`${routePrefix}/${item.id}`)
+      if (typeof navigateTo === 'function') return navigateTo(`${routePrefix}/${identifier}`)
     } catch (e) {
       // fallback to router.push
     }
 
-    router.push(`${routePrefix}/${item.id}`)
+    router.push(`${routePrefix}/${identifier}`)
   }
 
   /**
