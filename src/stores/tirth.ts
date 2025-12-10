@@ -38,22 +38,29 @@ export const useTirthStore = defineStore('tirth', {
 
   getters: {
     getTirthById: (state) => (id: string) => {
+      if (!Array.isArray(state.tirths)) return undefined
       return state.tirths.find((t) => t.id === id)
     },
 
     getTirthsByState: (state) => (state_name: string) => {
+      if (!Array.isArray(state.filteredTirths)) return []
       return state.filteredTirths.filter((t) => t.location.state === state_name)
     },
 
     getTirthsBySect: (state) => (sect: string) => {
+      if (!Array.isArray(state.filteredTirths)) return []
       return state.filteredTirths.filter((t) => t.sect === sect)
     },
 
     getTirthsByType: (state) => (type: string) => {
+      if (!Array.isArray(state.filteredTirths)) return []
       return state.filteredTirths.filter((t) => t.type === type)
     },
     // Return a simple array of tirth names for suggestions
-    tirthNames: (state) => state.tirths.map((t) => t.name || ''),
+    tirthNames: (state) => {
+      if (!Array.isArray(state.tirths)) return []
+      return state.tirths.map((t) => t.name || '')
+    },
   },
 
   actions: {
@@ -109,6 +116,10 @@ export const useTirthStore = defineStore('tirth', {
       facilities?: string[]
       searchTerm?: string
     }) {
+      if (!Array.isArray(this.tirths)) {
+        this.filteredTirths = []
+        return
+      }
       let results = [...this.tirths]
 
       if (filters.searchTerm) {
@@ -116,7 +127,7 @@ export const useTirthStore = defineStore('tirth', {
         results = results.filter(
           (t) =>
             t.name.toLowerCase().includes(term) ||
-            t.description.toLowerCase().includes(term) ||
+            (t.description && t.description.toLowerCase().includes(term)) ||
             t.location.city.toLowerCase().includes(term)
         )
       }

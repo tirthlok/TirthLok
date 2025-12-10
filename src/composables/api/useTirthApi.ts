@@ -30,9 +30,9 @@ export const useTirthApi = () => {
       latitude: raw.latitude || 0,
       longitude: raw.longitude || 0,
     },
-    sect: raw.sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
-    type: raw.kshetra || 'Gyan-sthan',
-    description: raw.description || '',
+    sect: raw.tirth_sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
+    type: raw.tirth_kshetra || 'Gyan-sthan',
+    description: raw.tirth_description || '',
     historicalBackground: '',
     foundingYear: 0,
     foundingDetails: '',
@@ -93,9 +93,9 @@ export const useTirthApi = () => {
         latitude: raw.latitude || 0,
         longitude: raw.longitude || 0,
       },
-      sect: raw.sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
-      type: raw.kshetra || 'Gyan-sthan',
-      description: raw.description || '',
+      sect: raw.tirth_sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
+      type: raw.tirth_kshetra || 'Gyan-sthan',
+      description: raw.tirth_description || '',
       historicalBackground: details.historical_background || '',
       foundingYear: 0,
       foundingDetails: details.founding_details || '',
@@ -133,7 +133,7 @@ export const useTirthApi = () => {
 
       return {
         tirths: (response.data || []).map(transformTirthData),
-        pagination: response.pagination,
+        pagination: response.pagination || { total: 0, page: 1, pages: 1 },
       }
     } catch (error) {
       console.error('Error fetching tirths:', error)

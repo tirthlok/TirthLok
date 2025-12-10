@@ -18,12 +18,25 @@ export default defineEventHandler(async (event) => {
     })
 
     if (search) params.append('search', search)
-    if (sect) params.append('sect', sect)
-    if (type) params.append('type', type)
+    if (sect) params.append('tirth_sect', sect)
+    if (type) params.append('tirth_kshetra', type)
 
     // Call backend API
     const backendUrl = `http://localhost:5000/api/v1/tirth?${params.toString()}`
     const response = await $fetch(backendUrl)
+
+    // Ensure response has the expected structure
+    if (!response.data) {
+      return {
+        success: true,
+        data: Array.isArray(response) ? response : [],
+        pagination: {
+          total: response.total || 0,
+          page: parseInt(page) || 1,
+          pages: 1,
+        }
+      }
+    }
 
     return response
   } catch (error) {
