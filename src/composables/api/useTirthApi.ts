@@ -24,8 +24,8 @@ export const useTirthApi = () => {
     id: String(raw.tirth_id),
     name: raw.tirth_name,
     location: {
-      city: raw.city,
-      state: raw.state,
+      city: raw.tirth_city,
+      state: raw.tirth_state,
       address: raw.address || '',
       latitude: raw.latitude || 0,
       longitude: raw.longitude || 0,
@@ -87,8 +87,8 @@ export const useTirthApi = () => {
       id: String(raw.tirth_id),
       name: raw.tirth_name,
       location: {
-        city: raw.city,
-        state: raw.state,
+        city: raw.tirth_city,
+        state: raw.tirth_state,
         address: raw.address || '',
         latitude: raw.latitude || 0,
         longitude: raw.longitude || 0,
