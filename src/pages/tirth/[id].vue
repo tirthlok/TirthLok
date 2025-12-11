@@ -124,8 +124,7 @@
 
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
-import { onBeforeRouteUpdate } from 'vue-router'
+import { ref, computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
 import { BaseCard, HeaderWithImage } from '~/components/shared'
 import TirthAbout from '~/components/tirth/TirthAbout.vue'
@@ -138,11 +137,7 @@ definePageMeta({
 
 const route = useRoute()
 const tirthStore = useTirthStore()
-
 const activeTab = ref('about')
-const tirth = ref<Tirth | null>(null)
-const loading = ref(false)
-const error = ref<string | null>(null)
 
 const tabs = [
   { id: 'about', label: 'About' },
@@ -150,50 +145,22 @@ const tabs = [
   { id: 'festivals', label: 'Festivals & Events' },
 ]
 
+// Server-side data fetching using useAsyncData with proper error handling
+const { data: tirth, pending: loading, error: fetchError } = await useAsyncData(
+  () => `tirth-detail-${route.params.id}`,
+  () => $fetch<Tirth>(`/api/tirth/${route.params.id}`)
+)
+
+const error = computed(() => {
+  if (!fetchError.value) return null
+  return typeof fetchError.value === 'string' ? fetchError.value : fetchError.value.message || 'Failed to load temple data'
+})
+
 const relatedTirths = computed(() => {
   if (!tirth.value) return []
   return tirthStore.tirths
     .filter((t: Tirth) => t.id !== tirth.value!.id && t.sect === tirth.value!.sect)
     .slice(0, 3)
-})
-
-// Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
-
-const loadData = async (idParam?: string) => {
-  try {
-    loading.value = true
-    error.value = null
-    const id = (idParam ?? route.params.id) as string
-
-    // The id parameter is the tirth_name (e.g., "Palitana")
-    // Call the API composable to fetch from server endpoint
-    const { useTirthApi } = await import('~/composables/api/useTirthApi')
-    const api = useTirthApi()
-    
-    try {
-      const tirthData = await api.fetchTirthById(id)
-      tirth.value = tirthData
-      activeTab.value = 'about'
-    } catch (err) {
-      error.value = `Temple "${id}" not found`
-      console.error('Error fetching tirth details:', err)
-    }
-  } catch (err) {
-    error.value = 'Failed to load temple data'
-    console.error('Error loading tirth:', err)
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  loadData()
-})
-
-// React to route param updates when the same component instance is reused
-onBeforeRouteUpdate((to) => {
-  const nextId = to.params.id as string
-  loadData(nextId)
 })
 </script>
 

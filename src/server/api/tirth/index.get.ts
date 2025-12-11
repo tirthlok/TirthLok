@@ -73,9 +73,61 @@ export default defineEventHandler(async (event) => {
         throw error
       }
 
+      // Transform database rows to Tirth interface
+      const transformedData = (data || []).map((row: any) => {
+        let images = row.tirth_images || []
+        if (typeof images === 'string') {
+          try {
+            images = JSON.parse(images)
+          } catch {
+            images = [images]
+          }
+        }
+
+        return {
+          id: row.id || `tirth-${row.tirth_name}`,
+          name: row.tirth_name || '',
+          description: row.tirth_description || '',
+          historicalBackground: row.tirth_history || 'To be Updated Soon',
+          foundingYear: row.tirth_founding_year || 0,
+          foundingDetails: row.tirth_founding_details || 'To be Updated Soon',
+          pratisthaYear: row.tirth_pratistha_year || 0,
+          acharya: row.tirth_acharya || 'To be Updated Soon',
+          architecture: row.tirth_architecture || 'To be Updated Soon',
+          moolnayak: row.tirth_moolnayak || [
+            {
+              name: row.tirth_name || 'Main Idol',
+              height: 'To be Updated Soon',
+              metal: 'To be Updated Soon',
+              year: 'To be Updated Soon',
+              details: 'To be Updated Soon',
+            }
+          ],
+          specialFacts: row.tirth_special_facts ? (Array.isArray(row.tirth_special_facts) ? row.tirth_special_facts : [row.tirth_special_facts]) : [],
+          poojaTimings: row.tirth_pooja_timings || 'To be Updated Soon',
+          darshanTimings: row.tirth_darshan_timings || 'To be Updated Soon',
+          festivals: row.tirth_festivals || [],
+          location: {
+            city: row.tirth_city || '',
+            state: row.tirth_state || '',
+            latitude: row.tirth_latitude || 0,
+            longitude: row.tirth_longitude || 0,
+            address: row.tirth_address || `${row.tirth_city}, ${row.tirth_state}`,
+          },
+          images: Array.isArray(images) ? images : [images].filter(Boolean),
+          sect: row.tirth_sect as 'Shwetambar' | 'Digambar' || 'Shwetambar',
+          type: row.tirth_kshetra || 'Other',
+          facilities: row.tirth_facilities || [],
+          rating: row.tirth_rating || 0,
+          reviews: row.tirth_reviews || 0,
+          travelDuration: row.tirth_travel_duration || '',
+          rules: row.tirth_rules ? (Array.isArray(row.tirth_rules) ? row.tirth_rules : [row.tirth_rules]) : [],
+        }
+      })
+
       return {
         success: true,
-        data: data || [],
+        data: transformedData,
         pagination: {
           total: count || 0,
           page,

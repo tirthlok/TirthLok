@@ -57,7 +57,7 @@
       </div>
 
       <!-- Error State -->
-      <div v-if="error" :class="[
+      <div v-if="error && !loading" :class="[
         'mb-6 p-4 sm:p-6 border-l-4 rounded-lg',
         themeStore?.isDarkMode 
           ? 'bg-red-900/20 border-red-500 text-red-300' 
@@ -101,10 +101,10 @@
       <div v-if="!loading && displayedTirths.length > 0 && pagination.pages > 1" class="mt-8 flex items-center justify-center gap-4">
         <button
           @click="previousPage"
-          :disabled="pagination.page <= 1"
+          :disabled="currentPage <= 1"
           :class="[
             'px-4 py-2 rounded-lg font-medium transition-all',
-            pagination.page <= 1
+            currentPage <= 1
               ? (themeStore?.isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
               : (themeStore?.isDarkMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white')
           ]"
@@ -116,15 +116,15 @@
           'text-sm font-medium',
           themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600'
         ]">
-          Page {{ pagination.page }} of {{ pagination.pages }}
+          Page {{ currentPage }} of {{ pagination.pages }}
         </div>
 
         <button
           @click="nextPage"
-          :disabled="pagination.page >= pagination.pages"
+          :disabled="currentPage >= pagination.pages"
           :class="[
             'px-4 py-2 rounded-lg font-medium transition-all',
-            pagination.page >= pagination.pages
+            currentPage >= pagination.pages
               ? (themeStore?.isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
               : (themeStore?.isDarkMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white')
           ]"
@@ -145,28 +145,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useTirthStore } from '~/stores/tirth'
+import { computed, ref } from 'vue'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import { BaseCard, Icon } from '~/components/shared'
+import type { Tirth } from '~/types/models'
 
 definePageMeta({
   layout: 'default'
 })
 
-const tirthStore = useTirthStore()
 const themeStore = useThemeStore()
 const route = useRoute()
 const hasId = computed(() => !!(route && route.params && route.params.id))
 const favoritesStore = useFavoritesStore()
 
-const loading = computed(() => tirthStore.loading)
-const error = computed(() => tirthStore.error)
-const filteredTirths = computed(() => tirthStore.filteredTirths)
-const pagination = computed(() => tirthStore.pagination)
+const selectedFilter = ref<string>('all')
+const currentPage = ref(1)
 
-const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
   { id: 'wishlist', label: `Favorites (${favoritesStore.getFavoriteCount})` },
@@ -180,9 +176,30 @@ const getFilterIcon = (id: string) => {
   }
 }
 
+// Server-side data fetching using useAsyncData with proper key handling
+const { data: tirthData, pending: loading, error: fetchError } = await useAsyncData(
+  () => `tirth-list-page-${currentPage.value}`,
+  () => $fetch<{ success: boolean; data: Tirth[]; pagination: { total: number; page: number; pages: number } }>('/api/tirth', {
+    query: {
+      page: currentPage.value,
+      limit: 10
+    }
+  }),
+  {
+    watch: [currentPage],
+  }
+)
+
+const allTirths = computed(() => (tirthData.value?.data || []) as Tirth[])
+const pagination = computed(() => tirthData.value?.pagination || { total: 0, page: 1, pages: 1 })
+const error = computed(() => {
+  if (!fetchError.value) return null
+  return typeof fetchError.value === 'string' ? fetchError.value : fetchError.value.message || 'Error loading data'
+})
+
 // Display tirths based on filter
 const displayedTirths = computed(() => {
-  const all = filteredTirths.value || []
+  const all = allTirths.value || []
   
   if (selectedFilter.value === 'all') return all
   
@@ -195,21 +212,16 @@ const displayedTirths = computed(() => {
 
 // Pagination methods
 const nextPage = () => {
-  if (pagination.value.page < pagination.value.pages) {
-    tirthStore.setPage(pagination.value.page + 1)
+  if (currentPage.value < pagination.value.pages) {
+    currentPage.value++
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 const previousPage = () => {
-  if (pagination.value.page > 1) {
-    tirthStore.setPage(pagination.value.page - 1)
+  if (currentPage.value > 1) {
+    currentPage.value--
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
-
-// Load initial data
-onMounted(async () => {
-  await tirthStore.fetchTirths(1)
-})
 </script>
