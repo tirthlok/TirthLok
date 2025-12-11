@@ -161,6 +161,8 @@ export const useSupabaseTirthApi = () => {
    */
   const fetchTirths = async (page = 1, limit = 10, filters?: { search?: string; sect?: string; type?: string }): Promise<{ tirths: Tirth[]; pagination: any }> => {
     try {
+      console.log('🚀 Fetching tirths with page:', page, 'limit:', limit, 'filters:', filters)
+      
       let query = supabase
         .from('tirth')
         .select('*', { count: 'exact' })
@@ -182,16 +184,21 @@ export const useSupabaseTirthApi = () => {
       
       const { data, error, count } = await query.range(from, to)
 
+      console.log('📊 Supabase response - data count:', data?.length, 'error:', error, 'total count:', count)
+      
       if (error) {
-        console.error('Supabase error:', error)
+        console.error('❌ Supabase error:', error)
         throw error
       }
 
       const total = count || 0
       const pages = Math.ceil(total / limit)
+      
+      const transformedTirths = (data || []).map(transformTirthData)
+      console.log('✅ Transformed tirths:', transformedTirths.length)
 
       return {
-        tirths: (data || []).map(transformTirthData),
+        tirths: transformedTirths,
         pagination: {
           total,
           page,
@@ -199,7 +206,7 @@ export const useSupabaseTirthApi = () => {
         },
       }
     } catch (error) {
-      console.error('Error fetching tirths from Supabase:', error)
+      console.error('❌ Error fetching tirths from Supabase:', error)
       throw error
     }
   }

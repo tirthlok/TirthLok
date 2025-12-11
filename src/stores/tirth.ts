@@ -70,22 +70,110 @@ export const useTirthStore = defineStore('tirth', {
       this.currentFilters = filters || {}
 
       try {
-        const { useSupabaseTirthApi } = await import('~/composables/api/useSupabaseTirthApi')
-        const api = useSupabaseTirthApi()
+        console.log('📦 Store: Starting fetchTirths')
         
-        const { tirths, pagination } = await api.fetchTirths(page, this.pagination.limit, filters)
+        // Build API URL with params
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(this.pagination.limit),
+        })
+        
+        if (filters?.search) params.append('search', filters.search)
+        if (filters?.sect) params.append('sect', filters.sect)
+        if (filters?.type) params.append('type', filters.type)
+        
+        console.log('📦 Store: Calling /api/tirth with params:', params.toString())
+        const response = await $fetch(`/api/tirth?${params.toString()}`)
+        
+        console.log('📦 Store: API response:', response)
+        
+        if (!response.success || !response.data) {
+          throw new Error('Invalid API response')
+        }
+
+        const transformTirthData = (raw: any) => {
+          // Parse mul_nayak if it exists
+          let mulNayakArray: any[] = []
+          let acharya = ''
+          
+          if (raw.mul_nayak) {
+            try {
+              const mulNayakData = typeof raw.mul_nayak === 'string' 
+                ? JSON.parse(raw.mul_nayak) 
+                : raw.mul_nayak
+              
+              if (mulNayakData) {
+                if (Array.isArray(mulNayakData)) {
+                  mulNayakArray = mulNayakData.map((idol: any) => ({
+                    name: idol.name || '',
+                    height: idol.height || '',
+                    metal: idol.metal || '',
+                    year: idol.year ? parseInt(idol.year) : undefined,
+                  }))
+                } else {
+                  mulNayakArray = [{
+                    name: mulNayakData.name || '',
+                    height: mulNayakData.height || '',
+                    metal: mulNayakData.metal || '',
+                    year: mulNayakData.year ? parseInt(mulNayakData.year) : undefined,
+                  }]
+                }
+                acharya = Array.isArray(mulNayakData) ? (mulNayakData[0]?.name || '') : (mulNayakData.name || '')
+              }
+            } catch (e) {
+              console.error('Error parsing mul_nayak:', e)
+              if (raw.mul_nayak) {
+                acharya = String(raw.mul_nayak)
+                mulNayakArray = [{ name: acharya }]
+              }
+            }
+          }
+
+          return {
+            id: String(raw.tirth_id),
+            name: raw.tirth_name,
+            location: {
+              city: raw.tirth_city,
+              state: raw.tirth_state,
+              address: raw.address || '',
+              latitude: raw.latitude || 0,
+              longitude: raw.longitude || 0,
+            },
+            sect: (raw.tirth_sect && ['Digambar', 'Shwetambar'].includes(raw.tirth_sect)) ? raw.tirth_sect : 'Jain',
+            type: raw.tirth_kshetra || 'Gyan-sthan',
+            description: raw.tirth_description || '',
+            historicalBackground: raw.historical_background || raw.historicalBackground || '',
+            foundingYear: 0,
+            foundingDetails: raw.founding_details || raw.foundingDetails || '',
+            pratisthaYear: 0,
+            acharya: acharya,
+            architecture: raw.architecture || '',
+            moolnayak: mulNayakArray,
+            specialFacts: raw.special_facts ? (Array.isArray(raw.special_facts) ? raw.special_facts : [raw.special_facts]) : [],
+            poojaTimings: raw.pooja_timings || raw.poojaTimings || '',
+            darshanTimings: raw.darshan_timings || raw.darshanTimings || '',
+            festivals: raw.festivals || [],
+            images: raw.images || [],
+            rating: raw.rating || 0,
+            reviews: 0,
+            facilities: raw.facilities || [],
+          }
+        }
+        
+        const tirths = (response.data || []).map(transformTirthData)
         
         this.tirths = tirths
         this.filteredTirths = tirths
         this.pagination = {
-          total: pagination.total,
-          page: pagination.page,
-          pages: pagination.pages,
+          total: response.pagination.total,
+          page: response.pagination.page,
+          pages: response.pagination.pages,
           limit: this.pagination.limit,
         }
+        console.log('📦 Store: State updated, total tirths:', this.tirths.length)
       } catch (error) {
         this.error = 'Failed to fetch tirth locations'
-        console.error('Fetch error:', error)
+        console.error('❌ Fetch error:', error)
         this.filteredTirths = []
       } finally {
         this.loading = false

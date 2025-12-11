@@ -6,12 +6,12 @@
 import { createClient } from '@supabase/supabase-js'
 
 export const useSupabase = () => {
-  const config = useRuntimeConfig()
-  
-  const supabaseUrl = config.public.supabaseUrl
-  const supabaseKey = config.public.supabaseAnonKey
+  // Get from environment at build time, fallback to window for client-side
+  const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || (typeof window !== 'undefined' && (window as any).__NUXT__?.config?.public?.supabaseUrl)
+  const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || (typeof window !== 'undefined' && (window as any).__NUXT__?.config?.public?.supabaseAnonKey)
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error('Supabase credentials missing:', { supabaseUrl: !!supabaseUrl, supabaseKey: !!supabaseKey })
     throw new Error('Supabase URL and Anon Key are required')
   }
 
