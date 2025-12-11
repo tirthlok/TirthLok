@@ -70,8 +70,8 @@ export const useTirthStore = defineStore('tirth', {
       this.currentFilters = filters || {}
 
       try {
-        const { useTirthApi } = await import('~/composables/api/useTirthApi')
-        const api = useTirthApi()
+        const { useSupabaseTirthApi } = await import('~/composables/api/useSupabaseTirthApi')
+        const api = useSupabaseTirthApi()
         
         const { tirths, pagination } = await api.fetchTirths(page, this.pagination.limit, filters)
         
@@ -94,8 +94,8 @@ export const useTirthStore = defineStore('tirth', {
 
     async fetchTirthById(id: string) {
       try {
-        const { useTirthApi } = await import('~/composables/api/useTirthApi')
-        const api = useTirthApi()
+        const { useSupabaseTirthApi } = await import('~/composables/api/useSupabaseTirthApi')
+        const api = useSupabaseTirthApi()
         const tirth = await api.fetchTirthById(id)
         this.selectedTirth = tirth
         return tirth
