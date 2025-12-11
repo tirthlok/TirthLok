@@ -18,6 +18,9 @@ export default defineEventHandler(async (event) => {
     // The backend expects the tirth_name as the identifier
     const backendUrl = `http://localhost:5000/api/v1/tirth/${id}?includeDetails=true`
     const response = await $fetch(backendUrl)
+    
+    // Debug: Log the full response structure
+    console.log(`[Tirth Detail] Backend response for ${id}:`, JSON.stringify(response, null, 2))
 
     return response
   } catch (error: any) {

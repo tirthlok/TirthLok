@@ -20,35 +20,74 @@ export const useTirthApi = () => {
   /**
    * Transform API response to Tirth model (for list pages)
    */
-  const transformTirthData = (raw: any): Tirth => ({
-    id: String(raw.tirth_id),
-    name: raw.tirth_name,
-    location: {
-      city: raw.tirth_city,
-      state: raw.tirth_state,
-      address: raw.address || '',
-      latitude: raw.latitude || 0,
-      longitude: raw.longitude || 0,
-    },
-    sect: raw.tirth_sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
-    type: raw.tirth_kshetra || 'Gyan-sthan',
-    description: raw.tirth_description || '',
-    historicalBackground: '',
-    foundingYear: 0,
-    foundingDetails: '',
-    pratisthaYear: 0,
-    acharya: '',
-    architecture: '',
-    moolnayak: [],
-    specialFacts: [],
-    poojaTimings: '',
-    darshanTimings: '',
-    festivals: raw.festivals || [],
-    images: raw.images || [],
-    rating: raw.rating || 0,
-    reviews: 0,
-    facilities: raw.facilities || [],
-  })
+  const transformTirthData = (raw: any): Tirth => {
+    // Parse mool_nayak if it exists (from list response)
+    let moolnayakArray: any[] = []
+    let acharya = ''
+    
+    if (raw.mool_nayak) {
+      try {
+        const moolNayakData = typeof raw.mool_nayak === 'string' 
+          ? JSON.parse(raw.mool_nayak) 
+          : raw.mool_nayak
+        
+        if (moolNayakData) {
+          if (Array.isArray(moolNayakData)) {
+            moolnayakArray = moolNayakData.map((idol: any) => ({
+              name: idol.name || '',
+              height: idol.height || '',
+              metal: idol.metal || '',
+              year: idol.year ? parseInt(idol.year) : undefined,
+            }))
+          } else {
+            moolnayakArray = [{
+              name: moolNayakData.name || '',
+              height: moolNayakData.height || '',
+              metal: moolNayakData.metal || '',
+              year: moolNayakData.year ? parseInt(moolNayakData.year) : undefined,
+            }]
+          }
+          acharya = Array.isArray(moolNayakData) ? (moolNayakData[0]?.name || '') : (moolNayakData.name || '')
+        }
+      } catch (e) {
+        console.error('Error parsing mool_nayak:', e)
+        if (raw.mool_nayak) {
+          acharya = String(raw.mool_nayak)
+          moolnayakArray = [{ name: acharya }]
+        }
+      }
+    }
+
+    return {
+      id: String(raw.tirth_id),
+      name: raw.tirth_name,
+      location: {
+        city: raw.tirth_city,
+        state: raw.tirth_state,
+        address: raw.address || '',
+        latitude: raw.latitude || 0,
+        longitude: raw.longitude || 0,
+      },
+      sect: (raw.tirth_sect && ['Digambar', 'Shwetambar'].includes(raw.tirth_sect)) ? raw.tirth_sect : 'Jain',
+      type: raw.tirth_kshetra || 'Gyan-sthan',
+      description: raw.tirth_description || '',
+      historicalBackground: raw.historical_background || raw.historicalBackground || '',
+      foundingYear: 0,
+      foundingDetails: raw.founding_details || raw.foundingDetails || '',
+      pratisthaYear: 0,
+      acharya: acharya,
+      architecture: raw.architecture || '',
+      moolnayak: moolnayakArray,
+      specialFacts: raw.special_facts ? [raw.special_facts] : [],
+      poojaTimings: raw.pooja_timings || raw.poojaTimings || '',
+      darshanTimings: raw.darshan_timings || raw.darshanTimings || '',
+      festivals: raw.festivals || [],
+      images: raw.images || [],
+      rating: raw.rating || 0,
+      reviews: 0,
+      facilities: raw.facilities || [],
+    }
+  }
 
   /**
    * Transform detailed API response to Tirth model (for detail pages)
@@ -57,29 +96,43 @@ export const useTirthApi = () => {
   const transformTirthDetailData = (raw: any): Tirth => {
     const details = raw.details && raw.details.length > 0 ? raw.details[0] : {}
     
-    // Parse mul_nayak JSON string if it exists
+    // Parse mool_nayak - check multiple possible locations
     let moolnayakArray: any[] = []
     let acharya = ''
     
-    if (details.mul_nayak) {
+    // Try multiple field names and locations
+    const moolNayakSource = details.mool_nayak || details.mul_nayak || raw.mool_nayak || raw.mul_nayak
+    
+    if (moolNayakSource) {
       try {
-        const mulNayakData = typeof details.mul_nayak === 'string' 
-          ? JSON.parse(details.mul_nayak) 
-          : details.mul_nayak
+        const mulNayakData = typeof moolNayakSource === 'string' 
+          ? JSON.parse(moolNayakSource) 
+          : moolNayakSource
         
         if (mulNayakData) {
-          moolnayakArray = [{
-            name: mulNayakData.name || '',
-            height: mulNayakData.height || '',
-            metal: mulNayakData.metal || '',
-            year: mulNayakData.year ? parseInt(mulNayakData.year) : undefined,
-          }]
-          acharya = mulNayakData.name || ''
+          if (Array.isArray(mulNayakData)) {
+            moolnayakArray = mulNayakData.map((idol: any) => ({
+              name: idol.name || '',
+              height: idol.height || '',
+              metal: idol.metal || '',
+              year: idol.year ? parseInt(idol.year) : undefined,
+            }))
+          } else {
+            moolnayakArray = [{
+              name: mulNayakData.name || '',
+              height: mulNayakData.height || '',
+              metal: mulNayakData.metal || '',
+              year: mulNayakData.year ? parseInt(mulNayakData.year) : undefined,
+            }]
+          }
+          acharya = Array.isArray(mulNayakData) ? (mulNayakData[0]?.name || '') : (mulNayakData.name || '')
         }
       } catch (e) {
-        // Fallback if JSON parsing fails
-        acharya = String(details.mul_nayak)
-        moolnayakArray = [{ name: acharya }]
+        console.error('Error parsing mool_nayak:', e)
+        if (moolNayakSource) {
+          acharya = String(moolNayakSource)
+          moolnayakArray = [{ name: acharya }]
+        }
       }
     }
     
@@ -93,19 +146,19 @@ export const useTirthApi = () => {
         latitude: raw.latitude || 0,
         longitude: raw.longitude || 0,
       },
-      sect: raw.tirth_sect === 'Digambar' ? 'Digambar' : 'Shwetambar',
+      sect: (raw.tirth_sect && ['Digambar', 'Shwetambar'].includes(raw.tirth_sect)) ? raw.tirth_sect : 'Jain',
       type: raw.tirth_kshetra || 'Gyan-sthan',
       description: raw.tirth_description || '',
-      historicalBackground: details.historical_background || '',
+      historicalBackground: details.historical_background || raw.historical_background || details.historicalBackground || raw.historicalBackground || '',
       foundingYear: 0,
-      foundingDetails: details.founding_details || '',
+      foundingDetails: details.founding_details || raw.founding_details || details.foundingDetails || raw.foundingDetails || '',
       pratisthaYear: 0,
       acharya: acharya,
-      architecture: details.architecture || '',
+      architecture: details.architecture || raw.architecture || '',
       moolnayak: moolnayakArray,
-      specialFacts: details.special_facts ? [details.special_facts] : [],
-      poojaTimings: details.events || '',
-      darshanTimings: details.events || '',
+      specialFacts: details.special_facts ? [details.special_facts] : raw.special_facts ? [raw.special_facts] : [],
+      poojaTimings: details.events || details.pooja_timings || raw.pooja_timings || raw.poojaTimings || '',
+      darshanTimings: details.events || details.darshan_timings || raw.darshan_timings || raw.darshanTimings || '',
       festivals: details.festival ? [{ name: details.festival, date: '', month: '', description: '' }] : raw.festivals || [],
       images: raw.images || [],
       rating: raw.rating || 0,
