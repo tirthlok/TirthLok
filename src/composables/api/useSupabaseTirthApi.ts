@@ -4,20 +4,10 @@
  */
 
 import type { Tirth } from '~/types/models'
-import { useSupabase } from './useSupabase'
+import { useSupabase } from '../useSupabase'
 
 export const useSupabaseTirthApi = () => {
   const { supabase } = useSupabase()
-
-  interface TirthApiResponse {
-    success: boolean
-    data: any[]
-    pagination: {
-      total: number
-      page: number
-      pages: number
-    }
-  }
 
   /**
    * Transform Supabase response to Tirth model (for list pages)
