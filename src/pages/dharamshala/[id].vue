@@ -27,7 +27,7 @@
       <!-- Content -->
       <div v-else-if="dharamshala" class="space-y-8 sm:space-y-10">
               <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 text-sm text-gray-500">
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
@@ -84,23 +84,6 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-            </div>
-
-            <!-- Thumbnails -->
-            <div v-if="dharamshala.images && dharamshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
-              <button
-                v-for="(image, index) in dharamshala.images"
-                :key="index"
-                @click="currentImageIndex = index"
-                :class="[
-                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:shadow-lg transform hover:scale-105',
-                  index === currentImageIndex 
-                    ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg' 
-                    : 'border-gray-200 hover:border-blue-400'
-                ]"
-              >
-                <img :src="image" :alt="`${dharamshala.name} ${index + 1}`" class="w-full h-full object-cover" />
               </button>
             </div>
           </div>

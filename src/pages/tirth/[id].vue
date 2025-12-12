@@ -25,29 +25,76 @@
       </div>
 
       <!-- Temple Content -->
-      <div v-else-if="tirth" class="space-y-6 sm:space-y-8">
-              <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 text-sm text-gray-500">
+      <div v-else-if="tirth" class="space-y-8 sm:space-y-12">
+        <!-- Breadcrumb -->
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ tirth.name }}</span>
-        </div>
-        <!-- Header -->
-        <HeaderWithImage
-          :title="tirth.name"
-          :subtitle="`${tirth.location.city}, ${tirth.location.state}`"
-          :images="tirth.images"
-          :metadata="{
-            location: `${tirth.location.city}, ${tirth.location.state}`,
-            rating: tirth.rating ? `${tirth.rating} (${tirth.reviews || 0} reviews)` : undefined,
-            type: tirth.type,
-          }"
-          :accent-dot-color="'bg-amber-400'"
-          :show-back-button="false"
-        />
+        </div>
 
+        <!-- Header Section with Image and Info -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <!-- Image Carousel (Left) -->
+          <div class="w-full lg:w-[400px]">
+            <div class="relative group overflow-hidden rounded-2xl shadow-2xl bg-gradient-to-br from-amber-100 to-orange-100 h-96 lg:h-[500px]">
+              <ImageCarousel
+                :images="tirth.images"
+                :title="tirth.name"
+                :subtitle="`${tirth.location.city}, ${tirth.location.state}`"
+                image-height="h-full"
+                :accent-dot-color="'bg-amber-400'"
+                :show-title-overlay="false"
+                :show-dots="true"
+              />
+            </div>
+          </div>
+
+          <!-- Info Section (Right) -->
+          <div class="space-y-6">
+            <!-- Title and Basic Info -->
+            <div>
+              <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ tirth.name }}</h1>
+              <div class="flex items-center gap-2 text-gray-600">
+                <Icon name="MapPin" :size="18" class="text-red-500" />
+                <span class="font-semibold">{{ tirth.location.city }}, {{ tirth.location.state }}</span>
+              </div>
+            </div>
+
+            <!-- Rating and Type -->
+            <div class="flex items-center gap-3 flex-wrap">
+              <div v-if="tirth.rating" class="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-lg">
+                <Icon name="Star" :size="20" class="text-yellow-400 fill-yellow-400" />
+                <span class="font-bold text-gray-900">{{ tirth.rating }}</span>
+                <span class="text-gray-600 text-sm">({{ tirth.reviews || 0 }} reviews)</span>
+              </div>
+              <span v-if="tirth.sect" class="px-3 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">{{ tirth.sect }}</span>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="space-y-4">
+              <!-- Card 1: Sect -->
+              <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 p-4 rounded-lg">
+                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Sect</div>
+                <div class="text-2xl font-bold text-blue-700 mt-1">{{ tirth.sect }}</div>
+              </div>
+
+              <!-- Card 2: Type/Kshetra -->
+              <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-l-4 border-purple-600 p-4 rounded-lg">
+                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Type</div>
+                <div class="text-2xl font-bold text-purple-700 mt-1">{{ tirth.type }}</div>
+              </div>
+
+              <!-- Card 3: Rating -->
+              <div class="bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-600 p-4 rounded-lg">
+                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Rating</div>
+                <div class="text-2xl font-bold text-green-700 mt-1">{{ tirth.rating ? `${tirth.rating} / 5` : 'N/A' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Tabs Navigation -->
         <div class="border-b-2 border-gray-200 -mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto">
           <div class="flex gap-2 sm:gap-8 scroll-smooth">
@@ -126,7 +173,7 @@
 import type { Tirth } from '~/types/models'
 import { ref, computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
-import { BaseCard, HeaderWithImage } from '~/components/shared'
+import { BaseCard } from '~/components/shared'
 import TirthAbout from '~/components/tirth/TirthAbout.vue'
 import TirthFacilities from '~/components/tirth/TirthFacilities.vue'
 import TirthFestivals from '~/components/tirth/TirthFestivals.vue'
@@ -153,7 +200,7 @@ const tirthId = computed(() => {
 })
 
 // Server-side data fetching using useAsyncData with proper error handling
-const { data: tirth, pending: loading, error: fetchError, refresh } = await useAsyncData(
+const { data: tirth, pending: loading, error: fetchError } = await useAsyncData(
   () => `tirth-detail-${tirthId.value}`,
   () => {
     if (!tirthId.value) return Promise.resolve(null)

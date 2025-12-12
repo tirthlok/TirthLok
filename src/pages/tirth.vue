@@ -71,7 +71,7 @@
       </div>
 
       <!-- Tirth Cards Grid - Using BaseCard -->
-      <div v-if="!loading && displayedTirths.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-if="!loading && displayedTirths.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-max" style="grid-auto-rows: 1fr;">
         <BaseCard
           v-for="tirth in displayedTirths"
           :key="tirth.id"

@@ -4,7 +4,7 @@
       :class="[wrapperClasses, colorScheme.border, 'hover:' + colorScheme.borderHover, props.variant === 'featured' ? 'hover:scale-100' : 'hover:scale-105']"
     >
       <!-- Image Carousel Container -->
-      <div class="relative overflow-hidden rounded-t-2xl">
+      <div class="relative overflow-hidden rounded-t-2xl h-64 shrink-0">
         <ImageCarousel
           :images="item.images"
           :title="item.name"
@@ -27,27 +27,31 @@
 
       <!-- Additional Info Section (Optional) -->
       <div v-if="showDetails" :class="detailsBgClass">
-        <!-- Description -->
-        <p v-if="item.description" :class="descriptionClass">{{ item.description }}</p>
+        <div class="flex flex-col h-full">
+          <!-- Description -->
+          <p v-if="item.description" :class="descriptionClass">{{ item.description }}</p>
 
-        <!-- Additional Fields -->
-        <div v-if="displayFields.length > 0" :class="fieldsContainerClass">
-          <div v-for="field in displayFields" :key="field.key" :class="fieldItemClass">
-            <Icon v-if="field.icon" :name="(field.icon as any)" :size="16" :class="'flex-shrink-0 mt-0.5 ' + colorScheme.accentColor" />
-            <div :class="themeStore.isDarkMode ? 'flex-1' : ''">
-              <span v-if="field.label" :class="fieldLabelClass">{{ field.label }}:</span>
-              <span :class="themeStore.isDarkMode ? 'ml-1' : ''">{{ formatFieldValue(field) }}</span>
+          <!-- Additional Fields -->
+          <div v-if="displayFields.length > 0" :class="fieldsContainerClass">
+            <div v-for="field in displayFields" :key="field.key" :class="fieldItemClass">
+              <Icon v-if="field.icon" :name="(field.icon as any)" :size="16" :class="'flex-shrink-0 mt-0.5 ' + colorScheme.accentColor" />
+              <div :class="themeStore.isDarkMode ? 'flex-1' : ''">
+                <span v-if="field.label" :class="fieldLabelClass">{{ field.label }}:</span>
+                <span :class="themeStore.isDarkMode ? 'ml-1' : ''">{{ formatFieldValue(field) }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Tags/Features -->
-        <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2" :class="themeStore.isDarkMode ? 'pt-2' : ''">
-          <span
-            v-for="tag in tagFields.slice(0, maxTags)"
-            :key="tag"
-            :class="[
-              'px-3 py-1.5 rounded-full text-xs font-semibold',
+          <!-- Spacer to push tags to bottom -->
+          <div class="flex-1"></div>
+
+          <!-- Tags/Features -->
+          <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2" :class="themeStore.isDarkMode ? 'pt-2' : ''">
+            <span
+              v-for="tag in tagFields.slice(0, maxTags)"
+              :key="tag"
+              :class="[
+                'px-3 py-1.5 rounded-full text-xs font-semibold',
               themeStore.isDarkMode ? 'bg-opacity-20 backdrop-blur-sm border border-red-500/30' : '',
               colorScheme.tagBg,
               colorScheme.tagText
@@ -55,6 +59,7 @@
           >
             {{ tag }}
           </span>
+        </div>
         </div>
       </div>
     </div>
@@ -117,12 +122,12 @@ const colorScheme = computed<ColorScheme>(() => {
 const wrapperClasses = computed(() => {
   if (props.variant === 'featured') {
     return themeStore.isDarkMode
-      ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] border-0 backdrop-blur-sm'
-      : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0'
+      ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] border-0 backdrop-blur-sm h-full flex flex-col'
+      : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0 h-full flex flex-col'
   }
   return themeStore.isDarkMode
-    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50'
-    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2'
+    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50 h-full flex flex-col'
+    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2 h-full flex flex-col'
 })
 
 const imageHeightFinal = computed(() => {
@@ -139,8 +144,8 @@ const isFavorited = computed(() => {
 // Details section background
 const detailsBgClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'p-4 space-y-4 bg-gradient-to-b from-gray-800 to-gray-900'
-    : 'p-4 space-y-3'
+    ? 'p-4 space-y-4 bg-gradient-to-b from-gray-800 to-gray-900 flex-1 min-h-0'
+    : 'p-4 space-y-3 flex-1 min-h-0'
 })
 
 // Description class
