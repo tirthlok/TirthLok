@@ -8,7 +8,12 @@ import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
   try {
-    const id = getRouterParam(event, 'id')
+    let id = getRouterParam(event, 'id')
+
+    // Decode URI component to handle spaces and special characters
+    if (id) {
+      id = decodeURIComponent(id)
+    }
 
     if (!id) {
       throw createError({

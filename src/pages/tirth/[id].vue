@@ -145,10 +145,23 @@ const tabs = [
   { id: 'festivals', label: 'Festivals & Events' },
 ]
 
+// Watch route params to ensure data is fetched when params change
+const tirthId = computed(() => {
+  const id = route.params.id as string
+  // Decode URI component to handle spaces and special characters
+  return id ? decodeURIComponent(id) : ''
+})
+
 // Server-side data fetching using useAsyncData with proper error handling
-const { data: tirth, pending: loading, error: fetchError } = await useAsyncData(
-  () => `tirth-detail-${route.params.id}`,
-  () => $fetch<Tirth>(`/api/tirth/${route.params.id}`)
+const { data: tirth, pending: loading, error: fetchError, refresh } = await useAsyncData(
+  () => `tirth-detail-${tirthId.value}`,
+  () => {
+    if (!tirthId.value) return Promise.resolve(null)
+    return $fetch<Tirth>(`/api/tirth/${tirthId.value}`)
+  },
+  {
+    watch: [tirthId], // Refetch when tirthId changes
+  }
 )
 
 const error = computed(() => {

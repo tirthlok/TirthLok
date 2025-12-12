@@ -16,18 +16,11 @@ export function useCard(item: CardItem) {
    */
   const navigateToDetail = (routePrefix: string) => {
     // Use item.name for tirth routing, item.id for others
-    const identifier = routePrefix === '/tirth' ? item.name : item.id
+    const identifier = routePrefix === '/tirth' ? encodeURIComponent(item.name) : item.id
+    const targetRoute = `${routePrefix}/${identifier}`
     
-    // Use Nuxt's navigateTo when available to ensure full Nuxt navigation lifecycle
-    try {
-      // navigateTo is globally available in Nuxt pages/components
-      // @ts-ignore
-      if (typeof navigateTo === 'function') return navigateTo(`${routePrefix}/${identifier}`)
-    } catch (e) {
-      // fallback to router.push
-    }
-
-    router.push(`${routePrefix}/${identifier}`)
+    // Use router.push for reliable navigation
+    router.push(targetRoute)
   }
 
   /**
