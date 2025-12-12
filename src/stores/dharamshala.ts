@@ -91,6 +91,7 @@ export const useDharamshalaStore = defineStore('dharamshala', {
 
     filterDharamshalas(filters: {
       city?: string
+      type?: string
       capacity?: number
       amenities?: string[]
       searchTerm?: string
@@ -111,13 +112,17 @@ export const useDharamshalaStore = defineStore('dharamshala', {
         results = results.filter((d) => d.location.city === filters.city)
       }
 
+      if (filters.type) {
+        results = results.filter((d) => d.type === filters.type)
+      }
+
       if (filters.capacity && filters.capacity > 0) {
         results = results.filter((d) => d.capacity && d.capacity >= filters.capacity!)
       }
 
       if (filters.amenities && filters.amenities.length > 0) {
         results = results.filter((d) =>
-          filters.amenities!.some((amenity) =>
+          filters.amenities!.every((amenity) =>
             d.amenities?.some((a) => a.toLowerCase() === amenity.toLowerCase())
           )
         )

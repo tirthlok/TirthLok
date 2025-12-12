@@ -22,35 +22,6 @@
         ]">Explore sacred Jain pilgrimage sites</p>
       </div>
 
-       <!-- Sticky Filter Bar -->
-    <div :class="[
-      'sticky top-[84px] z-40 backdrop-blur-sm border-b mb-4 py-3 px-2 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8',
-      themeStore?.isDarkMode 
-        ? 'bg-gray-950/95 border-gray-800' 
-        : 'bg-white/95 border-gray-100'
-    ]">
-      <div class="max-w-[1920px] mx-auto">
-        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-          <button
-            v-for="filter in filterOptions"
-            :key="filter.id"
-            @click="selectedFilter = filter.id"
-            :class="[
-              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
-              selectedFilter === filter.id
-                ? 'bg-red-500 text-white border-red-500 shadow-md'
-                : (themeStore?.isDarkMode 
-                  ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
-            ]"
-          >
-            <Icon :name="getFilterIcon(filter.id)" :size="16" />
-            <span>{{ filter.label }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-20">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
@@ -145,9 +116,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useFavoritesStore } from '~/stores/favorites'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useThemeStore } from '~/stores/theme'
+import { useTirthStore } from '~/stores/tirth'
 import { BaseCard, Icon } from '~/components/shared'
 import type { Tirth } from '~/types/models'
 
@@ -156,25 +127,13 @@ definePageMeta({
 })
 
 const themeStore = useThemeStore()
+const tirthStore = useTirthStore()
 const route = useRoute()
 const hasId = computed(() => !!(route && route.params && route.params.id))
-const favoritesStore = useFavoritesStore()
 
-const selectedFilter = ref<string>('all')
 const currentPage = ref(1)
 
-const filterOptions = computed(() => [
-  { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Favorites (${favoritesStore.getFavoriteCount})` },
-])
 
-const getFilterIcon = (id: string) => {
-  switch (id) {
-    case 'all': return 'Grid3X3'
-    case 'wishlist': return 'Heart'
-    default: return 'Circle'
-  }
-}
 
 // Server-side data fetching using useAsyncData with proper key handling
 const { data: tirthData, pending: loading, error: fetchError } = await useAsyncData(
@@ -197,17 +156,37 @@ const error = computed(() => {
   return typeof fetchError.value === 'string' ? fetchError.value : fetchError.value.message || 'Error loading data'
 })
 
-// Display tirths based on filter
-const displayedTirths = computed(() => {
-  const all = allTirths.value || []
-  
-  if (selectedFilter.value === 'all') return all
-  
-  if (selectedFilter.value === 'wishlist') {
-    return all.filter((t) => favoritesStore.isFavorite(t.id))
+// Sync API data to store for filtering
+watch(allTirths, (newTirths) => {
+  if (newTirths.length > 0) {
+    tirthStore.tirths = newTirths
+    tirthStore.filteredTirths = newTirths
   }
+}, { deep: true, immediate: true })
 
-  return all
+// Initialize filter options on mount
+onMounted(async () => {
+  await tirthStore.fetchFilterOptions()
+})
+
+// Display filtered or all tirths
+const displayedTirths = computed(() => {
+  // Check if any filters are actually set (not just empty values)
+  const hasActiveFilters = tirthStore.currentFilters && (
+    (tirthStore.currentFilters.searchTerm && tirthStore.currentFilters.searchTerm.trim()) ||
+    tirthStore.currentFilters.state ||
+    tirthStore.currentFilters.sect ||
+    tirthStore.currentFilters.type ||
+    (tirthStore.currentFilters.amenities && tirthStore.currentFilters.amenities.length > 0)
+  )
+  
+  // If filters are active, show filtered results
+  if (hasActiveFilters) {
+    return tirthStore.filteredTirths.length > 0 ? tirthStore.filteredTirths : []
+  }
+  
+  // Otherwise show paginated results
+  return allTirths.value
 })
 
 // Pagination methods

@@ -57,7 +57,7 @@
             </NuxtLink>
           </nav>
 
-          <!-- Search Bar -->
+          <!-- Search Bar with Filters -->
           <div class="w-full relative group max-w-2xl pt-1">
              <div ref="searchWrapper" class="relative flex items-center w-full">
                 <input 
@@ -70,31 +70,27 @@
                       ? getSearchBorderColorDark()
                       : 'bg-gray-100 focus:bg-white placeholder-gray-500 text-gray-900 border-transparent focus:border-primary/30 focus:ring-4 focus:ring-primary/10'
                   ]"
-                  @focus="showSuggestions = true"
+                  @focus="showSearchPanel = true"
                   @blur="handleBlur"
                   @input="handleSearch"
                 />
+                <button
+                  @click="showSearchPanel = !showSearchPanel"
+                  :class="[
+                    'absolute right-4 p-1 rounded-lg transition-colors',
+                    showSearchPanel 
+                      ? 'text-primary' 
+                      : 'text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary'
+                  ]"
+                  title="Toggle filters"
+                >
+                  <Icon name="SlidersHorizontal" :size="18" />
+                </button>
                 <Icon name="Search" :size="18" class="absolute left-4 group-focus-within:text-primary transition-colors text-gray-500 group-focus-within:text-primary dark:text-gray-400" />
                 
-                <!-- Filter Button inside Search -->
-                <button 
-                  @click.stop="filterOpen = !filterOpen" 
-                  :class="[
-                    'absolute right-2 p-1.5 rounded-full transition-colors',
-                    themeStore?.isDarkMode 
-                      ? 'hover:bg-gray-700 text-gray-500 hover:text-gray-300' 
-                      : 'hover:bg-gray-100 text-gray-400 hover:text-gray-600'
-                  ]"
-                >
-                  <div :class="[
-                    'flex items-center gap-2 pl-2',
-                    themeStore?.isDarkMode ? 'border-l border-gray-700' : 'border-l border-gray-200'
-                  ]">
-                    <Icon name="Sliders" :size="16" />
-                  </div>
-                </button>
-                
+                <!-- Search Suggestions (for quick search without filters) -->
                 <SearchSuggestions
+                  v-if="!showSearchPanel"
                   :items="suggestionsSource"
                   :query="searchQuery"
                   :minChars="1"
@@ -104,6 +100,21 @@
                   :anchor="searchWrapper"
                   @select="selectSuggestion"
                   @close="showSuggestions = false"
+                />
+
+                <!-- Search Filter Panel -->
+                <SearchFilter
+                  :visible="showSearchPanel"
+                  :filters="currentFilters"
+                  :states="availableStates"
+                  :sects="availableSects"
+                  :types="availableTypes"
+                  :amenities="availableAmenities"
+                  :cities="availableCities"
+                  :cuisines="availableCuisines"
+                  :dietary-options="availableDietaryOptions"
+                  @apply="applyFilters"
+                  @close="showSearchPanel = false"
                 />
              </div>
           </div>
@@ -272,121 +283,7 @@
       </div>
     </Transition>
 
-    <!-- Filter Modal - Teleported to body -->
-    <teleport to="body">
-      <div
-        v-if="filterOpen"
-        class="fixed inset-0 bg-black/50 z-[60] transition-opacity flex items-center justify-center p-4 backdrop-blur-sm"
-        @click="filterOpen = false"
-      >
-        <div :class="[
-          'rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar filter-modal animate-fade-in-up',
-          themeStore?.isDarkMode ? 'bg-gray-800' : 'bg-white'
-        ]" @click.stop>
-          <!-- ... existing filter modal content ... -->
-          <div class="flex items-center justify-between mb-6">
-            <h2 :class="[
-              'text-xl font-bold',
-              themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-            ]">Filters</h2>
-            <button @click="filterOpen = false" :class="[
-              'p-2 rounded-full transition-colors',
-              themeStore?.isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
-            ]">
-              <Icon name="X" :size="20" :class="themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-500'" />
-            </button>
-          </div>
 
-          <div class="space-y-6">
-            <!-- State Filter -->
-            <div>
-              <label :class="[
-                'block text-sm font-semibold mb-2',
-                themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-              ]">State</label>
-              <div class="relative">
-                <select v-model="selectedState" :class="[
-                  'w-full px-4 py-3 border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none',
-                  themeStore?.isDarkMode 
-                    ? 'border-gray-700 bg-gray-700 text-white' 
-                    : 'border-gray-200 bg-gray-50 text-gray-900'
-                ]">
-                  <option value="">All States</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                </select>
-                <Icon name="ChevronDown" :size="16" :class="`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
-              </div>
-            </div>
-
-            <!-- Sect Filter -->
-            <div>
-              <label :class="[
-                'block text-sm font-semibold mb-2',
-                themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-              ]">Sect</label>
-              <div class="flex gap-2">
-                <button 
-                  v-for="sect in ['Shwetambar', 'Digambar']" 
-                  :key="sect"
-                  @click="selectedSect = selectedSect === sect ? '' : sect"
-                  class="flex-1 py-2.5 px-4 rounded-xl border text-sm font-medium transition-all"
-                  :class="selectedSect === sect ? 'border-primary bg-primary/5 text-primary' : (themeStore?.isDarkMode ? 'border-gray-700 text-gray-300 hover:border-gray-600' : 'border-gray-200 text-gray-600 hover:border-gray-300')"
-                >
-                  {{ sect }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Facilities Filter -->
-            <div>
-              <label :class="[
-                'block text-sm font-semibold mb-3',
-                themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-              ]">Facilities</label>
-              <div class="grid grid-cols-2 gap-3">
-                <label 
-                  v-for="facility in facilitiesList" 
-                  :key="facility.value"
-                  class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
-                  :class="selectedFacilities.includes(facility.value) ? 'border-primary bg-primary/5' : (themeStore?.isDarkMode ? 'border-gray-700 hover:border-gray-600' : 'border-gray-200 hover:border-gray-300')"
-                >
-                  <input 
-                    v-model="selectedFacilities"
-                    type="checkbox" 
-                    :value="facility.value"
-                    class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  >
-                  <span :class="[
-                    'text-sm',
-                    themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                  ]">{{ facility.label }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div :class="[
-            'flex gap-3 mt-8 pt-6 border-t',
-            themeStore?.isDarkMode ? 'border-gray-700' : 'border-gray-100'
-          ]">
-            <button @click="resetFilters" :class="[
-              'flex-1 px-4 py-3 border rounded-xl font-semibold transition-colors',
-              themeStore?.isDarkMode 
-                ? 'border-gray-700 text-gray-300 hover:bg-gray-700' 
-                : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-            ]">
-              Reset
-            </button>
-            <button @click="applyFilters" class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover font-semibold shadow-lg shadow-primary/30 transition-all">
-              Show Results
-            </button>
-          </div>
-        </div>
-      </div>
-    </teleport>
   </header>
 </template>
 
@@ -395,46 +292,45 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '~/components/common/Icon.vue'
 import SearchSuggestions from '~/components/header/SearchSuggestions.vue'
-import { useTirthStore } from '~/stores/tirth'
+import SearchFilter from '~/components/header/SearchFilter.vue'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
+import { useTirthStore } from '~/stores/tirth'
 import { useThemeStore } from '~/stores/theme'
 import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
-const tithStore = useTirthStore()
 const dStore = useDharamshalaStore()
 const bStore = useBhojanshalaStore()
+const tStore = useTirthStore()
 const themeStore = useThemeStore()
 const route = useRoute()
 const searchWrapper = ref<HTMLElement | null>(null)
 const profileDropdownRef = ref<HTMLElement | null>(null)
 
 const mobileMenuOpen = ref(false)
-const filterOpen = ref(false)
 const profileOpen = ref(false)
 const searchQuery = ref('')
 const showSuggestions = ref(false)
+const showSearchPanel = ref(false)
 const isScrolled = ref(false)
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
-// Filter state
-const selectedState = ref('')
-const selectedSect = ref('')
-const selectedFacilities = ref<string[]>([])
+const currentFilters = ref({
+  searchTerm: '',
+  state: '',
+  sect: '',
+  type: '',
+  city: '',
+  amenities: [],
+  cuisines: [],
+  dietaryOptions: [],
+  vegetarianOnly: false,
+})
 
 const navLinks = [
   { name: 'Tirth', path: '/tirth', icon: 'Building2', color: 'red' },
   { name: 'Dharamshala', path: '/dharamshala', icon: 'Building', color: 'blue' },
   { name: 'Bhojanshala', path: '/bhojanshala', icon: 'UtensilsCrossed', color: 'green' },
-]
-
-const facilitiesList = [
-  { label: 'Dharamshala', value: 'dharmashala' },
-  { label: 'Bhojanshala', value: 'bhojanshala' },
-  { label: 'Gaushala', value: 'gaushala' },
-  { label: 'Parking', value: 'parking' },
-  { label: 'Restroom', value: 'washroom' },
-  { label: 'Water', value: 'water' },
 ]
 
 const isActive = (path: string) => route.path.startsWith(path)
@@ -443,7 +339,7 @@ const suggestionsSource = computed(() => {
   const p = route.path || ''
   if (p.startsWith('/dharamshala')) return dStore.dharamshalaNames || []
   if (p.startsWith('/bhojanshala')) return bStore.bhojanshalaNames || []
-  return tithStore.tirthNames || []
+  return []
 })
 
 const searchPlaceholder = computed(() => {
@@ -453,18 +349,60 @@ const searchPlaceholder = computed(() => {
   return 'Search tirths...'
 })
 
-const handleSearch = () => {
-  const q = searchQuery.value || undefined
-  if (searchQuery.value && searchQuery.value.length >= 1) showSuggestions.value = true
+// Extract unique filter values from backend cache
+const availableStates = computed(() => tStore.filterOptions.states)
+
+const availableSects = computed(() => tStore.filterOptions.sects)
+
+const availableTypes = computed(() => {
   const p = route.path || ''
   if (p.startsWith('/dharamshala')) {
-    dStore.filterDharamshalas({ searchTerm: q })
-  } else if (p.startsWith('/bhojanshala')) {
-    bStore.filterBhojanshalas({ searchTerm: q })
-  } else {
-    tithStore.filterTirths({ searchTerm: q })
+    if (!Array.isArray(dStore.dharamshalas)) return []
+    return [...new Set(dStore.dharamshalas.map(d => d.type))].filter(Boolean).sort()
   }
-}
+  if (p.startsWith('/bhojanshala')) {
+    if (!Array.isArray(bStore.bhojanshalas)) return []
+    return [...new Set(bStore.bhojanshalas.map(b => b.type))].filter(Boolean).sort()
+  }
+  return tStore.filterOptions.types
+})
+
+const availableAmenities = computed(() => tStore.filterOptions.facilities)
+
+const availableCities = computed(() => {
+  const p = route.path || ''
+  if (p.startsWith('/dharamshala')) {
+    if (!Array.isArray(dStore.dharamshalas)) return []
+    return [...new Set(dStore.dharamshalas.map(d => d.location.city))].filter(Boolean).sort()
+  }
+  if (p.startsWith('/bhojanshala')) {
+    if (!Array.isArray(bStore.bhojanshalas)) return []
+    return [...new Set(bStore.bhojanshalas.map(b => b.location.city))].filter(Boolean).sort()
+  }
+  return []
+})
+
+const availableCuisines = computed(() => {
+  if (!Array.isArray(bStore.bhojanshalas)) return []
+  const cuisines = new Set<string>()
+  bStore.bhojanshalas.forEach(b => {
+    if (Array.isArray(b.cuisineTypes)) {
+      b.cuisineTypes.forEach(c => cuisines.add(c))
+    }
+  })
+  return Array.from(cuisines).sort()
+})
+
+const availableDietaryOptions = computed(() => {
+  if (!Array.isArray(bStore.bhojanshalas)) return []
+  const options = new Set<string>()
+  bStore.bhojanshalas.forEach(b => {
+    if (Array.isArray(b.dietaryOptions)) {
+      b.dietaryOptions.forEach(o => options.add(o))
+    }
+  })
+  return Array.from(options).sort()
+})
 
 const selectSuggestion = (suggestion: string) => {
   searchQuery.value = suggestion
@@ -474,27 +412,32 @@ const selectSuggestion = (suggestion: string) => {
 
 const handleBlur = () => {
   setTimeout(() => {
-    showSuggestions.value = false
+    if (!showSearchPanel.value) {
+      showSuggestions.value = false
+    }
   }, 200)
 }
 
-const applyFilters = () => {
-  tithStore.filterTirths({
-    state: selectedState.value || undefined,
-    sect: selectedSect.value || undefined,
-    facilities: selectedFacilities.value.length > 0 ? selectedFacilities.value : undefined,
-    searchTerm: searchQuery.value || undefined,
-  })
-  filterOpen.value = false
+const handleSearch = () => {
+  currentFilters.value.searchTerm = searchQuery.value
+  emitFilterChange()
 }
 
-const resetFilters = () => {
-  selectedState.value = ''
-  selectedSect.value = ''
-  selectedFacilities.value = []
-  searchQuery.value = ''
-  tithStore.filterTirths({})
-  filterOpen.value = false
+const applyFilters = (filters: Record<string, any>) => {
+  currentFilters.value = filters
+  searchQuery.value = filters.searchTerm || ''
+  emitFilterChange()
+}
+
+const emitFilterChange = () => {
+  const p = route.path || ''
+  if (p.startsWith('/tirth')) {
+    tStore.filterTirths(currentFilters.value)
+  } else if (p.startsWith('/dharamshala')) {
+    dStore.filterDharamshalas(currentFilters.value)
+  } else if (p.startsWith('/bhojanshala')) {
+    bStore.filterBhojanshalas(currentFilters.value)
+  }
 }
 
 const signOut = () => {
@@ -532,12 +475,28 @@ const getSearchBorderColorDark = () => {
 // Watch route changes and reset scroll state
 watch(() => route.path, () => {
   isScrolled.value = false
+  showSearchPanel.value = false
+  showSuggestions.value = false
+  currentFilters.value = {
+    searchTerm: '',
+    state: '',
+    sect: '',
+    type: '',
+    city: '',
+    amenities: [],
+    cuisines: [],
+    dietaryOptions: [],
+    vegetarianOnly: false,
+  }
   if (scrollTimeout) clearTimeout(scrollTimeout)
 })
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('scroll', handleScroll, { passive: true })
+  
+  // Fetch filter options from backend
+  await tStore.fetchFilterOptions()
 })
 
 onUnmounted(() => {

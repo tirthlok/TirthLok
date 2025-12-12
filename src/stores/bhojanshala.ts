@@ -91,8 +91,10 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
 
     filterBhojanshalas(filters: {
       city?: string
-      cuisine?: string[]
+      type?: string
+      cuisines?: string[]
       dietaryOptions?: string[]
+      vegetarianOnly?: boolean
       searchTerm?: string
     }) {
       let results = [...this.bhojanshalas]
@@ -111,9 +113,13 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
         results = results.filter((b) => b.location.city === filters.city)
       }
 
-      if (filters.cuisine && filters.cuisine.length > 0) {
+      if (filters.type) {
+        results = results.filter((b) => b.type === filters.type)
+      }
+
+      if (filters.cuisines && filters.cuisines.length > 0) {
         results = results.filter((b) =>
-          filters.cuisine!.some((c) =>
+          filters.cuisines!.some((c) =>
             b.cuisineTypes?.some((ct) => ct.toLowerCase() === c.toLowerCase())
           )
         )
@@ -125,6 +131,10 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
             b.dietaryOptions?.some((o) => o.toLowerCase() === option.toLowerCase())
           )
         )
+      }
+
+      if (filters.vegetarianOnly) {
+        results = results.filter((b) => b.vegetarianOnly === true)
       }
 
       this.filteredBhojanshalas = results

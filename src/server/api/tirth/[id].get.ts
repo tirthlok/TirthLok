@@ -13,6 +13,14 @@ export default defineEventHandler(async (event) => {
   try {
     let id = getRouterParam(event, 'id')
 
+    // Skip non-tirth routes
+    if (id === 'filter-options') {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Not found',
+      })
+    }
+
     // Decode URI component to handle spaces and special characters
     if (id) {
       id = decodeURIComponent(id)

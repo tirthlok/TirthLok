@@ -14,10 +14,19 @@ interface TirthState {
     limit: number
   }
   currentFilters: {
-    search?: string
+    searchTerm?: string
+    state?: string
     sect?: string
     type?: string
+    amenities?: string[]
   }
+  filterOptions: {
+    states: string[]
+    sects: string[]
+    types: string[]
+    facilities: string[]
+  }
+  filterOptionsLoading: boolean
 }
 
 export const useTirthStore = defineStore('tirth', {
@@ -34,6 +43,13 @@ export const useTirthStore = defineStore('tirth', {
       limit: 10,
     },
     currentFilters: {},
+    filterOptions: {
+      states: [],
+      sects: [],
+      types: [],
+      facilities: [],
+    },
+    filterOptionsLoading: false,
   }),
 
   getters: {
@@ -42,20 +58,6 @@ export const useTirthStore = defineStore('tirth', {
       return state.tirths.find((t) => t.id === id)
     },
 
-    getTirthsByState: (state) => (state_name: string) => {
-      if (!Array.isArray(state.filteredTirths)) return []
-      return state.filteredTirths.filter((t) => t.location.state === state_name)
-    },
-
-    getTirthsBySect: (state) => (sect: string) => {
-      if (!Array.isArray(state.filteredTirths)) return []
-      return state.filteredTirths.filter((t) => t.sect === sect)
-    },
-
-    getTirthsByType: (state) => (type: string) => {
-      if (!Array.isArray(state.filteredTirths)) return []
-      return state.filteredTirths.filter((t) => t.type === type)
-    },
     // Return a simple array of tirth names for suggestions
     tirthNames: (state) => {
       if (!Array.isArray(state.tirths)) return []
@@ -64,10 +66,9 @@ export const useTirthStore = defineStore('tirth', {
   },
 
   actions: {
-    async fetchTirths(page = 1, filters?: { search?: string; sect?: string; type?: string }) {
+    async fetchTirths(page = 1) {
       this.loading = true
       this.error = null
-      this.currentFilters = filters || {}
 
       try {
         console.log('📦 Store: Starting fetchTirths')
@@ -77,10 +78,6 @@ export const useTirthStore = defineStore('tirth', {
           page: String(page),
           limit: String(this.pagination.limit),
         })
-        
-        if (filters?.search) params.append('search', filters.search)
-        if (filters?.sect) params.append('sect', filters.sect)
-        if (filters?.type) params.append('type', filters.type)
         
         console.log('📦 Store: Calling /api/tirth with params:', params.toString())
         const response = await $fetch(`/api/tirth?${params.toString()}`)
@@ -194,55 +191,89 @@ export const useTirthStore = defineStore('tirth', {
     },
 
     setPage(page: number) {
-      this.fetchTirths(page, this.currentFilters)
+      this.fetchTirths(page)
+    },
+
+    async fetchFilterOptions() {
+      if (this.filterOptions.states.length > 0) {
+        return // Already loaded
+      }
+
+      this.filterOptionsLoading = true
+      try {
+        const response = await $fetch<any>('/api/tirth/filter-options')
+        if (response?.success) {
+          this.filterOptions = response.data
+          console.log('📦 Store: Filter options loaded:', this.filterOptions)
+        }
+      } catch (error) {
+        console.error('❌ Error fetching filter options:', error)
+      } finally {
+        this.filterOptionsLoading = false
+      }
     },
 
     filterTirths(filters: {
+      searchTerm?: string
       state?: string
       sect?: string
       type?: string
-      facilities?: string[]
-      searchTerm?: string
+      amenities?: string[]
     }) {
-      if (!Array.isArray(this.tirths)) {
+      this.currentFilters = filters
+      
+      // Make sure we have data to filter
+      if (!Array.isArray(this.tirths) || this.tirths.length === 0) {
+        console.warn('❌ No tirth data available for filtering')
         this.filteredTirths = []
         return
       }
-      let results = [...this.tirths]
 
-      if (filters.searchTerm) {
+      let results = [...this.tirths]
+      console.log(`🔍 Starting filter with ${results.length} tirths`)
+
+      // Search by name, description, or city
+      if (filters.searchTerm && filters.searchTerm.trim()) {
         const term = filters.searchTerm.toLowerCase()
-        results = results.filter(
-          (t) =>
-            t.name.toLowerCase().includes(term) ||
-            (t.description && t.description.toLowerCase().includes(term)) ||
-            t.location.city.toLowerCase().includes(term)
+        results = results.filter((t) =>
+          t.name.toLowerCase().includes(term) ||
+          (t.description && t.description.toLowerCase().includes(term)) ||
+          t.location.city.toLowerCase().includes(term)
         )
+        console.log(`📍 After search filter: ${results.length} results`)
       }
 
+      // Filter by state
       if (filters.state) {
         results = results.filter((t) => t.location.state === filters.state)
+        console.log(`📍 After state filter (${filters.state}): ${results.length} results`)
       }
 
+      // Filter by sect
       if (filters.sect) {
         results = results.filter((t) => t.sect === filters.sect)
+        console.log(`📍 After sect filter (${filters.sect}): ${results.length} results`)
       }
 
+      // Filter by type
       if (filters.type) {
         results = results.filter((t) => t.type === filters.type)
+        console.log(`📍 After type filter (${filters.type}): ${results.length} results`)
       }
 
-      if (filters.facilities && filters.facilities.length > 0) {
+      // Filter by amenities/facilities (all selected amenities must be present)
+      if (filters.amenities && filters.amenities.length > 0) {
         results = results.filter((t) => {
-          // Check if tirth has facilities property and if any selected facility type is included
           if (!t.facilities || t.facilities.length === 0) return false
-          return filters.facilities!.some((facilityType) =>
-            t.facilities!.some((f) => f.type === facilityType)
+          return filters.amenities!.every((amenity) =>
+            t.facilities!.some((f) => f.type === amenity)
           )
         })
+        console.log(`📍 After amenities filter: ${results.length} results`)
       }
 
       this.filteredTirths = results
+      console.log(`✅ Filter complete: ${this.filteredTirths.length} filtered results`)
     },
 
     setSelectedTirth(tirth: Tirth | null) {
