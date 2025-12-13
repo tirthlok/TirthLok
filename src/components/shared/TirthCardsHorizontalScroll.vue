@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <!-- Header - Shows when data exists or loading -->
-    <div v-if="tirths.length > 0 || loading" class="flex items-center justify-between mb-4 px-4 md:px-6">
+    <div v-if="tirths.length > 0 || loading" class="flex items-center justify-between my-4">
       <div>
         <h2 v-if="title" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-900">
           {{ title }}
@@ -41,7 +41,7 @@
     <!-- Cards Grid -->
     <div
       v-else
-      class="py-4 px-4 md:px-6 overflow-x-auto scrollbar-hide"
+      class="py-4 overflow-x-auto scrollbar-hide"
       :style="{ scrollBehavior: 'smooth' }"
     >
       <div class="flex gap-4 pb-4 min-w-min">
@@ -58,6 +58,7 @@
               :show-wishlist="showWishlist"
               :image-height="imageHeight"
               :variant="variant"
+              :tag-fields="variant === 'featured' ? [] :[tirth.sect, tirth.type]"
             />
             <!-- Badge -->
             <div v-if="showBadges && tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
@@ -108,7 +109,7 @@ const props = withDefaults(defineProps<Props>(), {
   showBadges: true,
   showWishlist: true,
   variant: 'default',
-  imageHeight: '200px',
+  imageHeight: 'h-72',
   viewAllLink: '',
   tagFields: () => ['tirth_tags'],
   emptyStateMessage: 'No tirths found matching your filters.',

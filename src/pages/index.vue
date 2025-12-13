@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-background min-h-screen font-sans">
+  <div class="bg-background min-h-screen font-sans md:mx-auto md:px-4 lg:px-8 md:py-6 max-w-[1920px]">
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
-    <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6 max-w-[1920px] mx-auto">
+    <div class="flex flex-1 justify-center mx-auto">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
       <div class="max-w-[1920px] mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
@@ -38,6 +38,7 @@
 
     <!-- Featured Tirths Horizontal Scroll -->
     <TirthCardsHorizontalScroll
+      class="mt-12"
       :tirths="filteredTirths"
       :loading="loading"
       title="Featured Tirths"

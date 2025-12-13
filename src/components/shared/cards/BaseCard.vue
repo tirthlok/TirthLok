@@ -1,10 +1,11 @@
 <template>
-  <div class="relative group" @click="handleCardClick($event, routePrefix)">
+  <div class="relative group w-72">
     <div
       :class="[wrapperClasses, colorScheme.border, 'hover:' + colorScheme.borderHover, props.variant === 'featured' ? 'hover:scale-100' : 'hover:scale-105']"
+      @click="handleCardClick($event, routePrefix)"
     >
       <!-- Image Carousel Container -->
-      <div :class="['relative overflow-hidden shrink-0', props.variant === 'featured' ? 'rounded-2xl h-full' : 'rounded-t-2xl h-64']">
+      <div :class="['relative overflow-hidden shrink-0', props.variant === 'featured' ? 'rounded-2xl h-full' : 'rounded-t-2xl h-52']">
         <ImageCarousel
           :images="item.images"
           :title="item.name"
@@ -46,7 +47,7 @@
           <div class="flex-1"></div>
 
           <!-- Tags/Features -->
-          <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2" :class="themeStore.isDarkMode ? 'pt-2' : ''">
+          <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2 mt-3" :class="themeStore.isDarkMode ? 'pt-2' : ''">
             <span
               v-for="tag in tagFields.slice(0, maxTags)"
               :key="tag"
@@ -126,8 +127,8 @@ const wrapperClasses = computed(() => {
       : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0 h-full flex flex-col'
   }
   return themeStore.isDarkMode
-    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50 h-full flex flex-col'
-    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2 h-full flex flex-col'
+    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50 h-[365px] flex flex-col'
+    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2 h-[365px] flex flex-col'
 })
 
 const imageHeightFinal = computed(() => {
@@ -151,8 +152,8 @@ const detailsBgClass = computed(() => {
 // Description class
 const descriptionClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'text-sm text-gray-300 line-clamp-2 leading-relaxed'
-    : 'text-sm text-gray-600 line-clamp-2'
+    ? 'text-sm text-gray-300 leading-relaxed flex-grow overflow-hidden'
+    : 'text-sm text-gray-600 flex-grow overflow-hidden'
 })
 
 // Fields container class
