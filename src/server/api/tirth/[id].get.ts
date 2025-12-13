@@ -195,6 +195,8 @@ export default defineEventHandler(async (event) => {
       reviews: data.tirth_reviews || data.reviews || 0,
       travelDuration: data.tirth_travel_duration || data.travel_duration || '',
       rules: data.tirth_rules || data.rules ? (Array.isArray(data.tirth_rules || data.rules) ? (data.tirth_rules || data.rules) : [data.tirth_rules || data.rules]) : [],
+      tirth_grouping: data.tirth_grouping || undefined,
+      tirth_tags: data.tirth_tags ? (Array.isArray(data.tirth_tags) ? data.tirth_tags : [data.tirth_tags]) : undefined,
     }
 
     console.log(`📦 Transformed tirth data for ${id}:`, { name: transformedTirth.name, hasImages: transformedTirth.images.length > 0, hasDetails: !!detailedData })

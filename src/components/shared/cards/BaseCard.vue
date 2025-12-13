@@ -4,12 +4,12 @@
       :class="[wrapperClasses, colorScheme.border, 'hover:' + colorScheme.borderHover, props.variant === 'featured' ? 'hover:scale-100' : 'hover:scale-105']"
     >
       <!-- Image Carousel Container -->
-      <div class="relative overflow-hidden rounded-t-2xl h-64 shrink-0">
+      <div :class="['relative overflow-hidden shrink-0', props.variant === 'featured' ? 'rounded-2xl h-full' : 'rounded-t-2xl h-64']">
         <ImageCarousel
           :images="item.images"
           :title="item.name"
           :subtitle="item.location.city + ', ' + item.location.state"
-          :image-height="imageHeightFinal"
+          :image-height="props.variant === 'featured' ? 'h-full' : imageHeightFinal"
           :accent-dot-color="colorScheme.dot"
           :show-title-overlay="showTitleOverlay"
           :title-overlay-class="props.variant === 'featured' ? 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent' : 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/60 via-transparent to-transparent'"

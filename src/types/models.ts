@@ -58,6 +58,8 @@ export interface Tirth {
   reviews: number
   travelDuration?: string
   rules?: string[]
+  tirth_grouping?: string // e.g., 'popular', 'newly-added', 'most-visited', 'hidden-gems'
+  tirth_tags?: string[] // e.g., ['featured', 'seasonal', 'architectural-wonder']
 }
 
 export interface Festival {

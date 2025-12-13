@@ -43,8 +43,10 @@ export default defineEventHandler(async (event) => {
     // Try querying the table directly
     // With service role key, we should have access to tirthlok schema
     try {
-      const limit = parseInt(String(query.limit) || '10')
-      const page = parseInt(String(query.page) || '1')
+      const limitStr = String(query.limit || '10').trim()
+      const pageStr = String(query.page || '1').trim()
+      const limit = parseInt(limitStr, 10) || 10
+      const page = parseInt(pageStr, 10) || 1
       const offset = (page - 1) * limit
       
       // Try querying - service role key gives us access to all schemas
@@ -73,8 +75,8 @@ export default defineEventHandler(async (event) => {
         throw error
       }
 
-      // Transform database rows to Tirth interface
-      const transformedData = (data || []).map((row: any) => {
+      // If we have data, transform it; otherwise fallback to sample data for development
+      let transformedData = (data || []).map((row: any) => {
         let images = row.tirth_images || []
         if (typeof images === 'string') {
           try {
@@ -122,16 +124,23 @@ export default defineEventHandler(async (event) => {
           reviews: row.tirth_reviews || 0,
           travelDuration: row.tirth_travel_duration || '',
           rules: row.tirth_rules ? (Array.isArray(row.tirth_rules) ? row.tirth_rules : [row.tirth_rules]) : [],
+          tirth_grouping: row.tirth_grouping || undefined,
+          tirth_tags: row.tirth_tags ? (Array.isArray(row.tirth_tags) ? row.tirth_tags : [row.tirth_tags]) : undefined,
         }
       })
 
+      // Fallback to sample data for development if database returns empty
+      if (transformedData.length === 0) {
+        const { sampleTirths } = await import('~/server/utils/sampleData')
+        transformedData = sampleTirths.slice(offset, offset + limit) as any[]
+      }
       return {
         success: true,
         data: transformedData,
         pagination: {
-          total: count || 0,
+          total: count || transformedData.length,
           page,
-          pages: Math.ceil((count || 0) / limit),
+          pages: Math.ceil((count || transformedData.length) / limit),
         },
       }
     } catch (innerError: any) {

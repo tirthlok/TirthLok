@@ -59,6 +59,23 @@ const parseMoolNayak = (source: any) => {
 }
 
 /**
+ * Parse tags from tirth_tags field
+ */
+const parseTags = (source: any) => {
+  if (!source) return undefined
+  if (Array.isArray(source)) return source
+  if (typeof source === 'string') {
+    try {
+      const parsed = JSON.parse(source)
+      return Array.isArray(parsed) ? parsed : [source]
+    } catch {
+      return source.split(',').map((tag: string) => tag.trim())
+    }
+  }
+  return undefined
+}
+
+/**
  * Transform raw API response to Tirth model
  * Handles both list and detail responses with fallback field names
  */
@@ -97,6 +114,8 @@ const transformTirthData = (raw: any, details?: any): Tirth => {
     rating: raw.rating || 0,
     reviews: 0,
     facilities: raw.facilities || [],
+    tirth_grouping: raw.tirth_grouping || undefined,
+    tirth_tags: parseTags(raw.tirth_tags),
   }
 }
 
