@@ -36,6 +36,10 @@ export { default as ActionButton } from './buttons/ActionButton.vue'
 export { default as TagButton } from './buttons/TagButton.vue'
 export type { ButtonVariant as ActionButtonVariant, ButtonSize as ActionButtonSize } from './buttons/ActionButton.vue'
 
+// Room Booking Components (Dharamshala & Bhojanshala)
+export { default as RoomCard } from './RoomCard.vue'
+export { default as RoomBookingModal } from './RoomBookingModal.vue'
+
 // Common Components
 export { default as Icon } from '../common/Icon.vue'
 export { default as FavoriteButton } from '../common/FavoriteButton.vue'

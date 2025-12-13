@@ -249,8 +249,8 @@ import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import Icon from '~/components/common/Icon.vue'
-import RoomCard from '~/components/tirth/RoomCard.vue'
-import RoomBookingModal from '~/components/tirth/RoomBookingModal.vue'
+import RoomCard from '~/components/shared/RoomCard.vue'
+import RoomBookingModal from '~/components/shared/RoomBookingModal.vue'
 
 definePageMeta({
   layout: 'default',

@@ -179,8 +179,8 @@ export const useTirthStore = defineStore('tirth', {
 
     async fetchTirthById(id: string) {
       try {
-        const { useSupabaseTirthApi } = await import('~/composables/api/useSupabaseTirthApi')
-        const api = useSupabaseTirthApi()
+        const { useTirthApi } = await import('~/composables/api/useTirthApi')
+        const api = useTirthApi()
         const tirth = await api.fetchTirthById(id)
         this.selectedTirth = tirth
         return tirth
