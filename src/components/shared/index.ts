@@ -22,13 +22,9 @@ export type {
   CardConfig,
 } from './cards/types.ts'
 
-// Header Components
-export { default as HeaderWithImage } from './headers/HeaderWithImage.vue'
-
 // Filter Components
 export { default as FilterPanel } from './filters/FilterPanel.vue'
 export { default as SearchBox } from './filters/SearchBox.vue'
-export type { FilterOption, FilterDefinition } from './filters/FilterPanel.vue'
 export type { SearchResult } from './filters/SearchBox.vue'
 
 // Button Components

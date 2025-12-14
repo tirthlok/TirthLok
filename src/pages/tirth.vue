@@ -52,6 +52,22 @@
               <Icon :name="getFilterIcon(filter.id)" :size="16" />
               <span>{{ filter.label }}</span>
             </button>
+            <!-- Filter Panel Button -->
+            <button
+              @click="showAdvancedFilters = true"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ml-auto',
+                hasActiveFilters
+                  ? 'bg-red-500 text-white border-red-500 shadow-md'
+                  : (themeStore?.isDarkMode 
+                    ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
+              ]"
+            >
+              <Icon name="Sliders" :size="16" />
+              <span>Advanced</span>
+              <span v-if="hasActiveFilters" class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-red-500 rounded-full">{{ activeFilterCount }}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -73,7 +89,7 @@
       <!-- Tirth Cards Grid -->
       <div class="flex flex-wrap pb-4 min-w-min">
         <div
-            v-for="tirth in displayedTirths"
+            v-for="tirth in tirthStore.filteredTirths"
             :key="tirth.id"
             class="flex-shrink-0 m-4 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
           >
@@ -95,7 +111,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && displayedTirths.length === 0" :class="[
+      <div v-if="!loading && tirthStore.filteredTirths.length === 0" :class="[
         'text-center py-12',
         themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
       ]">
@@ -108,13 +124,21 @@
       </div>
 
       <!-- Results Info -->
-      <div v-if="!loading && displayedTirths.length > 0" :class="[
+      <div v-if="!loading && tirthStore.filteredTirths.length > 0" :class="[
         'mt-8 text-center text-sm',
         themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
       ]">
-        Showing {{ displayedTirths.length }} of {{ allTirths.length }} tirth locations
+        Showing {{ tirthStore.filteredTirths.length }} of {{ allTirths.length }} tirth locations
       </div>
     </div>
+
+    <!-- Advanced Filter Panel -->
+    <FilterPanel
+      :is-open="showAdvancedFilters"
+      @update:is-open="showAdvancedFilters = $event"
+      @apply="showAdvancedFilters = false"
+      @reset="showAdvancedFilters = false"
+    />
   </div>
 </template>
 
@@ -123,7 +147,7 @@ import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
 import { useGrouping } from '~/composables/ui/useGrouping'
-import { BaseCard, Icon } from '~/components/shared'
+import { BaseCard, Icon, FilterPanel } from '~/components/shared'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({
@@ -136,6 +160,22 @@ const { getUniqueGroupings, formatGroupingTitle } = useGrouping()
 const route = useRoute()
 
 const hasId = computed(() => !!(route?.params?.id))
+const showAdvancedFilters = ref(false)
+
+// Track active filters
+const hasActiveFilters = computed(() => {
+  const filters = tirthStore.currentFilters
+  return !!(filters.state || filters.sect || (filters.amenities && filters.amenities.length > 0))
+})
+
+const activeFilterCount = computed(() => {
+  const filters = tirthStore.currentFilters
+  let count = 0
+  if (filters.state) count++
+  if (filters.sect) count++
+  if (filters.amenities && filters.amenities.length > 0) count += filters.amenities.length
+  return count
+})
 
 // Fetch all tirths (full dataset)
 const { data: tirthData, pending: loading, error: fetchError } = await useAsyncData(
@@ -182,19 +222,22 @@ const getFilterIcon = (id: string) => {
 // State for selected grouping filter
 const selectedGrouping = ref<string>('all')
 
-// Display tirths based on selected grouping
-const displayedTirths = computed(() => {
-  const all = allTirths.value || []
-  
-  if (selectedGrouping.value === 'all') return all
-  
-  return all.filter((t: Tirth) => {
-    // Handle tirth_grouping as array or string
-    if (Array.isArray(t.tirth_grouping)) {
-      return t.tirth_grouping.includes(selectedGrouping.value)
-    }
-    return t.tirth_grouping === selectedGrouping.value
-  })
+// Update store when grouping changes
+watch(selectedGrouping, (newGrouping) => {
+  if (newGrouping === 'all') {
+    // Reset filters when selecting 'all'
+    tirthStore.filterTirths({})
+  } else {
+    // Filter by grouping - this will be handled by the grouping filter in the grouping tab
+    // and combined with any other filters applied via FilterPanel
+    const filteredByGrouping = allTirths.value?.filter((t: Tirth) => {
+      if (Array.isArray(t.tirth_grouping)) {
+        return t.tirth_grouping.includes(newGrouping)
+      }
+      return t.tirth_grouping === newGrouping
+    }) || []
+    tirthStore.filteredTirths = filteredByGrouping
+  }
 })
 
 onMounted(async () => {

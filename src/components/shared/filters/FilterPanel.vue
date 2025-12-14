@@ -1,201 +1,256 @@
 <template>
-  <div :class="['space-y-4', containerClass]">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h3 v-if="title" class="text-lg font-bold text-gray-900">{{ title }}</h3>
-      <button
-        v-if="showClearButton && hasActiveFilters"
-        @click="clearFilters"
-        class="text-sm text-red-600 hover:text-red-700 font-semibold"
+  <!-- Filter Modal - Teleported to body -->
+  <teleport to="body">
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 bg-black/50 z-[60] transition-opacity flex items-center justify-center p-4 backdrop-blur-sm"
+      @click="close"
+    >
+      <div
+        :class="[
+          'rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar filter-modal animate-fade-in-up',
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        ]"
+        @click.stop
       >
-        Clear All
-      </button>
-    </div>
-
-    <!-- Filter Items -->
-    <div :class="['space-y-3', filtersContainerClass]">
-      <div v-for="filter in filters" :key="filter.key" class="space-y-2">
-        <!-- Filter Label -->
-        <label class="text-sm font-semibold text-gray-700">{{ filter.label }}</label>
-
-        <!-- Checkbox Group -->
-        <div v-if="filter.type === 'checkbox'" class="space-y-2">
-          <div
-            v-for="option in filter.options"
-            :key="option.value"
-            class="flex items-center gap-2"
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h2
+            :class="[
+              'text-xl font-bold',
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            ]"
           >
-            <input
-              :id="`filter-${filter.key}-${option.value}`"
-              type="checkbox"
-              :checked="isOptionSelected(filter.key, option.value)"
-              @change="updateFilter(filter.key, option.value, $event)"
-              class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+            Filters
+          </h2>
+          <button
+            @click="close"
+            :class="[
+              'p-2 rounded-full transition-colors',
+              isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+            ]"
+          >
+            <Icon
+              name="X"
+              :size="20"
+              :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'"
             />
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="space-y-6">
+          <!-- State Filter -->
+          <div>
             <label
-              :for="`filter-${filter.key}-${option.value}`"
-              class="text-sm text-gray-700 cursor-pointer"
+              :class="[
+                'block text-sm font-semibold mb-2',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
             >
-              {{ option.label }}
+              State
             </label>
+            <div class="relative">
+              <select
+                v-model="selectedState"
+                :class="[
+                  'w-full px-4 py-3 border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none',
+                  isDarkMode
+                    ? 'border-gray-700 bg-gray-700 text-white'
+                    : 'border-gray-200 bg-gray-50 text-gray-900'
+                ]"
+              >
+                <option value="">All States</option>
+                <option v-for="state in availableStates" :key="state" :value="state">
+                  {{ state }}
+                </option>
+              </select>
+              <Icon
+                name="ChevronDown"
+                :size="16"
+                :class="`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- Radio Group -->
-        <div v-else-if="filter.type === 'radio'" class="space-y-2">
-          <div
-            v-for="option in filter.options"
-            :key="option.value"
-            class="flex items-center gap-2"
-          >
-            <input
-              :id="`filter-${filter.key}-${option.value}`"
-              type="radio"
-              :name="filter.key"
-              :value="option.value"
-              :checked="getSelectedValue(filter.key) === option.value"
-              @change="updateFilter(filter.key, option.value, $event)"
-              class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500"
-            />
+          <!-- Sect Filter -->
+          <div>
             <label
-              :for="`filter-${filter.key}-${option.value}`"
-              class="text-sm text-gray-700 cursor-pointer"
+              :class="[
+                'block text-sm font-semibold mb-2',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
             >
-              {{ option.label }}
+              Sect
             </label>
+            <div class="flex gap-2">
+              <button
+                v-for="sect in availableSects"
+                :key="sect"
+                @click="selectedSect = selectedSect === sect ? '' : sect"
+                class="flex-1 py-2.5 px-4 rounded-xl border text-sm font-medium transition-all"
+                :class="
+                  selectedSect === sect
+                    ? 'border-primary bg-primary/5 text-primary'
+                    : isDarkMode
+                    ? 'border-gray-700 text-gray-300 hover:border-gray-600'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                "
+              >
+                {{ sect }}
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Select Dropdown -->
-        <div v-else-if="filter.type === 'select'">
-          <select
-            :value="getSelectedValue(filter.key)"
-            @change="updateFilter(filter.key, ($event.target as HTMLSelectElement).value, $event)"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-          >
-            <option value="">-- Select --</option>
-            <option
-              v-for="option in filter.options"
-              :key="option.value"
-              :value="option.value"
+          <!-- Facilities Filter -->
+          <div>
+            <label
+              :class="[
+                'block text-sm font-semibold mb-3',
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              ]"
             >
-              {{ option.label }}
-            </option>
-          </select>
+              Facilities
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label
+                v-for="facility in availableFacilities"
+                :key="facility"
+                class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all"
+                :class="
+                  selectedFacilities.includes(facility)
+                    ? 'border-primary bg-primary/5'
+                    : isDarkMode
+                    ? 'border-gray-700 hover:border-gray-600'
+                    : 'border-gray-200 hover:border-gray-300'
+                "
+              >
+                <input
+                  v-model="selectedFacilities"
+                  type="checkbox"
+                  :value="facility"
+                  class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span
+                  :class="[
+                    'text-sm',
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  ]"
+                >
+                  {{ formatFacilityName(facility) }}
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
 
-        <!-- Range Slider -->
-        <div v-else-if="filter.type === 'range'" class="space-y-2">
-          <div class="flex items-center justify-between text-sm">
-            <span>{{ filter.min }}</span>
-            <span class="font-semibold">{{ getSelectedValue(filter.key) }}</span>
-            <span>{{ filter.max }}</span>
-          </div>
-          <input
-            type="range"
-            :min="filter.min"
-            :max="filter.max"
-            :value="getSelectedValue(filter.key) || filter.min"
-            @change="updateFilter(filter.key, ($event.target as HTMLInputElement).value, $event)"
-            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+        <!-- Footer Buttons -->
+        <div
+          :class="[
+            'flex gap-3 mt-8 pt-6 border-t',
+            isDarkMode ? 'border-gray-700' : 'border-gray-100'
+          ]"
+        >
+          <button
+            @click="reset"
+            :class="[
+              'flex-1 px-4 py-3 border rounded-xl font-semibold transition-colors',
+              isDarkMode
+                ? 'border-gray-700 text-gray-300 hover:bg-gray-700'
+                : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            Reset
+          </button>
+          <button
+            @click="apply"
+            class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover font-semibold shadow-lg shadow-primary/30 transition-all"
+          >
+            Show Results
+          </button>
         </div>
       </div>
     </div>
-
-    <!-- Apply Button -->
-    <button
-      v-if="showApplyButton"
-      @click="applyFilters"
-      class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-    >
-      Apply Filters
-    </button>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-
-export interface FilterOption {
-  value: string | number
-  label: string
-}
-
-export interface FilterDefinition {
-  key: string
-  label: string
-  type: 'checkbox' | 'radio' | 'select' | 'range'
-  options?: FilterOption[]
-  min?: number
-  max?: number
-}
+import { ref, computed } from 'vue'
+import Icon from '~/components/common/Icon.vue'
+import { useThemeStore } from '~/stores/theme'
+import { useTirthStore } from '~/stores/tirth'
 
 interface Props {
-  filters: FilterDefinition[]
-  activeFilters: Record<string, any>
-  title?: string
-  showApplyButton?: boolean
-  showClearButton?: boolean
-  containerClass?: string
-  filtersContainerClass?: string
+  isOpen: boolean
+  searchQuery?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Filters',
-  showApplyButton: false,
-  showClearButton: true,
-  containerClass: '',
-  filtersContainerClass: '',
+withDefaults(defineProps<Props>(), {
+  searchQuery: '',
 })
 
 const emit = defineEmits<{
-  'update-filters': [filters: Record<string, any>]
-  'apply-filters': [filters: Record<string, any>]
+  'update:isOpen': [value: boolean]
+  apply: [filters: FilterState]
+  reset: []
 }>()
 
-const localFilters = ref<Record<string, any>>({ ...props.activeFilters })
+interface FilterState {
+  state?: string
+  sect?: string
+  amenities?: string[]
+  searchTerm?: string
+}
 
-const hasActiveFilters = computed(() => {
-  return Object.values(localFilters.value).some((v) => v && (!Array.isArray(v) || v.length > 0))
-})
+const themeStore = useThemeStore()
+const tirthStore = useTirthStore()
 
-const isOptionSelected = (filterKey: string, optionValue: string | number) => {
-  const selected = localFilters.value[filterKey]
-  if (Array.isArray(selected)) {
-    return selected.includes(optionValue)
+const isDarkMode = computed(() => themeStore.isDarkMode)
+
+const selectedState = ref('')
+const selectedSect = ref('')
+const selectedFacilities = ref<string[]>([])
+
+// Get filter options from store
+const availableStates = computed(() => tirthStore.filterOptions.states || [])
+const availableSects = computed(() => tirthStore.filterOptions.sects || [])
+const availableFacilities = computed(() => tirthStore.filterOptions.facilities || [])
+
+const formatFacilityName = (facility: string): string => {
+  const facilityMap: Record<string, string> = {
+    dharmashala: 'Dharamshala',
+    bhojanshala: 'Bhojanshala',
+    gaushala: 'Gaushala',
+    parking: 'Parking',
+    washroom: 'Restroom',
+    water: 'Water',
+    clinic: 'Clinic'
   }
-  return selected === optionValue
+  return facilityMap[facility] || facility.charAt(0).toUpperCase() + facility.slice(1)
 }
 
-const getSelectedValue = (filterKey: string) => {
-  return localFilters.value[filterKey] || ''
+const close = () => {
+  emit('update:isOpen', false)
 }
 
-const updateFilter = (key: string, value: string | number, event: Event) => {
-  const target = event.target as HTMLInputElement | HTMLSelectElement
-  const filter = props.filters.find((f) => f.key === key)
-
-  if (filter?.type === 'checkbox') {
-    const current = localFilters.value[key] || []
-    if (target.checked) {
-      localFilters.value[key] = [...current, value]
-    } else {
-      localFilters.value[key] = current.filter((v: any) => v !== value)
-    }
-  } else {
-    localFilters.value[key] = value
+const apply = () => {
+  const filters: FilterState = {
+    state: selectedState.value || undefined,
+    sect: selectedSect.value || undefined,
+    amenities: selectedFacilities.value.length > 0 ? selectedFacilities.value : undefined,
+    searchTerm: undefined,
   }
-
-  emit('update-filters', localFilters.value)
+  tirthStore.filterTirths(filters)
+  emit('apply', filters)
+  close()
 }
 
-const applyFilters = () => {
-  emit('apply-filters', localFilters.value)
-}
-
-const clearFilters = () => {
-  localFilters.value = {}
-  emit('update-filters', localFilters.value)
+const reset = () => {
+  selectedState.value = ''
+  selectedSect.value = ''
+  selectedFacilities.value = []
+  tirthStore.filterTirths({})
+  emit('reset')
+  close()
 }
 </script>
