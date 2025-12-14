@@ -332,4 +332,3 @@ For support, email info@jainthirthexplorer.com or open an issue in the repositor
 ---
 
 **Note**: This is a template project. Replace sample data with real information and connect to your actual database for production use.
-
