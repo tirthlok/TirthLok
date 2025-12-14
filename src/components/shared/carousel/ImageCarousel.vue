@@ -17,28 +17,26 @@
     />
 
     <!-- Gradient Overlay -->
-    <div v-if="showGradient" class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none"></div>
+    <div v-if="showGradient" class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
 
     <!-- Navigation Arrows (always visible) -->
-    <div v-if="hasMultipleImages" class="absolute inset-0 flex items-center justify-between px-3 opacity-90 z-30">
+    <div v-if="hasMultipleImages" class="absolute inset-0 flex items-center justify-between px-3 opacity-90 pointer-events-none">
       <button
         @click.stop.prevent="prevImage"
-        @mouseenter="() => (arrowHoverState = 'prev')"
-        @mouseleave="() => (arrowHoverState = null)"
+        class="p-2 bg-white/20 hover:bg-white/30 rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110 pointer-events-auto z-20"
         :aria-label="`Previous image`"
         type="button"
-        class="p-2 bg-white/20 hover:bg-white/40 rounded-full shadow-lg hover:shadow-xl transition-all pointer-events-auto"
+        data-no-nav="true"
       >
         <Icon name="ChevronLeft" :size="24" class="text-gray-900" />
       </button>
 
       <button
         @click.stop.prevent="nextImage"
-        @mouseenter="() => (arrowHoverState = 'next')"
-        @mouseleave="() => (arrowHoverState = null)"
+        class="p-2 bg-white/20 hover:bg-white/30 rounded-full shadow-lg transition-colors hover:shadow-xl transform hover:scale-110 pointer-events-auto z-20"
         :aria-label="`Next image`"
         type="button"
-        class="p-2 bg-white/20 hover:bg-white/40 rounded-full shadow-lg hover:shadow-xl transition-all pointer-events-auto"
+        data-no-nav="true"
       >
         <Icon name="ChevronRight" :size="24" class="text-gray-900" />
       </button>
@@ -115,7 +113,6 @@ const {
 
 // local hover state to control arrow visibility and image scale
 const isHovered = ref(false)
-const arrowHoverState = ref<'prev' | 'next' | null>(null)
 
 const placeholder = placeholderImg
 

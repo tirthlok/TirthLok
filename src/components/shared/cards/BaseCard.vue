@@ -1,16 +1,15 @@
 <template>
-  <div class="relative group w-72">
+  <div class="relative group" @click="handleCardClick($event, routePrefix)">
     <div
       :class="[wrapperClasses, colorScheme.border, 'hover:' + colorScheme.borderHover, props.variant === 'featured' ? 'hover:scale-100' : 'hover:scale-105']"
-      @click="handleCardClick($event, routePrefix)"
     >
       <!-- Image Carousel Container -->
-      <div :class="['relative overflow-hidden shrink-0', props.variant === 'featured' ? 'rounded-2xl h-full' : 'rounded-t-2xl h-52']">
+      <div class="relative overflow-hidden rounded-t-2xl">
         <ImageCarousel
           :images="item.images"
           :title="item.name"
           :subtitle="item.location.city + ', ' + item.location.state"
-          :image-height="props.variant === 'featured' ? 'h-full' : imageHeightFinal"
+          :image-height="imageHeightFinal"
           :accent-dot-color="colorScheme.dot"
           :show-title-overlay="showTitleOverlay"
           :title-overlay-class="props.variant === 'featured' ? 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent' : 'absolute bottom-0 left-0 right-0 px-4 py-8 text-white bg-gradient-to-t from-black/60 via-transparent to-transparent'"
@@ -28,31 +27,27 @@
 
       <!-- Additional Info Section (Optional) -->
       <div v-if="showDetails" :class="detailsBgClass">
-        <div class="flex flex-col h-full">
-          <!-- Description -->
-          <p v-if="item.description" :class="descriptionClass">{{ item.description }}</p>
+        <!-- Description -->
+        <p v-if="item.description" :class="descriptionClass">{{ item.description }}</p>
 
-          <!-- Additional Fields -->
-          <div v-if="displayFields.length > 0" :class="fieldsContainerClass">
-            <div v-for="field in displayFields" :key="field.key" :class="fieldItemClass">
-              <Icon v-if="field.icon" :name="(field.icon as any)" :size="16" :class="'flex-shrink-0 mt-0.5 ' + colorScheme.accentColor" />
-              <div :class="themeStore.isDarkMode ? 'flex-1' : ''">
-                <span v-if="field.label" :class="fieldLabelClass">{{ field.label }}:</span>
-                <span :class="themeStore.isDarkMode ? 'ml-1' : ''">{{ formatFieldValue(field) }}</span>
-              </div>
+        <!-- Additional Fields -->
+        <div v-if="displayFields.length > 0" :class="fieldsContainerClass">
+          <div v-for="field in displayFields" :key="field.key" :class="fieldItemClass">
+            <Icon v-if="field.icon" :name="(field.icon as any)" :size="16" :class="'flex-shrink-0 mt-0.5 ' + colorScheme.accentColor" />
+            <div :class="themeStore.isDarkMode ? 'flex-1' : ''">
+              <span v-if="field.label" :class="fieldLabelClass">{{ field.label }}:</span>
+              <span :class="themeStore.isDarkMode ? 'ml-1' : ''">{{ formatFieldValue(field) }}</span>
             </div>
           </div>
+        </div>
 
-          <!-- Spacer to push tags to bottom -->
-          <div class="flex-1"></div>
-
-          <!-- Tags/Features -->
-          <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2 mt-3" :class="themeStore.isDarkMode ? 'pt-2' : ''">
-            <span
-              v-for="tag in tagFields.slice(0, maxTags)"
-              :key="tag"
-              :class="[
-                'px-3 py-1.5 rounded-full text-xs font-semibold',
+        <!-- Tags/Features -->
+        <div v-if="tagFields.length > 0" class="flex flex-wrap gap-2" :class="themeStore.isDarkMode ? 'pt-2' : ''">
+          <span
+            v-for="tag in tagFields.slice(0, maxTags)"
+            :key="tag"
+            :class="[
+              'px-3 py-1.5 rounded-full text-xs font-semibold',
               themeStore.isDarkMode ? 'bg-opacity-20 backdrop-blur-sm border border-red-500/30' : '',
               colorScheme.tagBg,
               colorScheme.tagText
@@ -60,7 +55,6 @@
           >
             {{ tag }}
           </span>
-        </div>
         </div>
       </div>
     </div>
@@ -123,12 +117,12 @@ const colorScheme = computed<ColorScheme>(() => {
 const wrapperClasses = computed(() => {
   if (props.variant === 'featured') {
     return themeStore.isDarkMode
-      ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] border-0 backdrop-blur-sm h-full flex flex-col'
-      : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0 h-full flex flex-col'
+      ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] border-0 backdrop-blur-sm'
+      : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-0'
   }
   return themeStore.isDarkMode
-    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50 h-[365px] flex flex-col'
-    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2 h-[365px] flex flex-col'
+    ? 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl hover:shadow-2xl border-2 backdrop-blur-sm border-gray-700/50 hover:border-gray-600/50'
+    : 'rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white shadow-lg hover:shadow-2xl border-2'
 })
 
 const imageHeightFinal = computed(() => {
@@ -145,15 +139,15 @@ const isFavorited = computed(() => {
 // Details section background
 const detailsBgClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'p-4 space-y-4 bg-gradient-to-b from-gray-800 to-gray-900 flex-1 min-h-0'
-    : 'p-4 space-y-3 flex-1 min-h-0'
+    ? 'p-4 space-y-4 bg-gradient-to-b from-gray-800 to-gray-900'
+    : 'p-4 space-y-3'
 })
 
 // Description class
 const descriptionClass = computed(() => {
   return themeStore.isDarkMode
-    ? 'text-sm text-gray-300 leading-relaxed flex-grow overflow-hidden'
-    : 'text-sm text-gray-600 flex-grow overflow-hidden'
+    ? 'text-sm text-gray-300 line-clamp-2 leading-relaxed'
+    : 'text-sm text-gray-600 line-clamp-2'
 })
 
 // Fields container class

@@ -11,20 +11,49 @@
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
        </div>
-      <!-- <div class="mb-8">
-        <h1 :class="[
-          'text-3xl sm:text-4xl md:text-5xl font-bold mb-2',
-          themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-        ]">All Tirth Locations</h1>
-        <p :class="[
-          'text-base md:text-lg',
-          themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-600'
-        ]">Explore sacred Jain pilgrimage sites</p>
-      </div> -->
-
-      <!-- Loading State -->
+      <div class="my-2">
+          <h2 :class="[
+            'text-2xl md:text-3xl font-bold',
+            themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
+          ]">Tirth</h2>
+          <p :class="[
+            'text-base',
+            themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          ]">
+            Browse all {{ allTirths.length }} tirths.
+          </p>
+        </div>
       <div v-if="loading" class="flex justify-center items-center py-20">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
+      </div>
+
+      <!-- Sticky Filter Bar -->
+      <div :class="[
+        'sticky top-[84px] z-40 backdrop-blur-sm border-b mb-6 py-3 px-4 md:px-6 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8',
+        themeStore?.isDarkMode 
+          ? 'bg-gray-950/95 border-gray-800' 
+          : 'bg-white/95 border-gray-100'
+      ]">
+        <div class="max-w-[1920px] mx-auto">
+          <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+            <button
+              v-for="filter in filterOptions"
+              :key="filter.id"
+              @click="selectedGrouping = filter.id"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
+                selectedGrouping === filter.id
+                  ? 'bg-blue-500 text-white border-blue-500 shadow-md'
+                  : (themeStore?.isDarkMode 
+                    ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
+              ]"
+            >
+              <Icon :name="getFilterIcon(filter.id)" :size="16" />
+              <span>{{ filter.label }}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Error State -->
@@ -41,83 +70,60 @@
         ]">{{ error }}</p>
       </div>
 
-      <!-- Dynamic Grouped Horizontal Scroll Sections -->
-      <div v-if="!loading && groupedTirths.length > 0" class="space-y-12 mb-4">
+      <!-- Tirth Cards Grid -->
+      <div class="flex flex-wrap pb-4 min-w-min">
         <div
-          v-for="(group, index) in groupedTirths"
-          :key="`${group.grouping}-${index}`"
-          class="scroll-section"
-        >
-          <TirthCardsHorizontalScroll
-            :tirths="group.tirths"
-            :loading="loading"
-            :grouping="group.grouping"
-            :title="group.displayTitle"
-            :subtitle="`${group.count} ${group.count === 1 ? 'location' : 'locations'}`"
-            show-badges
-            show-wishlist
-            :show-details="true"
-            variant="default"
-            image-height="200px"
-            :view-all-link="`/tirth?grouping=${encodeURIComponent(group.grouping)}`"
-            :max-cards="6"
-          />
-        </div>
-      </div>
-
-      <!-- All Tirth Grid Section -->
-      <div v-if="!loading && allTirths.length > 0" class="mt-4">
-        <div class="mb-8">
-          <h2 :class="[
-            'text-2xl md:text-3xl font-bold mb-2',
-            themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-          ]">All Tirth Locations</h2>
-          <p :class="[
-            'text-base',
-            themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          ]">
-            Browse all {{ allTirths.length }} sacred pilgrimage sites
-          </p>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-max" style="grid-auto-rows: 1fr;">
-          <BaseCard
-              v-for="tirth in allTirths"
-              :key="tirth.id"
+            v-for="tirth in displayedTirths"
+            :key="tirth.id"
+            class="flex-shrink-0 m-4 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
+          >
+            <!-- New badge with animation -->
+            <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
+              <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ tirth.tirth_tags[0] }}</span>
+            </div>
+            <BaseCard
               :item="tirth"
               card-type="tirth"
-              :show-details="true"
               :show-wishlist="true"
-              :image-height="'200px'"
-              :variant="'default'"
+              :show-details="false"
+              variant="featured"
+              :image-height="'h-72'"
+              route-prefix="/tirth"
               :tag-fields="[tirth.sect, tirth.type]"
             />
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && allTirths.length === 0" class="text-center py-12">
-        <Icon name="MapPin" :size="48" class="mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+      <div v-if="!loading && displayedTirths.length === 0" :class="[
+        'text-center py-12',
+        themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
+      ]">
+        <Icon name="MapPin" :size="48" :class="themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'" class="mx-auto mb-4" />
         <h3 :class="[
           'text-lg sm:text-xl md:text-2xl font-semibold mb-2',
           themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-        ]">No Tirths Available</h3>
-        <p :class="[
-          'text-sm md:text-base',
-          themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-        ]">Try refreshing the page or check back soon.</p>
+        ]">No Tirths Found</h3>
+        <p class="text-sm md:text-base">Try adjusting your filter or search criteria</p>
       </div>
 
-
+      <!-- Results Info -->
+      <div v-if="!loading && displayedTirths.length > 0" :class="[
+        'mt-8 text-center text-sm',
+        themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
+      ]">
+        Showing {{ displayedTirths.length }} of {{ allTirths.length }} tirth locations
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
 import { useGrouping } from '~/composables/ui/useGrouping'
-import { TirthCardsHorizontalScroll, BaseCard, Icon } from '~/components/shared'
+import { BaseCard, Icon } from '~/components/shared'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({
@@ -126,26 +132,20 @@ definePageMeta({
 
 const themeStore = useThemeStore()
 const tirthStore = useTirthStore()
-const { groupTirthsByGrouping } = useGrouping()
+const { getUniqueGroupings, formatGroupingTitle } = useGrouping()
 const route = useRoute()
 
 const hasId = computed(() => !!(route?.params?.id))
 
-// Fetch all tirths (full dataset for grouping)
+// Fetch all tirths (full dataset)
 const { data: tirthData, pending: loading, error: fetchError } = await useAsyncData(
-  'all-tirths-for-grouping',
+  'all-tirths',
   () => $fetch<{ success: boolean; data: Tirth[] }>('/api/tirth', {
-    query: { limit: 1000 } // Fetch all for grouping logic
+    query: { limit: 1000 }
   })
 )
 
 const allTirths = computed(() => (tirthData.value?.data || []) as Tirth[])
-console.log('Fetched tirths for grouping:', allTirths.value) 
-
-// Dynamically compute grouped tirths
-const groupedTirths = computed(() => {
-  return groupTirthsByGrouping(allTirths.value)
-})
 
 const error = computed(() => {
   if (!fetchError.value) return null
@@ -161,13 +161,45 @@ watch(allTirths, (newTirths) => {
   }
 }, { deep: true, immediate: true })
 
+// Dynamic filter options based on unique tirth_grouping values
+const uniqueGroupings = computed(() => getUniqueGroupings(allTirths.value))
+
+const filterOptions = computed(() => [
+  { id: 'all', label: 'All' },
+  ...uniqueGroupings.value.map(grouping => ({
+    id: grouping,
+    label: formatGroupingTitle(grouping)
+  }))
+])
+
+const getFilterIcon = (id: string) => {
+  switch (id) {
+    case 'all': return 'Grid3X3'
+    default: return 'MapPin'
+  }
+}
+
+// State for selected grouping filter
+const selectedGrouping = ref<string>('all')
+
+// Display tirths based on selected grouping
+const displayedTirths = computed(() => {
+  const all = allTirths.value || []
+  
+  if (selectedGrouping.value === 'all') return all
+  
+  return all.filter((t: Tirth) => {
+    // Handle tirth_grouping as array or string
+    if (Array.isArray(t.tirth_grouping)) {
+      return t.tirth_grouping.includes(selectedGrouping.value)
+    }
+    return t.tirth_grouping === selectedGrouping.value
+  })
+})
+
 onMounted(async () => {
   await tirthStore.fetchFilterOptions()
 })
 </script>
 
-<style scoped>
-.scroll-section {
-  scroll-margin-top: 4rem;
-}
-</style>
+

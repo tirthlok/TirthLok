@@ -37,7 +37,48 @@
     </div>
 
     <!-- Featured Tirths Horizontal Scroll -->
-    <TirthCardsHorizontalScroll
+    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
+      <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
+          <div class="flex-1">
+            <!-- <div class="inline-block mb-3 px-3 py-1 bg-accent/10 rounded-full">
+              <span class="text-sm font-semibold text-accent">✨ Curated Collection</span>
+            </div> -->
+            <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif mb-2">Featured Tirths</h3>
+            <!-- <p class="text-text-muted text-sm">Discover the most visited sacred destinations worldwide</p> -->
+          </div>
+          <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-2 text-sm sm:text-base px-5 py-2.5 rounded-full hover:bg-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/50">
+            Explore All <Icon name="ArrowRight" :size="18" />
+          </NuxtLink>
+        </div>
+        
+        <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 scroll-smooth">
+          <div class="flex gap-6 w-max snap-x snap-mandatory">
+            <div
+              v-for="tirth in filteredTirths"
+              :key="tirth.id"
+              class="flex-shrink-0 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
+            >
+              <!-- New badge with animation -->
+              <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
+                <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ tirth.tirth_tags[0] }}</span>
+              </div>
+              <BaseCard
+                :item="tirth"
+                card-type="tirth"
+                :show-wishlist="true"
+                :show-details="false"
+                variant="featured"
+                :image-height="'h-72'"
+                route-prefix="/tirth"
+                :tag-fields="[tirth.sect, tirth.type]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <TirthCardsHorizontalScroll
       class="mt-12"
       :tirths="filteredTirths"
       :loading="loading"
@@ -50,7 +91,7 @@
       variant="featured"
       image-height="h-72"
       view-all-link="/tirth"
-    />
+    /> -->
 
 
     <!-- Key Features Section - "Enhance your travel Experiences" style -->
@@ -214,7 +255,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
-import { TirthCardsHorizontalScroll } from '~/components/shared'
 import Icon from '~/components/common/Icon.vue'
 
 // Import images from assets
@@ -230,14 +270,14 @@ definePageMeta({
   layout: 'default',
 })
 
-const tithStore = useTirthStore()
+const tirthStore = useTirthStore()
 
 // Server-side fetch and hydrate tirth store
 const { data: apiResponse } = await useAsyncData('tirths', () => $fetch('/api/tirth'))
 if (apiResponse?.value) {
   const response = apiResponse.value as any
   const tirthsData = response.data || []
-  tithStore.$patch((state) => {
+  tirthStore.$patch((state) => {
     state.tirths = tirthsData
     state.filteredTirths = tirthsData
     if (response.pagination) {
@@ -246,9 +286,11 @@ if (apiResponse?.value) {
   })
 }
 
-const loading = computed(() => tithStore.loading)
-const error = computed(() => tithStore.error)
-const filteredTirths = computed(() => tithStore.filteredTirths)
+const loading = computed(() => tirthStore.loading)
+const error = computed(() => tirthStore.error)
+const filteredTirths = computed(() => {
+    return tirthStore.filteredTirths.filter((tirth) => tirth.tirth_tags && tirth.tirth_tags.length > 0)
+})
 
 
 // Data is fetched and stores hydrated on the server via useAsyncData
