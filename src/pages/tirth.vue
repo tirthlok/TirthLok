@@ -244,5 +244,3 @@ onMounted(async () => {
   await tirthStore.fetchFilterOptions()
 })
 </script>
-
-
