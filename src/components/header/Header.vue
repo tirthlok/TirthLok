@@ -91,6 +91,8 @@
                     themeStore?.isDarkMode ? 'border-l border-gray-700' : 'border-l border-gray-200'
                   ]">
                     <Icon name="Sliders" :size="16" />
+                    <!-- Active filters badge (visible on mobile) -->
+                    <span v-if="activeFilterCount > 0" class="md:hidden absolute -top-2 -right-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-red-500 text-white rounded-full">{{ activeFilterCount }}</span>
                   </div>
                 </button>
                 
@@ -318,6 +320,23 @@ const navLinks = [
 ]
 
 const isActive = (path: string) => route.path.startsWith(path)
+
+// Calculate active filter count for current page (mobile filter badge)
+const activeFilterCount = computed(() => {
+  const p = route.path || ''
+  
+  // Only show filter count on Tirth page (other pages don't have mobile filter badge)
+  if (p.startsWith('/tirth')) {
+    const filters = tithStore.currentFilters
+    let count = 0
+    if (filters.state) count++
+    if (filters.sect) count++
+    if (filters.amenities && filters.amenities.length > 0) count += filters.amenities.length
+    return count
+  }
+  
+  return 0
+})
 
 const suggestionsSource = computed(() => {
   const p = route.path || ''

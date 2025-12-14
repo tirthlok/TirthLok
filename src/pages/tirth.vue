@@ -52,11 +52,11 @@
               <Icon :name="getFilterIcon(filter.id)" :size="16" />
               <span>{{ filter.label }}</span>
             </button>
-            <!-- Filter Panel Button -->
+            <!-- Filter Panel Button (Hidden on Mobile) -->
             <button
               @click="showAdvancedFilters = true"
               :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ml-auto',
+                'hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ml-auto',
                 hasActiveFilters
                   ? 'bg-red-500 text-white border-red-500 shadow-md'
                   : (themeStore?.isDarkMode 
