@@ -222,7 +222,7 @@ const getFilterIcon = (id: string) => {
 // State for selected grouping filter
 const selectedGrouping = ref<string>('all')
 
-// Apply combined filters (grouping + advanced filters)
+// Apply combined filters (grouping + advanced filters + search)
 const applyFilters = () => {
   let result = allTirths.value
 
@@ -250,6 +250,17 @@ const applyFilters = () => {
         t.facilities?.some((f: any) => f.type === amenity)
       )
     })
+  }
+  
+  // Apply search filter
+  if (filters.searchTerm) {
+    const searchLower = filters.searchTerm.toLowerCase()
+    result = result.filter((t: Tirth) =>
+      t.name?.toLowerCase().includes(searchLower) ||
+      t.description?.toLowerCase().includes(searchLower) ||
+      t.location?.city?.toLowerCase().includes(searchLower) ||
+      t.location?.state?.toLowerCase().includes(searchLower)
+    )
   }
 
   tirthStore.filteredTirths = result
