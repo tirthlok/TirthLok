@@ -43,7 +43,7 @@
               :class="[
                 'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
                 selectedGrouping === filter.id
-                  ? 'bg-blue-500 text-white border-blue-500 shadow-md'
+                  ? 'bg-red-500 text-white border-red-500 shadow-md'
                   : (themeStore?.isDarkMode 
                     ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
@@ -58,7 +58,7 @@
               :class="[
                 'hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ml-auto',
                 hasActiveFilters
-                  ? 'bg-red-500 text-white border-red-500 shadow-md'
+                  ? 'text-red-500 border-red-500 shadow-md'
                   : (themeStore?.isDarkMode 
                     ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
@@ -222,23 +222,52 @@ const getFilterIcon = (id: string) => {
 // State for selected grouping filter
 const selectedGrouping = ref<string>('all')
 
-// Update store when grouping changes
-watch(selectedGrouping, (newGrouping) => {
-  if (newGrouping === 'all') {
-    // Reset filters when selecting 'all'
-    tirthStore.filterTirths({})
-  } else {
-    // Filter by grouping - this will be handled by the grouping filter in the grouping tab
-    // and combined with any other filters applied via FilterPanel
-    const filteredByGrouping = allTirths.value?.filter((t: Tirth) => {
+// Apply combined filters (grouping + advanced filters)
+const applyFilters = () => {
+  let result = allTirths.value
+
+  // Apply grouping filter
+  if (selectedGrouping.value !== 'all') {
+    result = result.filter((t: Tirth) => {
       if (Array.isArray(t.tirth_grouping)) {
-        return t.tirth_grouping.includes(newGrouping)
+        return t.tirth_grouping.includes(selectedGrouping.value)
       }
-      return t.tirth_grouping === newGrouping
-    }) || []
-    tirthStore.filteredTirths = filteredByGrouping
+      return t.tirth_grouping === selectedGrouping.value
+    })
   }
+
+  // Apply advanced filters from store
+  const filters = tirthStore.currentFilters
+  if (filters.state) {
+    result = result.filter((t: Tirth) => t.location?.state === filters.state)
+  }
+  if (filters.sect) {
+    result = result.filter((t: Tirth) => t.sect === filters.sect)
+  }
+  if (filters.amenities && filters.amenities.length > 0) {
+    result = result.filter((t: Tirth) => {
+      return filters.amenities!.some(amenity =>
+        t.facilities?.some((f: any) => f.type === amenity)
+      )
+    })
+  }
+
+  tirthStore.filteredTirths = result
+}
+
+// Watch grouping changes
+watch(selectedGrouping, () => {
+  applyFilters()
 })
+
+// Watch store filters changes
+watch(
+  () => tirthStore.currentFilters,
+  () => {
+    applyFilters()
+  },
+  { deep: true }
+)
 
 onMounted(async () => {
   await tirthStore.fetchFilterOptions()
