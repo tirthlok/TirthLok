@@ -87,11 +87,11 @@
       </div>
 
       <!-- Tirth Cards Grid -->
-      <div class="flex flex-wrap pb-4 min-w-min">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
         <div
             v-for="tirth in tirthStore.filteredTirths"
             :key="tirth.id"
-            class="flex-shrink-0 m-4 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
+            class="transition-transform hover:-translate-y-2 duration-300 group relative"
           >
             <!-- New badge with animation -->
             <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
