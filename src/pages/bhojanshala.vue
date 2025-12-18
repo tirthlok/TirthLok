@@ -127,17 +127,24 @@ const favoritesStore = useFavoritesStore()
 const themeStore = useThemeStore()
 
 // Server-side fetch and hydrate store
-const { data: serverBhojans } = await useAsyncData<Bhojanshala[]>('bhojanshala', () => $fetch('/api/bhojanshala'))
+// cache: 'no-store' ensures fresh data on every page reload (fixes refresh issue)
+const { data: serverBhojans } = await useFetch(
+  () => `/api/bhojanshala?_t=${Date.now()}`,
+  { cache: 'no-store' }
+)
 if (serverBhojans?.value) {
   bhojanshalaStore.$patch((state) => {
-    state.bhojanshalas = serverBhojans.value as Bhojanshala[]
-    state.filteredBhojanshalas = serverBhojans.value as Bhojanshala[]
+    state.bhojanshalas = (serverBhojans.value as any) as Bhojanshala[]
+    state.filteredBhojanshalas = (serverBhojans.value as any) as Bhojanshala[]
   })
 }
 
-const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+const { data: serverFavorites } = await useFetch(
+  () => `/api/favorites?_t=${Date.now()}`,
+  { cache: 'no-store' }
+)
 if (serverFavorites?.value) {
-  favoritesStore.setFavorites(serverFavorites.value as string[])
+  favoritesStore.setFavorites((serverFavorites.value as any) as string[])
 }
 
 const loading = computed(() => bhojanshalaStore.loading)

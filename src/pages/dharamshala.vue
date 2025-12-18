@@ -128,17 +128,24 @@ const hasId = computed(() => !!(route && route.params && route.params.id))
 const favoritesStore = useFavoritesStore()
 
 // Server-side fetch and hydrate store
-const { data: serverDharamshala } = await useAsyncData<Dharamshala[]>('dharamshala', () => $fetch('/api/dharamshala'))
+// cache: 'no-store' ensures fresh data on every page reload (fixes refresh issue)
+const { data: serverDharamshala } = await useFetch(
+  () => `/api/dharamshala?_t=${Date.now()}`,
+  { cache: 'no-store' }
+)
 if (serverDharamshala?.value) {
   dharamshalaStore.$patch((state) => {
-    state.dharamshalas = serverDharamshala.value as Dharamshala[]
-    state.filteredDharamshalas = serverDharamshala.value as Dharamshala[]
+    state.dharamshalas = (serverDharamshala.value as any) as Dharamshala[]
+    state.filteredDharamshalas = (serverDharamshala.value as any) as Dharamshala[]
   })
 }
 
-const { data: serverFavorites } = await useAsyncData<string[]>('favorites', () => $fetch('/api/favorites'))
+const { data: serverFavorites } = await useFetch(
+  () => `/api/favorites?_t=${Date.now()}`,
+  { cache: 'no-store' }
+)
 if (serverFavorites?.value) {
-  favoritesStore.setFavorites(serverFavorites.value as string[])
+  favoritesStore.setFavorites((serverFavorites.value as any) as string[])
 }
 
 const loading = computed(() => dharamshalaStore.loading)

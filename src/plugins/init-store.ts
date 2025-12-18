@@ -1,26 +1,27 @@
 import { useTirthStore } from '~/stores/tirth'
 
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(async (nuxtApp) => {
+  // Get store instance
   const tithStore = useTirthStore()
   
-  // Initialize store with tirth data on app startup with timeout
-  if (tithStore.tirths.length === 0) {
-    try {
-      console.log('🔌 Plugin: Initializing tirth store')
-      // Set a 5 second timeout for initial fetch
-      const fetchPromise = tithStore.fetchTirths()
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Fetch timeout')), 5000)
-      )
-      
-      await Promise.race([fetchPromise, timeoutPromise])
-      console.log('🔌 Plugin: Store initialization complete, tirths loaded:', tithStore.tirths.length)
-    } catch (error) {
-      // Silently fail - app can still function without initial data
-      console.warn('❌ Failed to initialize tirth data on startup:', error)
-      // Continue loading app without data
-    }
-  } else {
-    console.log('🔌 Plugin: Store already has data, skipping init')
+  // Initialize store data on app startup
+  // This ensures data is available when SSR hydration occurs
+  try {
+    console.log('🔌 Plugin: Initializing tirth store on app startup')
+    
+    // Always attempt to fetch on first load, regardless of current state
+    // useAsyncData on pages will handle caching with server: true
+    const fetchPromise = tithStore.fetchTirths()
+    
+    // Set timeout to prevent hanging on slow networks
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Fetch timeout')), 8000)
+    )
+    
+    await Promise.race([fetchPromise, timeoutPromise])
+    console.log('🔌 Plugin: Store initialization complete, tirths loaded:', tithStore.tirths.length)
+  } catch (error) {
+    console.warn('⚠️ Warning: Initial fetch failed, pages will handle data fetching:', error)
+    // Pages have useAsyncData with server: true, so data will still load correctly
   }
 })

@@ -177,15 +177,20 @@ const activeFilterCount = computed(() => {
   return count
 })
 
-// Fetch all tirths (full dataset)
-const { data: tirthData, pending: loading, error: fetchError } = await useAsyncData(
-  'all-tirths',
-  () => $fetch<{ success: boolean; data: Tirth[] }>('/api/tirth', {
-    query: { limit: 1000 }
-  })
+// Fetch all tirths using useFetch with cache disabled
+// cache: false ensures fresh data on every page reload, fixing the refresh issue
+const { data: tirthData, pending: loading, error: fetchError, refresh: refreshTirths } = await useFetch(
+  () => `/api/tirth?limit=1000&_t=${Date.now()}`, // Add timestamp to bust cache
+  {
+    cache: 'no-store', // Disable all caching, fetch fresh data every time
+  }
 )
 
-const allTirths = computed(() => (tirthData.value?.data || []) as Tirth[])
+// Computed that returns data from fetch response
+const allTirths = computed(() => {
+  const response = tirthData.value as any
+  return (response?.data || []) as Tirth[]
+})
 
 const error = computed(() => {
   if (!fetchError.value) return null
@@ -194,12 +199,16 @@ const error = computed(() => {
     : fetchError.value?.message || 'Error loading data'
 })
 
-// Sync to store for other components
+// Sync to store for other components AND apply filters when data arrives
+// Watch the actual fetched data - this fires whenever new data arrives
 watch(allTirths, (newTirths) => {
-  if (newTirths.length > 0) {
+  if (newTirths && newTirths.length > 0) {
+    console.log('🔍 Tirth page: Data arrived, syncing to store and applying filters', newTirths.length)
     tirthStore.tirths = newTirths
+    // CRITICAL: Call applyFilters immediately when fresh data arrives
+    applyFilters()
   }
-}, { deep: true, immediate: true })
+}, { deep: true, immediate: false })
 
 // Dynamic filter options based on unique tirth_grouping values
 const uniqueGroupings = computed(() => getUniqueGroupings(allTirths.value))
@@ -263,11 +272,13 @@ const applyFilters = () => {
     )
   }
 
+  console.log('📋 Tirth page: applyFilters result:', result.length, 'after filtering from', allTirths.value.length)
   tirthStore.filteredTirths = result
 }
 
 // Watch grouping changes
 watch(selectedGrouping, () => {
+  console.log('🎯 Tirth page: Grouping changed to:', selectedGrouping.value)
   applyFilters()
 })
 
@@ -275,12 +286,21 @@ watch(selectedGrouping, () => {
 watch(
   () => tirthStore.currentFilters,
   () => {
+    console.log('⚙️ Tirth page: Store filters changed')
     applyFilters()
   },
   { deep: true }
 )
 
 onMounted(async () => {
+  console.log('🔧 Tirth page: Mounted, checking if data exists')
+  // Apply filters in case data was already loaded by plugin/SSR
+  if (allTirths.value.length > 0) {
+    console.log('💾 Tirth page: Data already loaded from plugin/SSR, applying filters')
+    applyFilters()
+  } else {
+    console.log('⏳ Tirth page: Waiting for useFetch to load data')
+  }
   await tirthStore.fetchFilterOptions()
 })
 </script>
