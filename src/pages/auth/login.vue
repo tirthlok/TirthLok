@@ -1,32 +1,29 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center py-4 sm:py-8 px-4">
-    <div class="w-full max-w-md">
+  <div class="auth-page">
+    <div class="auth-wrapper">
       <!-- Back Button -->
-      <NuxtLink 
-        to="/" 
-        class="inline-flex items-center gap-1.5 text-red-600 hover:text-red-700 font-semibold mb-4 sm:mb-6 transition-colors text-sm sm:text-base"
-      >
+      <NuxtLink to="/" class="auth-back-btn">
         <Icon name="ArrowLeft" :size="16" />
         <span>Back to Home</span>
       </NuxtLink>
 
       <!-- Auth Card -->
-      <div class="bg-white rounded-2xl shadow-xl border border-red-100 overflow-hidden">
+      <div class="auth-card">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-6 sm:py-8 text-center">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-lg mx-auto mb-3">
-            <Icon name="User" :size="32" class="text-red-600" />
+        <div class="auth-card__header">
+          <div class="auth-avatar">
+            <Icon name="User" :size="28" />
           </div>
-          <h1 class="text-xl sm:text-2xl font-bold text-white">
+          <h1 class="auth-header__title">
             {{ isSignUp ? 'Create Account' : 'Welcome Back' }}
           </h1>
-          <p class="text-red-100 text-sm mt-1">
+          <p class="auth-header__subtitle">
             {{ isSignUp ? 'Join TirthLok today' : 'Sign in to your account' }}
           </p>
         </div>
 
         <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="p-6 sm:p-8 space-y-4 sm:space-y-5">
+        <form @submit.prevent="handleSubmit" class="auth-card__body">
           <!-- Error Message -->
           <Transition
             enter-active-class="transition-all duration-300"
@@ -36,9 +33,9 @@
             leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 -translate-y-2"
           >
-            <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
-              <Icon name="AlertCircle" :size="18" class="text-red-600 flex-shrink-0 mt-0.5" />
-              <span class="text-red-700 text-sm">{{ errorMessage }}</span>
+            <div v-if="errorMessage" class="auth-alert auth-alert--error">
+              <Icon name="AlertCircle" :size="16" />
+              <span>{{ errorMessage }}</span>
             </div>
           </Transition>
 
@@ -51,9 +48,9 @@
             leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 -translate-y-2"
           >
-            <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-2">
-              <Icon name="Check" :size="18" class="text-green-600 flex-shrink-0 mt-0.5" />
-              <span class="text-green-700 text-sm">{{ successMessage }}</span>
+            <div v-if="successMessage" class="auth-alert auth-alert--success">
+              <Icon name="Check" :size="16" />
+              <span>{{ successMessage }}</span>
             </div>
           </Transition>
 
@@ -66,61 +63,61 @@
             leave-from-class="opacity-100 max-h-40"
             leave-to-class="opacity-0 max-h-0"
           >
-            <div v-if="isSignUp" class="grid grid-cols-2 gap-3 overflow-hidden">
-              <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700">First Name</label>
+            <div v-if="isSignUp" class="auth-form__row overflow-hidden">
+              <div class="auth-form__group">
+                <label class="auth-form__label">First Name</label>
                 <input 
                   v-model="form.firstName"
                   type="text"
                   placeholder="John"
-                  class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 text-sm"
+                  class="auth-form__input"
                 />
               </div>
-              <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+              <div class="auth-form__group">
+                <label class="auth-form__label">Last Name</label>
                 <input 
                   v-model="form.lastName"
                   type="text"
                   placeholder="Doe"
-                  class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 text-sm"
+                  class="auth-form__input"
                 />
               </div>
             </div>
           </Transition>
 
           <!-- Email Field -->
-          <div class="space-y-1.5">
-            <label class="block text-sm font-medium text-gray-700">Email</label>
+          <div class="auth-form__group">
+            <label class="auth-form__label">Email</label>
             <input 
               v-model="form.email"
               type="email"
               required
               placeholder="you@example.com"
-              class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 text-sm"
+              class="auth-form__input"
             />
           </div>
 
           <!-- Password Field -->
-          <div class="space-y-1.5">
-            <label class="block text-sm font-medium text-gray-700">Password</label>
-            <div class="relative">
+          <div class="auth-form__group">
+            <label class="auth-form__label">Password</label>
+            <div class="auth-form__input-wrapper">
               <input 
                 v-model="form.password"
                 :type="showPassword ? 'text' : 'password'"
                 required
                 minlength="6"
                 placeholder="••••••••"
-                class="w-full px-4 py-2.5 pr-10 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 text-sm"
+                class="auth-form__input"
               />
               <button 
                 type="button"
                 @click="showPassword = !showPassword"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                class="auth-form__toggle-password"
               >
                 <Icon :name="showPassword ? 'EyeOff' : 'Eye'" :size="18" />
               </button>
             </div>
-            <p v-if="isSignUp" class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+            <p v-if="isSignUp" class="auth-form__hint">Minimum 6 characters</p>
           </div>
 
           <!-- Sect Selection (Sign Up Only) -->
@@ -132,11 +129,11 @@
             leave-from-class="opacity-100 max-h-20"
             leave-to-class="opacity-0 max-h-0"
           >
-            <div v-if="isSignUp" class="space-y-1.5 overflow-hidden">
-              <label class="block text-sm font-medium text-gray-700">Sect (Optional)</label>
+            <div v-if="isSignUp" class="auth-form__group overflow-hidden">
+              <label class="auth-form__label">Sect (Optional)</label>
               <select 
                 v-model="form.sect"
-                class="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-300 text-sm bg-white"
+                class="auth-form__input"
               >
                 <option value="">Select your sect</option>
                 <option value="Shwetambar">Shwetambar</option>
@@ -149,7 +146,7 @@
           <button 
             type="submit"
             :disabled="isLoading"
-            class="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+            class="auth-btn-submit"
           >
             <svg v-if="isLoading" class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -159,13 +156,13 @@
           </button>
 
           <!-- Toggle Mode -->
-          <div class="text-center pt-2">
-            <p class="text-sm text-gray-600">
+          <div class="auth-toggle">
+            <p class="auth-toggle__text">
               {{ isSignUp ? 'Already have an account?' : "Don't have an account?" }}
               <button 
                 type="button"
                 @click="toggleMode"
-                class="text-red-600 hover:text-red-700 font-semibold ml-1 transition-colors"
+                class="auth-toggle__btn"
               >
                 {{ isSignUp ? 'Sign In' : 'Sign Up' }}
               </button>
@@ -175,14 +172,12 @@
       </div>
 
       <!-- Info Card -->
-      <div class="mt-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-4 border border-red-200">
-        <div class="flex items-start gap-2">
-          <Icon name="Info" :size="18" class="text-red-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p class="text-sm text-gray-600">
-              By creating an account, you can save your favorite Tirths, track visited places, and get personalized recommendations.
-            </p>
-          </div>
+      <div class="auth-info-card">
+        <div class="auth-info-card__content">
+          <Icon name="Info" :size="18" class="auth-info-card__icon" />
+          <p class="auth-info-card__text">
+            By creating an account, you can save your favorite Tirths, track visited places, and get personalized recommendations.
+          </p>
         </div>
       </div>
     </div>

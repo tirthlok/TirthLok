@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import './theme.css';
+@import './profile.css';
+@import './auth.css';
 
 @tailwind base;
 @tailwind components;
@@ -56,12 +58,15 @@ body {
 
 /* Hide scrollbar utility (cross-browser) */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Portrait aspect utility (3:4) - height = width * 4/3 (e.g., 150x200) */
@@ -72,8 +77,8 @@ body {
   padding-top: 133.3333%;
 }
 
-.portrait-aspect > img,
-.portrait-aspect > .absolute-img {
+.portrait-aspect>img,
+.portrait-aspect>.absolute-img {
   position: absolute;
   top: 0;
   left: 0;
@@ -110,6 +115,7 @@ body {
     transform: translateX(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -120,24 +126,31 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -147,6 +160,7 @@ body {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -171,7 +185,7 @@ body {
 .animate-shimmer {
   animation: shimmer 2s infinite;
   background-size: 1000px 100%;
-  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 /* ----------------------------
@@ -183,8 +197,10 @@ html,
 body,
 #app,
 #__nuxt {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Webkit browsers */
@@ -193,7 +209,8 @@ body::-webkit-scrollbar,
 #app::-webkit-scrollbar,
 #__nuxt::-webkit-scrollbar,
 *::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
   width: 0;
   height: 0;
 }
@@ -203,6 +220,7 @@ body::-webkit-scrollbar,
   -ms-overflow-style: auto !important;
   scrollbar-width: auto !important;
 }
+
 .show-scrollbar::-webkit-scrollbar {
   display: block !important;
   width: 10px !important;
@@ -211,11 +229,15 @@ body::-webkit-scrollbar,
 
 /* Force-hide scrollbar for filter modal specifically (extra safety) */
 .filter-modal {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
+
 .filter-modal::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari and Opera */
+  display: none !important;
+  /* Chrome, Safari and Opera */
   width: 0 !important;
   height: 0 !important;
 }
