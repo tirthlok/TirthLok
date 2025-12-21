@@ -118,15 +118,35 @@
         >
           <!-- Desktop Profile Dropdown -->
           <div class="hidden md:flex items-center gap-3 pl-2">
-            <button :class="[
-              'p-2 rounded-full text-gray-500 hover:text-primary transition-colors relative group',
-              themeStore?.isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-            ]">
+            <!-- Notification Bell (only when logged in) -->
+            <button 
+              v-if="isAuthenticated"
+              :class="[
+                'p-2 rounded-full text-gray-500 hover:text-primary transition-colors relative group',
+                themeStore?.isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+              ]"
+            >
               <Icon name="Bell" :size="20" />
               <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white scale-0 group-hover:scale-100 transition-transform"></span>
             </button>
             
-            <div class="relative" ref="profileDropdownRef">
+            <!-- Login Button (when NOT authenticated) -->
+            <NuxtLink 
+              v-if="!isAuthenticated"
+              to="/auth/login"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 rounded-full border hover:shadow-md transition-all cursor-pointer font-medium text-sm',
+                themeStore?.isDarkMode 
+                  ? 'border-gray-700 bg-gray-800 hover:bg-gray-700 text-white' 
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              ]"
+            >
+              <Icon name="User" :size="18" />
+              <span>Login</span>
+            </NuxtLink>
+            
+            <!-- Profile Dropdown (when authenticated) -->
+            <div v-if="isAuthenticated" class="relative" ref="profileDropdownRef">
               <button 
                 @click="profileOpen = !profileOpen"
                 :class="[
@@ -137,7 +157,7 @@
                 ]"
               >
                 <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  SS
+                  {{ userInitials }}
                 </div>
                 <Icon name="ChevronDown" :size="14" :class="`transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''} ${themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'}`" />
               </button>
@@ -164,11 +184,11 @@
                     <p :class="[
                       'text-sm font-semibold',
                       themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-                    ]">Shreyas Shah</p>
+                    ]">{{ userFullName }}</p>
                     <p :class="[
                       'text-xs truncate',
                       themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                    ]">shreyas@example.com</p>
+                    ]">{{ userEmail }}</p>
                   </div>
                   
                   <NuxtLink to="/profile" @click="profileOpen = false" :class="[
@@ -242,33 +262,75 @@
               'px-4 text-xs font-semibold uppercase tracking-wider mb-2',
               themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
             ]">Account</p>
-            <NuxtLink to="/profile" @click="mobileMenuOpen = false" :class="[
-              'flex items-center gap-3 px-4 py-3 rounded-xl',
-              themeStore?.isDarkMode 
-                ? 'text-gray-300 hover:bg-gray-700' 
-                : 'text-gray-700 hover:bg-gray-50'
-            ]">
-              <Icon name="User" :size="18" />
-              <span>Profile</span>
+            
+            <!-- Login Button (when NOT authenticated) -->
+            <NuxtLink 
+              v-if="!isAuthenticated"
+              to="/auth/login" 
+              @click="mobileMenuOpen = false" 
+              :class="[
+                'flex items-center gap-3 px-4 py-3 rounded-xl',
+                themeStore?.isDarkMode 
+                  ? 'text-gray-300 hover:bg-gray-700' 
+                  : 'text-gray-700 hover:bg-gray-50'
+              ]"
+            >
+              <Icon name="LogIn" :size="18" />
+              <span>Login / Sign Up</span>
             </NuxtLink>
-            <NuxtLink to="/settings" @click="mobileMenuOpen = false" :class="[
-              'flex items-center gap-3 px-4 py-3 rounded-xl',
-              themeStore?.isDarkMode 
-                ? 'text-gray-300 hover:bg-gray-700' 
-                : 'text-gray-700 hover:bg-gray-50'
-            ]">
-              <Icon name="Settings" :size="18" />
-              <span>Settings</span>
-            </NuxtLink>
-            <button @click="signOut" :class="[
-              'w-full flex items-center gap-3 px-4 py-3 rounded-xl',
-              themeStore?.isDarkMode 
-                ? 'text-red-400 hover:bg-red-900/30' 
-                : 'text-red-600 hover:bg-red-50'
-            ]">
-              <Icon name="LogOut" :size="18" />
-              <span>Sign Out</span>
-            </button>
+            
+            <!-- User Info & Actions (when authenticated) -->
+            <template v-if="isAuthenticated">
+              <!-- User Info Header -->
+              <div :class="[
+                'px-4 py-3 rounded-xl mb-2',
+                themeStore?.isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+              ]">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                    {{ userInitials }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p :class="[
+                      'text-sm font-semibold truncate',
+                      themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
+                    ]">{{ userFullName }}</p>
+                    <p :class="[
+                      'text-xs truncate',
+                      themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                    ]">{{ userEmail }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <NuxtLink to="/profile" @click="mobileMenuOpen = false" :class="[
+                'flex items-center gap-3 px-4 py-3 rounded-xl',
+                themeStore?.isDarkMode 
+                  ? 'text-gray-300 hover:bg-gray-700' 
+                  : 'text-gray-700 hover:bg-gray-50'
+              ]">
+                <Icon name="User" :size="18" />
+                <span>Profile</span>
+              </NuxtLink>
+              <NuxtLink to="/settings" @click="mobileMenuOpen = false" :class="[
+                'flex items-center gap-3 px-4 py-3 rounded-xl',
+                themeStore?.isDarkMode 
+                  ? 'text-gray-300 hover:bg-gray-700' 
+                  : 'text-gray-700 hover:bg-gray-50'
+              ]">
+                <Icon name="Settings" :size="18" />
+                <span>Settings</span>
+              </NuxtLink>
+              <button @click="signOut" :class="[
+                'w-full flex items-center gap-3 px-4 py-3 rounded-xl',
+                themeStore?.isDarkMode 
+                  ? 'text-red-400 hover:bg-red-900/30' 
+                  : 'text-red-600 hover:bg-red-50'
+              ]">
+                <Icon name="LogOut" :size="18" />
+                <span>Sign Out</span>
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -295,15 +357,86 @@ import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
+import { useAuth } from '~/composables/useAuth'
 import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
-const tithStore = useTirthStore()
+const tirthStore = useTirthStore()
 const dStore = useDharamshalaStore()
 const bStore = useBhojanshalaStore()
 const themeStore = useThemeStore()
 const route = useRoute()
 const searchWrapper = ref<HTMLElement | null>(null)
 const profileDropdownRef = ref<HTMLElement | null>(null)
+
+// Auth state
+const { 
+  user, 
+  isAuthenticated, 
+  initialize: initAuth, 
+  signOut: authSignOut,
+  getCustomerProfile 
+} = useAuth()
+
+// Customer profile data
+const customerProfile = ref<{
+  customer_first_name?: string | null
+  customer_last_name?: string | null
+  customer_email_id?: string | null
+} | null>(null)
+
+// Computed user display properties
+const userInitials = computed(() => {
+  if (!isAuthenticated.value) return ''
+  
+  const firstName = customerProfile.value?.customer_first_name || user.value?.user_metadata?.first_name || ''
+  const lastName = customerProfile.value?.customer_last_name || user.value?.user_metadata?.last_name || ''
+  
+  if (firstName && lastName) {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+  }
+  if (firstName) {
+    return firstName.substring(0, 2).toUpperCase()
+  }
+  // Fallback to email initials
+  const email = user.value?.email || ''
+  return email.substring(0, 2).toUpperCase()
+})
+
+const userFullName = computed(() => {
+  if (!isAuthenticated.value) return ''
+  
+  const firstName = customerProfile.value?.customer_first_name || user.value?.user_metadata?.first_name || ''
+  const lastName = customerProfile.value?.customer_last_name || user.value?.user_metadata?.last_name || ''
+  
+  if (firstName || lastName) {
+    return `${firstName} ${lastName}`.trim()
+  }
+  return user.value?.email?.split('@')[0] || 'User'
+})
+
+const userEmail = computed(() => {
+  if (!isAuthenticated.value) return ''
+  return customerProfile.value?.customer_email_id || user.value?.email || ''
+})
+
+// Load customer profile when user is authenticated
+const loadCustomerProfile = async () => {
+  if (user.value?.id) {
+    const result = await getCustomerProfile(user.value.id)
+    if (result.success && result.data) {
+      customerProfile.value = result.data
+    }
+  }
+}
+
+// Watch for auth state changes
+watch(isAuthenticated, async (newVal) => {
+  if (newVal) {
+    await loadCustomerProfile()
+  } else {
+    customerProfile.value = null
+  }
+})
 
 const mobileMenuOpen = ref(false)
 const filterOpen = ref(false)
@@ -327,7 +460,7 @@ const activeFilterCount = computed(() => {
   
   // Only show filter count on Tirth page (other pages don't have mobile filter badge)
   if (p.startsWith('/tirth')) {
-    const filters = tithStore.currentFilters
+    const filters = tirthStore.currentFilters
     let count = 0
     if (filters.state) count++
     if (filters.sect) count++
@@ -342,7 +475,7 @@ const suggestionsSource = computed(() => {
   const p = route.path || ''
   if (p.startsWith('/dharamshala')) return dStore.dharamshalaNames || []
   if (p.startsWith('/bhojanshala')) return bStore.bhojanshalaNames || []
-  return tithStore.tirthNames || []
+  return tirthStore.tirthNames || []
 })
 
 const searchPlaceholder = computed(() => {
@@ -361,7 +494,7 @@ const handleSearch = () => {
   } else if (p.startsWith('/bhojanshala')) {
     bStore.filterBhojanshalas({ searchTerm: q })
   } else {
-    tithStore.filterTirths({ searchTerm: q })
+    tirthStore.filterTirths({ searchTerm: q })
   }
 }
 
@@ -377,9 +510,11 @@ const handleBlur = () => {
   }, 200)
 }
 
-const signOut = () => {
+const signOut = async () => {
   mobileMenuOpen.value = false
   profileOpen.value = false
+  await authSignOut()
+  customerProfile.value = null
   navigateTo('/')
 }
 
@@ -415,9 +550,15 @@ watch(() => route.path, () => {
   if (scrollTimeout) clearTimeout(scrollTimeout)
 })
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('scroll', handleScroll, { passive: true })
+  
+  // Initialize auth and load profile
+  await initAuth()
+  if (isAuthenticated.value) {
+    await loadCustomerProfile()
+  }
 })
 
 onUnmounted(() => {
