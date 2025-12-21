@@ -87,6 +87,17 @@ export interface AdminUser extends User {
   permissions: string[]
 }
 
+export interface CustomerProfile {
+  customer_id: string
+  customer_email_id: string
+  customer_first_name?: string
+  customer_last_name?: string
+  customer_mobile?: number
+  customer_sect?: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Room {
   id: string
   roomNumber: string
