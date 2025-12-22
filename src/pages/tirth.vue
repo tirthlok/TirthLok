@@ -185,12 +185,12 @@ const activeFilterCount = computed(() => {
 })
 
 // Fetch all tirths using useFetch with cache disabled
-// Removed await to make fetch non-blocking - UI renders immediately with loading state
+// Non-blocking fetch - UI renders immediately with loading state, fetch runs in parallel
 const { data: tirthData, pending: loading, error: fetchError, refresh: refreshTirths } = useFetch(
   () => `/api/tirth?limit=1000&_t=${Date.now()}`, // Add timestamp to bust cache
   {
     cache: 'no-store', // Disable all caching, fetch fresh data every time
-    lazy: true, // Lazy loading for better UX - doesn't block navigation
+    server: true, // Fetch starts on server for faster initial load
   }
 )
 
