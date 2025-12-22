@@ -20,14 +20,11 @@
             'text-base',
             themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
           ]">
-            Browse all {{ allTirths.length }} tirths.
+            Browse all {{ loading ? '...' : allTirths.length }} tirths.
           </p>
         </div>
-      <div v-if="loading" class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
-      </div>
 
-      <!-- Sticky Filter Bar -->
+      <!-- Sticky Filter Bar - Always visible -->
       <div :class="[
         'sticky top-[84px] z-40 backdrop-blur-sm border-b mb-6 py-3 px-4 md:px-6 transition-all duration-300 -mx-4 sm:-mx-6 lg:-mx-8',
         themeStore?.isDarkMode 
@@ -35,28 +32,32 @@
           : 'bg-white/95 border-gray-100'
       ]">
         <div class="max-w-[1920px] mx-auto">
-          <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-            <button
-              v-for="filter in filterOptions"
-              :key="filter.id"
-              @click="selectedGrouping = filter.id"
-              :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border',
-                selectedGrouping === filter.id
-                  ? 'bg-red-500 text-white border-red-500 shadow-md'
-                  : (themeStore?.isDarkMode 
-                    ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
-              ]"
-            >
-              <Icon :name="getFilterIcon(filter.id)" :size="16" />
-              <span>{{ filter.label }}</span>
-            </button>
-            <!-- Filter Panel Button (Hidden on Mobile) -->
+          <!-- Use justify-between to keep Advanced button fixed on right -->
+          <div class="flex items-center justify-between gap-3">
+            <!-- Scrollable filter buttons container -->
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar flex-1 min-w-0">
+              <button
+                v-for="filter in filterOptions"
+                :key="filter.id"
+                @click="selectedGrouping = filter.id"
+                :class="[
+                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border flex-shrink-0',
+                  selectedGrouping === filter.id
+                    ? 'bg-red-500 text-white border-red-500 shadow-md'
+                    : (themeStore?.isDarkMode 
+                      ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
+                ]"
+              >
+                <Icon :name="getFilterIcon(filter.id)" :size="16" />
+                <span>{{ filter.label }}</span>
+              </button>
+            </div>
+            <!-- Advanced Filter Button - Fixed position on right -->
             <button
               @click="showAdvancedFilters = true"
               :class="[
-                'hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ml-auto',
+                'hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border flex-shrink-0',
                 hasActiveFilters
                   ? 'text-red-500 border-red-500 shadow-md'
                   : (themeStore?.isDarkMode 
@@ -86,8 +87,13 @@
         ]">{{ error }}</p>
       </div>
 
+      <!-- Loading Skeleton Grid -->
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
+        <TirthCardSkeleton v-for="n in 8" :key="n" />
+      </div>
+
       <!-- Tirth Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
         <div
             v-for="tirth in tirthStore.filteredTirths"
             :key="tirth.id"
@@ -148,6 +154,7 @@ import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
 import { useGrouping } from '~/composables/ui/useGrouping'
 import { BaseCard, Icon, FilterPanel } from '~/components/shared'
+import TirthCardSkeleton from '~/components/shared/TirthCardSkeleton.vue'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({
@@ -178,11 +185,12 @@ const activeFilterCount = computed(() => {
 })
 
 // Fetch all tirths using useFetch with cache disabled
-// cache: false ensures fresh data on every page reload, fixing the refresh issue
-const { data: tirthData, pending: loading, error: fetchError, refresh: refreshTirths } = await useFetch(
+// Removed await to make fetch non-blocking - UI renders immediately with loading state
+const { data: tirthData, pending: loading, error: fetchError, refresh: refreshTirths } = useFetch(
   () => `/api/tirth?limit=1000&_t=${Date.now()}`, // Add timestamp to bust cache
   {
     cache: 'no-store', // Disable all caching, fetch fresh data every time
+    lazy: true, // Lazy loading for better UX - doesn't block navigation
   }
 )
 
