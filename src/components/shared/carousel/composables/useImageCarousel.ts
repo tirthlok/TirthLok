@@ -21,17 +21,18 @@ export function useImageCarousel(
   const _initialImages = Array.isArray(images) ? images.slice() : images ? [images] : []
   const imagesArr = ref<string[]>(_initialImages)
 
-  // Preload images on client and filter out broken ones
-  const preloadImage = (url: string, timeout = 500) => {
+  // Preload images on client and filter out truly broken ones
+  // Increased timeout to 5 seconds for production network reliability
+  const preloadImage = (url: string, timeout = 5000) => {
     return new Promise<boolean>((resolve) => {
-      if (typeof window === 'undefined') return resolve(false)
+      if (typeof window === 'undefined') return resolve(true) // SSR: assume valid
       const img = new Image()
       let done = false
       const t = setTimeout(() => {
         if (done) return
         done = true
-        img.src = ''
-        resolve(false)
+        // On timeout, don't abort - assume image is still loading and keep it
+        resolve(true)
       }, timeout)
       img.onload = () => {
         if (done) return
@@ -43,13 +44,14 @@ export function useImageCarousel(
         if (done) return
         done = true
         clearTimeout(t)
-        resolve(false)
+        resolve(false) // Only reject truly broken images (404, etc.)
       }
       img.src = url
     })
   }
 
   // Validate and filter images when called (lazy validation)
+  // Only removes images that fail to load (404 errors), not slow-loading ones
   const validateImages = async () => {
     if (_initialImages.length === 0) {
       imagesArr.value = []
@@ -66,7 +68,10 @@ export function useImageCarousel(
         }
       })
     )
-    imagesArr.value = validated
+    // Only update if we have results, otherwise keep original
+    if (validated.length > 0) {
+      imagesArr.value = validated
+    }
   }
 
   // Navigate to next image
