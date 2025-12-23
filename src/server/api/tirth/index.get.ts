@@ -7,12 +7,12 @@ import { createClient } from '@supabase/supabase-js'
 export default defineEventHandler(async (event) => {
   try {
     console.log('🔌 Server API: /api/tirth called')
-    
+
     // Get Supabase config - try runtime config first, then fallback to environment
     const config = useRuntimeConfig()
     let supabaseUrl = config.public?.supabaseUrl
     let supabaseKey = config.public?.supabaseAnonKey
-    
+
     // Fallback to service role key for full schema access
     if (!supabaseUrl) {
       supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
       const limit = parseInt(limitStr, 10) || 10
       const page = parseInt(pageStr, 10) || 1
       const offset = (page - 1) * limit
-      
+
       // Try querying - service role key gives us access to all schemas
       let supabaseQuery = supabase
         .from('tirth_cards')
@@ -67,6 +67,7 @@ export default defineEventHandler(async (event) => {
 
       // Apply pagination
       const { data, error, count } = await supabaseQuery.range(offset, offset + limit - 1)
+
 
       console.log('📊 Supabase response:', { dataCount: data?.length, error: error?.message, total: count })
 
@@ -87,7 +88,7 @@ export default defineEventHandler(async (event) => {
         }
 
         return {
-          id: row.id || `tirth-${row.tirth_name}`,
+          id: row.tirth_name || 'unknown',
           name: row.tirth_name || '',
           description: row.tirth_description || '',
           historicalBackground: row.tirth_history || 'To be Updated Soon',

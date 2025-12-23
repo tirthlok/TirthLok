@@ -152,6 +152,8 @@
 import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
+import { useFavoritesStore } from '~/stores/favorites'
+import { useAuth } from '~/composables/auth/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'
 import { BaseCard, Icon, FilterPanel } from '~/components/shared'
 import TirthCardSkeleton from '~/components/shared/TirthCardSkeleton.vue'
@@ -163,6 +165,8 @@ definePageMeta({
 
 const themeStore = useThemeStore()
 const tirthStore = useTirthStore()
+const favoritesStore = useFavoritesStore()
+const { isAuthenticated } = useAuth()
 const { getUniqueGroupings, formatGroupingTitle } = useGrouping()
 const route = useRoute()
 
@@ -223,6 +227,7 @@ const uniqueGroupings = computed(() => getUniqueGroupings(allTirths.value))
 
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
+  { id: 'wishlist', label: `Wishlist (${favoritesStore.getFavoriteCount})` },
   ...uniqueGroupings.value.map(grouping => ({
     id: grouping,
     label: formatGroupingTitle(grouping)
@@ -232,6 +237,7 @@ const filterOptions = computed(() => [
 const getFilterIcon = (id: string) => {
   switch (id) {
     case 'all': return 'Grid3X3'
+    case 'wishlist': return 'Heart'
     default: return 'MapPin'
   }
 }
@@ -243,8 +249,16 @@ const selectedGrouping = ref<string>('all')
 const applyFilters = () => {
   let result = allTirths.value
 
+  // Apply wishlist filter
+  if (selectedGrouping.value === 'wishlist') {
+    if (!isAuthenticated.value) {
+      result = []
+    } else {
+      result = result.filter((t: Tirth) => favoritesStore.isFavorite(t.id))
+    }
+  }
   // Apply grouping filter
-  if (selectedGrouping.value !== 'all') {
+  else if (selectedGrouping.value !== 'all') {
     result = result.filter((t: Tirth) => {
       if (Array.isArray(t.tirth_grouping)) {
         return t.tirth_grouping.includes(selectedGrouping.value)
@@ -300,8 +314,21 @@ watch(
   { deep: true }
 )
 
+// Watch favorites changes to re-apply filter when wishlist is updated
+watch(
+  () => favoritesStore.favorites,
+  () => {
+    if (selectedGrouping.value === 'wishlist') {
+      console.log('❤️ Tirth page: Favorites changed, re-applying wishlist filter')
+      applyFilters()
+    }
+  },
+  { deep: true }
+)
+
 onMounted(async () => {
   console.log('🔧 Tirth page: Mounted, checking if data exists')
+  
   // Apply filters in case data was already loaded by plugin/SSR
   if (allTirths.value.length > 0) {
     console.log('💾 Tirth page: Data already loaded from plugin/SSR, applying filters')

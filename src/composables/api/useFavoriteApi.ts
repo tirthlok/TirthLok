@@ -1,68 +1,131 @@
 /**
  * useFavoriteApi Composable
- * Favorite/Wishlist API endpoints
+ * Favorite/Wishlist API - uses Supabase client directly with authenticated session
+ * Uses tirth_name as the unique identifier (since tirth_cards table lacks tirth_id)
  */
 
+import { useSupabase } from '~/composables/auth/useSupabase'
+import { useAuth } from '~/composables/auth/useAuth'
+
 export const useFavoriteApi = () => {
-  const config = useRuntimeConfig()
+  const { supabase } = useSupabase()
+  const { session } = useAuth()
 
   /**
-   * Fetch user's favorites
+   * Fetch user's wishlist (Tirth names)
    */
   const fetchFavorites = async (): Promise<string[]> => {
+    if (!session.value?.user?.id) {
+      console.log('[Wishlist] No user session, returning empty wishlist')
+      return []
+    }
+
     try {
-      return await $fetch('/api/favorites', {
-        baseURL: config.public.apiBaseUrl,
-      })
+      const { data, error } = await supabase
+        .from('customer_wishlist')
+        .select('tirth_name')
+        .eq('customer_id', session.value.user.id)
+
+      if (error) {
+        console.error('Error fetching wishlist:', error)
+        throw error
+      }
+
+      return (data || []).map(item => item.tirth_name)
     } catch (error) {
-      console.error('Error fetching favorites:', error)
+      console.error('Error fetching wishlist:', error)
       throw error
     }
   }
 
   /**
-   * Add item to favorites
+   * Add tirth to wishlist
+   * @param tirthName - The tirth name (used as unique identifier)
    */
-  const addFavorite = async (itemId: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala'): Promise<string[]> => {
+  const addFavorite = async (tirthName: string, _entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'): Promise<string[]> => {
+    if (!session.value?.user?.id) {
+      throw new Error('Not authenticated')
+    }
+
+    if (!tirthName || tirthName === 'undefined') {
+      console.error('[Wishlist] Invalid tirth name:', tirthName)
+      throw new Error(`Invalid tirth name: ${tirthName}`)
+    }
+
     try {
-      return await $fetch('/api/favorites', {
-        method: 'POST',
-        baseURL: config.public.apiBaseUrl,
-        body: { itemId, entityType },
-      })
+      console.log('[Wishlist] Adding tirth:', { tirthName, userId: session.value.user.id })
+
+      const { error: insertError } = await supabase
+        .from('customer_wishlist')
+        .insert({
+          customer_id: session.value.user.id,
+          tirth_name: tirthName
+        })
+
+      if (insertError) {
+        // Handle duplicate entry gracefully
+        if (insertError.code === '23505') {
+          console.log('[Wishlist] Already in wishlist')
+        } else {
+          console.error('Error adding to wishlist:', insertError)
+          throw insertError
+        }
+      }
+
+      // Return updated wishlist
+      return await fetchFavorites()
     } catch (error) {
-      console.error(`Error adding favorite ${itemId}:`, error)
+      console.error(`Error adding to wishlist ${tirthName}:`, error)
       throw error
     }
   }
 
   /**
-   * Remove item from favorites
+   * Remove tirth from wishlist
+   * @param tirthName - The tirth name (used as unique identifier)
    */
-  const removeFavorite = async (itemId: string): Promise<string[]> => {
+  const removeFavorite = async (tirthName: string): Promise<string[]> => {
+    if (!session.value?.user?.id) {
+      throw new Error('Not authenticated')
+    }
+
+    if (!tirthName || tirthName === 'undefined') {
+      console.error('[Wishlist] Invalid tirth name:', tirthName)
+      throw new Error(`Invalid tirth name: ${tirthName}`)
+    }
+
     try {
-      return await $fetch(`/api/favorites/${itemId}`, {
-        method: 'DELETE',
-        baseURL: config.public.apiBaseUrl,
-      })
+      console.log('[Wishlist] Removing tirth:', { tirthName, userId: session.value.user.id })
+
+      const { error } = await supabase
+        .from('customer_wishlist')
+        .delete()
+        .eq('customer_id', session.value.user.id)
+        .eq('tirth_name', tirthName)
+
+      if (error) {
+        console.error('Error removing from wishlist:', error)
+        throw error
+      }
+
+      // Return updated wishlist
+      return await fetchFavorites()
     } catch (error) {
-      console.error(`Error removing favorite ${itemId}:`, error)
+      console.error(`Error removing from wishlist ${tirthName}:`, error)
       throw error
     }
   }
 
   /**
-   * Check if item is favorited
+   * Check if item is in wishlist
    */
-  const isFavorite = async (itemId: string): Promise<boolean> => {
+  const isFavorite = async (tirthName: string): Promise<boolean> => {
     try {
-      const response = await $fetch<{ isFavorite: boolean }>(`/api/favorites/${itemId}`, {
-        baseURL: config.public.apiBaseUrl,
-      })
-      return response.isFavorite
+      const favorites = await fetchFavorites()
+      return favorites.includes(tirthName)
     } catch (error) {
-      console.error(`Error checking favorite status for ${itemId}:`, error)
-      throw error
+      console.error(`Error checking wishlist status for ${tirthName}:`, error)
+      return false
     }
   }
 
@@ -70,13 +133,22 @@ export const useFavoriteApi = () => {
    * Clear all favorites
    */
   const clearFavorites = async (): Promise<void> => {
+    if (!session.value?.user?.id) {
+      return
+    }
+
     try {
-      await $fetch('/api/favorites', {
-        method: 'DELETE',
-        baseURL: config.public.apiBaseUrl,
-      })
+      const { error } = await supabase
+        .from('customer_wishlist')
+        .delete()
+        .eq('customer_id', session.value.user.id)
+
+      if (error) {
+        console.error('Error clearing wishlist:', error)
+        throw error
+      }
     } catch (error) {
-      console.error('Error clearing favorites:', error)
+      console.error('Error clearing wishlist:', error)
       throw error
     }
   }

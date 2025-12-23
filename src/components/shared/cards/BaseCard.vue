@@ -23,6 +23,7 @@
         :entity-type="cardType"
         :is-favorited="isFavorited"
         class='absolute top-4 right-4 z-10'
+        @auth-required="handleAuthRequired"
       />
 
       <!-- Additional Info Section (Optional) -->
@@ -135,6 +136,12 @@ const imageHeightFinal = computed(() => {
 const isFavorited = computed(() => {
   return favoritesStore.isFavorite(props.item.id)
 })
+
+// Handle auth required - redirect to login
+const router = useRouter()
+const handleAuthRequired = () => {
+  router.push('/auth/login')
+}
 
 // Details section background
 const detailsBgClass = computed(() => {

@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     let supabaseUrl = config.public?.supabaseUrl
     let supabaseKey = config.public?.supabaseAnonKey
-    
+
     // Fallback to service role key for full schema access
     if (!supabaseUrl) {
       supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
     let detailedData: any = null
 
     console.log(`🔍 Querying tirth_details for: ${id}`)
-    
+
     try {
       const { data: detailsResult, error: detailsError } = await supabase
         .from('tirth_details')
@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
       .single()
 
     console.log(`📊 Supabase response for ${id}:`, { found: !!cardData, hasDetails: !!detailedData, error: cardError?.message })
-    
+
     if (cardData) {
       console.log(`📋 Raw tirth_cards columns:`, Object.keys(cardData))
       console.log(`📋 Raw tirth_cards data:`, JSON.stringify(cardData, null, 2))
@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
     // Now fetch festivals from the tirth_festivals_and_events table for this tirth
     console.log(`🔍 Querying tirth_festivals_and_events table for tirth: ${id}`)
     let festivals: any[] = []
-    
+
     try {
       const { data: festivalsData, error: festivalsError } = await supabase
         .from('tirth_festivals_and_events')
@@ -158,7 +158,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const transformedTirth = {
-      id: data.id || `tirth-${data.tirth_name}`,
+      id: data.tirth_name || 'unknown',
       name: data.tirth_name || '',
       description: data.tirth_description || '',
       historicalBackground: data.tirth_history || data.historical_background || 'To be Updated Soon',
@@ -204,7 +204,7 @@ export default defineEventHandler(async (event) => {
     return transformedTirth
   } catch (error: any) {
     console.error(`❌ Error fetching tirth ${getRouterParam(event, 'id')}:`, error)
-    
+
     // Handle 404 errors
     if (error.statusCode === 404) {
       throw error

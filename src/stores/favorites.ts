@@ -4,6 +4,7 @@ interface FavoritesState {
   favorites: string[]
   loading: boolean
   error: string | null
+  initialized: boolean
 }
 
 /**
@@ -15,6 +16,7 @@ export const useFavoritesStore = defineStore('favorites', {
     favorites: [],
     loading: false,
     error: null,
+    initialized: false,
   }),
 
   getters: {
@@ -50,6 +52,7 @@ export const useFavoritesStore = defineStore('favorites', {
         const { useFavoriteApi } = await import('~/composables/api')
         const { fetchFavorites } = useFavoriteApi()
         this.favorites = await fetchFavorites()
+        this.initialized = true
       } catch (error) {
         this.error = 'Failed to fetch favorites'
         console.error(error)
