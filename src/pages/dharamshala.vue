@@ -114,8 +114,8 @@ import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import type { Dharamshala } from '~/types/models'
-import { BaseCard, Icon } from '~/components/shared'
-import type { CardItem } from '~/components/shared'
+import { BaseCard, Icon } from '~/components/ui'
+import type { CardItem } from '~/components/ui'
 
 definePageMeta({
   layout: 'default'
@@ -140,13 +140,7 @@ if (serverDharamshala?.value) {
   })
 }
 
-const { data: serverFavorites } = await useFetch(
-  () => `/api/favorites?_t=${Date.now()}`,
-  { cache: 'no-store' }
-)
-if (serverFavorites?.value) {
-  favoritesStore.setFavorites((serverFavorites.value as any) as string[])
-}
+// Favorites are now loaded by init-auth.client.ts plugin on client side
 
 const loading = computed(() => dharamshalaStore.loading)
 const error = computed(() => dharamshalaStore.error)

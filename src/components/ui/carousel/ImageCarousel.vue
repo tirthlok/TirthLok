@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useImageCarousel } from './composables/useImageCarousel'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 // Placeholder image when there are no valid images
 import placeholderImg from '~/assets/images/jain-temple-placeholder.png'
 

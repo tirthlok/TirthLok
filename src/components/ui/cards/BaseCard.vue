@@ -69,8 +69,8 @@ import { useCard } from './composables/useCard'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useThemeStore } from '~/stores/theme'
 import ImageCarousel from '../carousel/ImageCarousel.vue'
-import FavoriteButton from '../../common/FavoriteButton.vue'
-import Icon from '../../common/Icon.vue'
+import FavoriteButton from '../FavoriteButton.vue'
+import Icon from '../Icon.vue'
 
 interface Props {
   item: CardItem

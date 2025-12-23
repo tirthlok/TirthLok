@@ -145,8 +145,8 @@
 
 <script setup lang="ts">
 import { useThemeStore } from '~/stores/theme'
-import Header from '~/components/header/Header.vue'
-import Icon from '~/components/common/Icon.vue'
+import Header from '~/components/layout/header/Header.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 const themeStore = useThemeStore()
 </script>

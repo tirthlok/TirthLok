@@ -176,7 +176,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
 

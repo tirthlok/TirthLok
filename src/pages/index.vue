@@ -255,7 +255,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 // Import images from assets
 import heroImg from '~/assets/images/hero-jain-temple.png'

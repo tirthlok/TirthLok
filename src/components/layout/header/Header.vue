@@ -350,14 +350,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import Icon from '~/components/common/Icon.vue'
-import SearchSuggestions from '~/components/header/SearchSuggestions.vue'
-import FilterPanel from '~/components/shared/filters/FilterPanel.vue'
+import Icon from '~/components/ui/Icon.vue'
+import SearchSuggestions from '~/components/layout/header/SearchSuggestions.vue'
+import FilterPanel from '~/components/ui/filters/FilterPanel.vue'
 import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
-import { useAuth } from '~/composables/useAuth'
+import { useAuth } from '~/composables/auth/useAuth'
 import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
 const tirthStore = useTirthStore()

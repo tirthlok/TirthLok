@@ -231,7 +231,7 @@ import type { Bhojanshala } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 definePageMeta({
   layout: 'default',

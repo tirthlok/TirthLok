@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success'
 export type ButtonSize = 'sm' | 'md' | 'lg'

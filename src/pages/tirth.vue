@@ -155,8 +155,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useAuth } from '~/composables/auth/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'
-import { BaseCard, Icon, FilterPanel } from '~/components/shared'
-import TirthCardSkeleton from '~/components/shared/TirthCardSkeleton.vue'
+import { BaseCard, Icon, FilterPanel, TirthCardSkeleton } from '~/components/ui'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({
