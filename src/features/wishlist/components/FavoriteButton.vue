@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useFavoritesStore } from '~/stores/favorites'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 import Icon from '~/components/ui/Icon.vue'
 
 interface Props {

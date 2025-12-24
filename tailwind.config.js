@@ -1,10 +1,11 @@
 module.exports = {
   content: [
-    './components/**/*.{js,vue,ts}',
-    './layouts/**/*.vue',
-    './pages/**/*.vue',
-    './plugins/**/*.{js,ts}',
-    './app.vue',
+    './src/components/**/*.{js,vue,ts}',
+    './src/layouts/**/*.vue',
+    './src/pages/**/*.vue',
+    './src/plugins/**/*.{js,ts}',
+    './src/features/**/*.{js,vue,ts}',
+    './src/app.vue',
   ],
   theme: {
     extend: {
@@ -28,7 +29,7 @@ module.exports = {
         surface: 'var(--color-surface)',
         muted: 'var(--color-surface-muted)',
         logo: 'var(--color-logo)',
-        
+
         // Legacy Color Names (Mapped to Schema)
         'cream': 'var(--color-background)',
         'sage': 'var(--color-secondary)',

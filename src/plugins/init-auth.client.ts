@@ -5,7 +5,7 @@
  */
 
 import { useFavoritesStore } from '~/stores/favorites'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 
 export default defineNuxtPlugin(async () => {
     // Only run on client side
@@ -30,7 +30,7 @@ export default defineNuxtPlugin(async () => {
         }
 
         // Set up auth state change listener to sync favorites
-        const { supabase } = await import('~/composables/auth/useSupabase').then(m => m.useSupabase())
+        const { supabase } = await import('~/features/auth/composables/useSupabase').then(m => m.useSupabase())
 
         supabase.auth.onAuthStateChange(async (event, newSession) => {
             console.log('🔐 Auth Plugin: Auth state changed:', event)

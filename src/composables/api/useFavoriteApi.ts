@@ -4,8 +4,8 @@
  * Uses tirth_name as the unique identifier (since tirth_cards table lacks tirth_id)
  */
 
-import { useSupabase } from '~/composables/auth/useSupabase'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useSupabase } from '~/features/auth/composables/useSupabase'
+import { useAuth } from '~/features/auth/composables/useAuth'
 
 export const useFavoriteApi = () => {
   const { supabase } = useSupabase()

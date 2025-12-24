@@ -4,7 +4,7 @@
  * Redirects to login page if user is not authenticated
  */
 
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
     // Only run on client side

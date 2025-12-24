@@ -203,7 +203,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 
 definePageMeta({
   layout: 'default',

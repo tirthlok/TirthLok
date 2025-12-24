@@ -174,9 +174,9 @@ import type { Tirth } from '~/types/models'
 import { ref, computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
 import { BaseCard } from '~/components/ui'
-import TirthAbout from '~/components/tirth/TirthAbout.vue'
-import TirthFacilities from '~/components/tirth/TirthFacilities.vue'
-import TirthFestivals from '~/components/tirth/TirthFestivals.vue'
+import TirthAbout from '~/features/tirth/components/TirthAbout.vue'
+import TirthFacilities from '~/features/tirth/components/TirthFacilities.vue'
+import TirthFestivals from '~/features/tirth/components/TirthFestivals.vue'
 
 definePageMeta({
   layout: 'default',

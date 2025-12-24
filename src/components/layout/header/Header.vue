@@ -357,7 +357,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
 const tirthStore = useTirthStore()

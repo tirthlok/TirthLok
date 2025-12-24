@@ -153,7 +153,7 @@ import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
 import { useFavoritesStore } from '~/stores/favorites'
-import { useAuth } from '~/composables/auth/useAuth'
+import { useAuth } from '~/features/auth/composables/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'
 import { BaseCard, Icon, FilterPanel, TirthCardSkeleton } from '~/components/ui'
 import type { Tirth } from '~/types/models'
@@ -189,7 +189,7 @@ const activeFilterCount = computed(() => {
 
 // Fetch all tirths using useFetch with cache disabled
 // Non-blocking fetch - UI renders immediately with loading state, fetch runs in parallel
-const { data: tirthData, pending: loading, error: fetchError, refresh: refreshTirths } = useFetch(
+const { data: tirthData, pending: loading, error: fetchError } = useFetch(
   () => `/api/tirth?limit=1000&_t=${Date.now()}`, // Add timestamp to bust cache
   {
     cache: 'no-store', // Disable all caching, fetch fresh data every time
