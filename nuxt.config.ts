@@ -4,21 +4,20 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
   ],
-  
+
   css: ['~/assets/css/main.css'],
-  
+
   // Use `src/` as the application's source directory. This groups all app code under `src/`.
   srcDir: 'src/',
 
   ssr: true,
-  
+
   typescript: {
     strict: true,
   },
 
   tailwindcss: {
     exposeConfig: true,
-    injectPosition: 'first',
     viewer: true,
   },
 
