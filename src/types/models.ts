@@ -50,6 +50,7 @@ export interface Tirth {
   darshanTimings: string
   festivals: Festival[]
   location: Location
+  contact?: ContactInfo
   images: string[]
   sect: 'Shwetambar' | 'Digambar'
   type: 'Gyan-sthan' | 'Siddhakshetra' | 'Atishay-Kshetra' | 'Other'

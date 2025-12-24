@@ -27,7 +27,7 @@
       <!-- Temple Content -->
       <div v-else-if="tirth" class="space-y-8 sm:space-y-12">
         <!-- Breadcrumb -->
-        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
@@ -38,8 +38,8 @@
         <!-- Header Section with Image and Info -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <!-- Image Carousel (Left) -->
-          <div class="w-full lg:w-[400px]">
-            <div class="relative group overflow-hidden rounded-2xl shadow-2xl bg-gradient-to-br from-amber-100 to-orange-100 h-96 lg:h-[500px]">
+          <div class="w-full">
+            <div class="relative group overflow-hidden rounded-2xl shadow-2xl bg-gradient-to-br from-amber-100 to-orange-100 h-80 sm:h-96 lg:h-[450px]">
               <ImageCarousel
                 :images="tirth.images"
                 :title="tirth.name"
@@ -63,35 +63,77 @@
               </div>
             </div>
 
-            <!-- Rating and Type -->
-            <div class="flex items-center gap-3 flex-wrap">
-              <div v-if="tirth.rating" class="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-lg">
-                <Icon name="Star" :size="20" class="text-yellow-400 fill-yellow-400" />
-                <span class="font-bold text-gray-900">{{ tirth.rating }}</span>
-                <span class="text-gray-600 text-sm">({{ tirth.reviews || 0 }} reviews)</span>
+
+
+            <!-- Key Details - Two Column Layout -->
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Sect Card -->
+              <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <Icon name="Users" :size="16" class="text-blue-600" />
+                  <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Sect</div>
+                </div>
+                <div class="text-xl font-bold text-blue-700">{{ tirth.sect }}</div>
               </div>
-              <span v-if="tirth.sect" class="px-3 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">{{ tirth.sect }}</span>
+
+              <!-- Type Card -->
+              <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-l-4 border-purple-600 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <Icon name="Landmark" :size="16" class="text-purple-600" />
+                  <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Type</div>
+                </div>
+                <div class="text-xl font-bold text-purple-700">{{ tirth.type }}</div>
+              </div>
+
+              <!-- Contact Card -->
+              <div class="bg-gradient-to-br from-teal-50 to-cyan-100 border-l-4 border-teal-600 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <Icon name="Phone" :size="16" class="text-teal-600" />
+                  <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Contact</div>
+                </div>
+                <a v-if="tirth.contact?.phone" :href="`tel:${tirth.contact.phone}`" class="text-xl font-bold text-teal-700 hover:text-teal-800 transition-colors">
+                  {{ tirth.contact.phone }}
+                </a>
+                <div v-else class="text-lg text-gray-500 italic">
+                  To Be Updated Soon
+                </div>
+              </div>
+
+              <!-- Email Card -->
+              <div class="bg-gradient-to-br from-orange-50 to-amber-100 border-l-4 border-orange-600 p-4 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                  <Icon name="Mail" :size="16" class="text-orange-600" />
+                  <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Email</div>
+                </div>
+                <a v-if="tirth.contact?.email" :href="`mailto:${tirth.contact.email}`" class="text-xl font-bold text-orange-700 hover:text-orange-800 transition-colors break-all">
+                  {{ tirth.contact.email }}
+                </a>
+                <div v-else class="text-lg text-gray-500 italic">
+                  To Be Updated Soon
+                </div>
+              </div>
             </div>
 
-            <!-- Info Cards -->
-            <div class="space-y-4">
-              <!-- Card 1: Sect -->
-              <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 p-4 rounded-lg">
-                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Sect</div>
-                <div class="text-2xl font-bold text-blue-700 mt-1">{{ tirth.sect }}</div>
-              </div>
-
-              <!-- Card 2: Type/Kshetra -->
-              <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-l-4 border-purple-600 p-4 rounded-lg">
-                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Type</div>
-                <div class="text-2xl font-bold text-purple-700 mt-1">{{ tirth.type }}</div>
-              </div>
-
-              <!-- Card 3: Rating -->
-              <div class="bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-600 p-4 rounded-lg">
-                <div class="text-gray-600 text-sm font-semibold uppercase tracking-wide">Rating</div>
-                <div class="text-2xl font-bold text-green-700 mt-1">{{ tirth.rating ? `${tirth.rating} / 5` : 'N/A' }}</div>
-              </div>
+            <!-- Directions Button -->
+            <div class="mt-6">
+              <a 
+                :href="getDirectionsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white rounded-2xl font-semibold text-base overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/50 hover:-translate-y-0.5"
+              >
+                <!-- Animated background overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <!-- Content -->
+                <div class="relative flex items-center gap-3">
+                  <div class="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm group-hover:bg-white/30 transition-all">
+                    <Icon name="Navigation" :size="20" class="group-hover:rotate-12 transition-transform duration-300" />
+                  </div>
+                  <span class="font-semibold">Get Directions</span>
+                  <Icon name="ArrowRight" :size="18" class="group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -148,10 +190,10 @@
         <div class="flex justify-center pt-8 border-t">
           <a
             href="#top"
-            class="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full font-bold hover:from-amber-700 hover:to-orange-700 transition-all"
+            class="p-4 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full font-bold hover:from-amber-700 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-110"
+            aria-label="Back to top"
           >
-            <Icon name="ArrowUp" :size="20" />
-            <span>Back to Top</span>
+            <Icon name="ArrowUp" :size="24" />
           </a>
         </div>
       </div>
@@ -221,6 +263,22 @@ const relatedTirths = computed(() => {
   return tirthStore.tirths
     .filter((t: Tirth) => t.id !== tirth.value!.id && t.sect === tirth.value!.sect)
     .slice(0, 3)
+})
+
+// Generate Google Maps directions URL
+const getDirectionsUrl = computed(() => {
+  if (!tirth.value) return '#'
+  
+  const location = tirth.value.location
+  
+  // If we have latitude and longitude, use coordinates (most accurate)
+  if (location.latitude && location.longitude) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`
+  }
+  
+  // Otherwise, use the address
+  const address = `${location.address}, ${location.city}, ${location.state}${location.zipCode ? ' ' + location.zipCode : ''}`
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
 })
 </script>
 
