@@ -27,7 +27,7 @@
       <!-- Content -->
       <div v-else-if="bhojanshala" class="space-y-8 sm:space-y-10">
               <!-- Breadcrumb -->
-        <div class="hidden md:flex items-center gap-2 text-sm text-gray-500">
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/bhojanshala" class="hover:text-gray-900 transition-colors">Bhojanshala</NuxtLink>

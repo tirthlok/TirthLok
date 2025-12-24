@@ -40,7 +40,7 @@
     <div v-if="filteredItems.length === 0" class="text-center py-8 md:py-12 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
       <Icon name="Home" :size="64" class="text-gray-300 mx-auto mb-4" />
       <p class="text-gray-600 font-semibold text-lg">No facilities found for this category</p>
-      <p class="text-gray-500 text-sm mt-2">Try selecting a different filter</p>
+      <p class="text-gray-600 text-sm mt-2">Try selecting a different filter</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,6 +50,7 @@
         class="bg-white rounded-2xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 overflow-hidden group transform hover:scale-105 cursor-pointer"
         role="button"
         tabindex="0"
+        :aria-label="`View details for ${facility.name}`"
         @click="goToFacility(facility)"
         @keydown.enter.prevent="goToFacility(facility)"
       >

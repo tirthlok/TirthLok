@@ -13,7 +13,7 @@
         >
           <span v-html="highlight(item)" class="text-sm font-medium text-gray-900"></span>
         </li>
-        <li v-if="matched.length === 0" class="px-4 py-3 text-sm text-gray-500">No results</li>
+        <li v-if="matched.length === 0" class="px-4 py-3 text-sm text-gray-600">No results</li>
       </ul>
     </div>
   </teleport>

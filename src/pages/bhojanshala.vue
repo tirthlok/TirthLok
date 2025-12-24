@@ -6,7 +6,7 @@
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2 text-sm text-gray-500">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/bhojanshala" class="hover:text-gray-900 transition-colors">Bhojanshala</NuxtLink>

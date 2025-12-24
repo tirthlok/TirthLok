@@ -43,7 +43,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="items.length === 0" class="text-center py-8 text-gray-500">
+    <div v-if="items.length === 0" class="text-center py-8 text-gray-600">
       <p>{{ emptyMessage }}</p>
     </div>
 

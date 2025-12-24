@@ -4,6 +4,7 @@
     @mouseenter="() => (isHovered = true)"
     @mouseleave="() => (isHovered = false)"
     :aria-pressed="isFavorited"
+    :aria-label="isFavorited ? 'Remove from wishlist' : 'Add to wishlist'"
     :title="isFavorited ? 'Remove from wishlist' : 'Add to wishlist'"
     :disabled="isLoading"
     class="w-11 h-11 flex items-center justify-center transition-all duration-300"
@@ -33,7 +34,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useAuth } from '~/composables/auth/useAuth'
-import Icon from './Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 interface Props {
   itemId: string

@@ -17,7 +17,7 @@
       />
 
       <!-- Search Icon -->
-      <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+      <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
         <Icon name="Search" :size="18" />
       </div>
 
@@ -25,7 +25,7 @@
       <button
         v-if="searchQuery && showClearButton"
         @click="clearSearch"
-        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
         aria-label="Clear search"
       >
         <Icon name="X" :size="18" />
@@ -58,7 +58,7 @@
     <!-- No Results Message -->
     <div
       v-if="showResults && searchQuery && results.length === 0 && !isLoading"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 p-4 text-center text-gray-500"
+      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 p-4 text-center text-gray-600"
     >
       No results found for "{{ searchQuery }}"
     </div>
