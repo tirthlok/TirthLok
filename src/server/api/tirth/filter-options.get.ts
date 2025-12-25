@@ -1,12 +1,12 @@
 export default defineEventHandler(async () => {
   try {
     const { createClient } = await import('@supabase/supabase-js')
-    
+
     // Get Supabase config - try runtime config first, then fallback to environment
     const config = useRuntimeConfig()
     let supabaseUrl = config.public?.supabaseUrl
     let supabaseKey = config.public?.supabaseAnonKey
-    
+
     // Fallback to hardcoded values
     if (!supabaseUrl) {
       supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
@@ -24,21 +24,21 @@ export default defineEventHandler(async () => {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Fetch all unique states from tirth_cards table
+    // Fetch all unique states from v_tirth_cards view
     const { data: statesData, error: statesError } = await supabase
-      .from('tirth_cards')
+      .from('v_tirth_cards')
       .select('tirth_state')
       .not('tirth_state', 'is', null)
 
-    // Fetch all unique sects from tirth_cards table
+    // Fetch all unique sects from v_tirth_cards view
     const { data: sectsData, error: sectsError } = await supabase
-      .from('tirth_cards')
+      .from('v_tirth_cards')
       .select('tirth_sect')
       .not('tirth_sect', 'is', null)
 
-    // Fetch all unique types (kshetra) from tirth_cards table
+    // Fetch all unique types (kshetra) from v_tirth_cards view
     const { data: typesData, error: typesError } = await supabase
-      .from('tirth_cards')
+      .from('v_tirth_cards')
       .select('tirth_kshetra')
       .not('tirth_kshetra', 'is', null)
 
@@ -55,9 +55,9 @@ export default defineEventHandler(async () => {
     const sects = [...new Set(sectsData?.map(d => d.tirth_sect).filter(Boolean) || [])].sort()
     const types = [...new Set(typesData?.map(d => d.tirth_kshetra).filter(Boolean) || [])].sort()
 
-    // For facilities, fetch from tirth_details table since they might be stored there
+    // For facilities, fetch from v_tirth_details view since they might be stored there
     const { data: facilitiesData, error: facilitiesError } = await supabase
-      .from('tirth_details')
+      .from('v_tirth_details')
       .select('facilities')
       .not('facilities', 'is', null)
 

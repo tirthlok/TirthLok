@@ -1,7 +1,7 @@
 /**
  * useFavoriteApi Composable
  * Favorite/Wishlist API - uses Supabase client directly with authenticated session
- * Uses tirth_name as the unique identifier (since tirth_cards table lacks tirth_id)
+ * Uses tirth_name as the unique identifier (since v_tirth_cards view lacks tirth_id)
  */
 
 import { useSupabase } from '~/features/auth/composables/useSupabase'

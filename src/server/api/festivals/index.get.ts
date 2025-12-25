@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     let supabaseUrl = config.public?.supabaseUrl
     let supabaseKey = config.public?.supabaseAnonKey
-    
+
     // Fallback to hardcoded values
     if (!supabaseUrl) {
       supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const tirth_name = query.tirth_name as string
 
-    let queryBuilder: any = supabase.from('tirth_festivals_and_events').select('*')
+    let queryBuilder: any = supabase.from('v_tirth_festivals_and_events').select('*')
 
     // Filter by tirth_name if provided
     if (tirth_name) {
@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('❌ Error in festivals API:', error)
-    
+
     return {
       success: false,
       data: [],

@@ -3,8 +3,8 @@
  * Server-side only endpoint that queries Supabase directly
  * The :id parameter should be the tirth_name (e.g., "Palitana")
  * Fetches:
- * - tirth_details table for detailed information
- * - tirth_cards table for basic card data
+ * - v_tirth_details view for detailed information
+ * - v_tirth_cards view for basic card data
  * - festivals table for related festivals
  */
 import { createClient } from '@supabase/supabase-js'
@@ -57,34 +57,34 @@ export default defineEventHandler(async (event) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // First try to get detailed data from tirth_details table
+    // First try to get detailed data from v_tirth_details view
     let data: any = null
     let detailedData: any = null
 
-    console.log(`🔍 Querying tirth_details for: ${id}`)
+    console.log(`🔍 Querying v_tirth_details for: ${id}`)
 
     try {
       const { data: detailsResult, error: detailsError } = await supabase
-        .from('tirth_details')
+        .from('v_tirth_details')
         .select('*')
         .eq('tirth_name', id)
         .single()
 
       if (!detailsError && detailsResult) {
         detailedData = detailsResult
-        console.log(`✅ Found detailed data in tirth_details`)
-        console.log(`📋 Raw tirth_details columns:`, Object.keys(detailsResult))
-        console.log(`📋 Raw tirth_details data:`, JSON.stringify(detailsResult, null, 2))
+        console.log(`✅ Found detailed data in v_tirth_details`)
+        console.log(`📋 Raw v_tirth_details columns:`, Object.keys(detailsResult))
+        console.log(`📋 Raw v_tirth_details data:`, JSON.stringify(detailsResult, null, 2))
       } else {
         console.log(`⚠️ No detailed data found: ${detailsError?.message || 'not found'}`)
       }
     } catch (err) {
-      console.log(`⚠️ Error querying tirth_details: ${err}`)
+      console.log(`⚠️ Error querying v_tirth_details: ${err}`)
     }
 
     // Now get the basic card data
     const { data: cardData, error: cardError } = await supabase
-      .from('tirth_cards')
+      .from('v_tirth_cards')
       .select('*')
       .eq('tirth_name', id)
       .single()
@@ -92,8 +92,8 @@ export default defineEventHandler(async (event) => {
     console.log(`📊 Supabase response for ${id}:`, { found: !!cardData, hasDetails: !!detailedData, error: cardError?.message })
 
     if (cardData) {
-      console.log(`📋 Raw tirth_cards columns:`, Object.keys(cardData))
-      console.log(`📋 Raw tirth_cards data:`, JSON.stringify(cardData, null, 2))
+      console.log(`📋 Raw v_tirth_cards columns:`, Object.keys(cardData))
+      console.log(`📋 Raw v_tirth_cards data:`, JSON.stringify(cardData, null, 2))
     }
 
     if (cardError) {
@@ -114,13 +114,13 @@ export default defineEventHandler(async (event) => {
     // Merge card and detail data, with details taking precedence
     data = { ...cardData, ...detailedData }
 
-    // Now fetch festivals from the tirth_festivals_and_events table for this tirth
-    console.log(`🔍 Querying tirth_festivals_and_events table for tirth: ${id}`)
+    // Now fetch festivals from the v_tirth_festivals_and_events view for this tirth
+    console.log(`🔍 Querying v_tirth_festivals_and_events view for tirth: ${id}`)
     let festivals: any[] = []
 
     try {
       const { data: festivalsData, error: festivalsError } = await supabase
-        .from('tirth_festivals_and_events')
+        .from('v_tirth_festivals_and_events')
         .select('*')
         .eq('tirth_name', id)
         .order('time_frame', { ascending: true })
@@ -138,7 +138,7 @@ export default defineEventHandler(async (event) => {
         console.log(`📋 Raw festivals data:`, JSON.stringify(festivalsData, null, 2))
         console.log(`📋 Transformed festivals data:`, JSON.stringify(festivals, null, 2))
       } else if (festivalsError) {
-        console.log(`⚠️ Error querying tirth_festivals_and_events: ${festivalsError.message}`)
+        console.log(`⚠️ Error querying v_tirth_festivals_and_events: ${festivalsError.message}`)
       } else {
         console.log(`⚠️ No festivals found for tirth_name: ${id}`)
       }

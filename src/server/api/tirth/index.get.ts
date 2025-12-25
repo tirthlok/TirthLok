@@ -34,8 +34,6 @@ export default defineEventHandler(async (event) => {
     // Since the table is in tirthlok schema, we'll use rpc if available
     // or try to access it directly via query
     const query = getQuery(event)
-    const page = parseInt(String(query.page) || '1')
-    const limit = parseInt(String(query.limit) || '10')
     const search = String(query.search || '')
     const sect = String(query.sect || '')
     const type = String(query.type || '')
@@ -51,7 +49,7 @@ export default defineEventHandler(async (event) => {
 
       // Try querying - service role key gives us access to all schemas
       let supabaseQuery = supabase
-        .from('tirth_cards')
+        .from('v_tirth_cards')
         .select('*', { count: 'exact' })
 
       // Apply filters
