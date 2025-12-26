@@ -12,7 +12,8 @@ export const useFavoriteApi = () => {
   const { session } = useAuth()
 
   /**
-   * Fetch user's wishlist (Tirth names)
+   * Fetch user's wishlist (Tirth names) using secure view
+   * View automatically filters to show only user's own wishlist
    */
   const fetchFavorites = async (): Promise<string[]> => {
     if (!session.value?.user?.id) {
@@ -22,9 +23,8 @@ export const useFavoriteApi = () => {
 
     try {
       const { data, error } = await supabase
-        .from('customer_wishlist')
+        .from('v_customer_wishlist')
         .select('tirth_name')
-        .eq('customer_id', session.value.user.id)
 
       if (error) {
         console.error('Error fetching wishlist:', error)
@@ -39,7 +39,7 @@ export const useFavoriteApi = () => {
   }
 
   /**
-   * Add tirth to wishlist
+   * Add tirth to wishlist using RPC function
    * @param tirthName - The tirth name (used as unique identifier)
    */
   const addFavorite = async (tirthName: string, _entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'): Promise<string[]> => {
@@ -55,20 +55,17 @@ export const useFavoriteApi = () => {
     try {
       console.log('[Wishlist] Adding tirth:', { tirthName, userId: session.value.user.id })
 
-      const { error: insertError } = await supabase
-        .from('customer_wishlist')
-        .insert({
-          customer_id: session.value.user.id,
-          tirth_name: tirthName
-        })
+      const { error: rpcError } = await supabase.rpc('add_to_wishlist', {
+        p_tirth_name: tirthName
+      })
 
-      if (insertError) {
+      if (rpcError) {
         // Handle duplicate entry gracefully
-        if (insertError.code === '23505') {
+        if (rpcError.code === '23505') {
           console.log('[Wishlist] Already in wishlist')
         } else {
-          console.error('Error adding to wishlist:', insertError)
-          throw insertError
+          console.error('Error adding to wishlist:', rpcError)
+          throw rpcError
         }
       }
 
@@ -81,7 +78,7 @@ export const useFavoriteApi = () => {
   }
 
   /**
-   * Remove tirth from wishlist
+   * Remove tirth from wishlist using RPC function
    * @param tirthName - The tirth name (used as unique identifier)
    */
   const removeFavorite = async (tirthName: string): Promise<string[]> => {
@@ -97,15 +94,13 @@ export const useFavoriteApi = () => {
     try {
       console.log('[Wishlist] Removing tirth:', { tirthName, userId: session.value.user.id })
 
-      const { error } = await supabase
-        .from('customer_wishlist')
-        .delete()
-        .eq('customer_id', session.value.user.id)
-        .eq('tirth_name', tirthName)
+      const { error: rpcError } = await supabase.rpc('remove_from_wishlist', {
+        p_tirth_name: tirthName
+      })
 
-      if (error) {
-        console.error('Error removing from wishlist:', error)
-        throw error
+      if (rpcError) {
+        console.error('Error removing from wishlist:', rpcError)
+        throw rpcError
       }
 
       // Return updated wishlist
@@ -130,7 +125,7 @@ export const useFavoriteApi = () => {
   }
 
   /**
-   * Clear all favorites
+   * Clear all favorites using RPC function
    */
   const clearFavorites = async (): Promise<void> => {
     if (!session.value?.user?.id) {
@@ -138,14 +133,11 @@ export const useFavoriteApi = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('customer_wishlist')
-        .delete()
-        .eq('customer_id', session.value.user.id)
+      const { error: rpcError } = await supabase.rpc('clear_wishlist')
 
-      if (error) {
-        console.error('Error clearing wishlist:', error)
-        throw error
+      if (rpcError) {
+        console.error('Error clearing wishlist:', rpcError)
+        throw rpcError
       }
     } catch (error) {
       console.error('Error clearing wishlist:', error)

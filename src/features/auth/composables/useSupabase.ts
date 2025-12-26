@@ -16,10 +16,8 @@ export const useSupabase = () => {
     // Get config from Nuxt runtime config
     const config = useRuntimeConfig()
 
-    // const supabaseUrl = config.public.supabaseUrl as string
-    // const supabaseKey = config.public.supabaseAnonKey as string
-    const supabaseUrl = "https://cfmvkvpyjvbcenqorifa.supabase.co"
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmbXZrdnB5anZiY2VucW9yaWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyOTM0MjQsImV4cCI6MjA4MDg2OTQyNH0.lWTSNFoT9LteNnRzVXKjgbe2YORyS9275p2lYDH2bZ4"
+    const supabaseUrl = config.public.supabaseUrl as string
+    const supabaseKey = config.public.supabaseAnonKey as string
 
     if (!supabaseUrl || !supabaseKey) {
         console.error('Supabase credentials missing:', {

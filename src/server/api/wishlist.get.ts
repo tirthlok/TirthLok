@@ -16,9 +16,8 @@ export default defineEventHandler(async (event) => {
 
     try {
         const { data, error } = await supabase
-            .from('customer_wishlist')
-            .select('tirth_id')
-            .eq('customer_id', userId)
+            .from('v_customer_wishlist')
+            .select('tirth_name')
 
         if (error) {
             console.error('Error fetching wishlist:', error)
@@ -28,8 +27,8 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // Return array of tirth IDs
-        return data.map(item => String(item.tirth_id))
+        // Return array of tirth names
+        return (data as { tirth_name: string }[]).map(item => item.tirth_name)
     } catch (err: any) {
         if (err.statusCode) throw err
         console.error('Wishlist fetch error:', err)

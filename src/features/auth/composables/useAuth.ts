@@ -79,7 +79,6 @@ export const useAuth = () => {
             if (data.user) {
                 // Create customer profile in the database
                 const profileResult = await createCustomerProfile(
-                    data.user.id,
                     email,
                     firstName,
                     lastName,
@@ -161,28 +160,26 @@ export const useAuth = () => {
     }
 
     /**
-     * Create customer profile in the database
+     * Create customer profile using RPC function
+     * Uses secure create_customer_profile RPC instead of direct INSERT
      */
     const createCustomerProfile = async (
-        userId: string,
         email: string,
         firstName?: string,
         lastName?: string,
         sect?: string
     ) => {
         try {
-            const { error: insertError } = await supabase
-                .from('customer_profile')
-                .insert({
-                    customer_id: userId,
-                    customer_email_id: email,
-                    customer_first_name: firstName || null,
-                    customer_last_name: lastName || null,
-                    customer_sect: sect || null,
-                })
+            const { error: rpcError } = await supabase.rpc('create_customer_profile', {
+                p_email: email,
+                p_first_name: firstName || null,
+                p_last_name: lastName || null,
+                p_mobile: null,
+                p_sect: sect || null,
+            })
 
-            if (insertError) {
-                return { success: false, error: insertError.message }
+            if (rpcError) {
+                return { success: false, error: rpcError.message }
             }
 
             return { success: true }
@@ -192,14 +189,14 @@ export const useAuth = () => {
     }
 
     /**
-     * Get customer profile from database
+     * Get customer profile using secure view
+     * View automatically filters to show only user's own profile
      */
-    const getCustomerProfile = async (userId: string) => {
+    const getCustomerProfile = async () => {
         try {
             const { data, error: fetchError } = await supabase
-                .from('customer_profile')
+                .from('v_customer_profile')
                 .select('*')
-                .eq('customer_id', userId)
                 .single()
 
             if (fetchError) {
@@ -213,10 +210,10 @@ export const useAuth = () => {
     }
 
     /**
-     * Update customer profile in database
+     * Update customer profile using RPC function
+     * RPC handles auth.uid() and updated_at automatically
      */
     const updateCustomerProfile = async (
-        userId: string,
         updates: {
             customer_first_name?: string
             customer_last_name?: string
@@ -225,18 +222,15 @@ export const useAuth = () => {
         }
     ) => {
         try {
-            const { data, error: updateError } = await supabase
-                .from('customer_profile')
-                .update({
-                    ...updates,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('customer_id', userId)
-                .select()
-                .single()
+            const { data, error: rpcError } = await supabase.rpc('update_customer_profile', {
+                p_first_name: updates.customer_first_name || null,
+                p_last_name: updates.customer_last_name || null,
+                p_mobile: updates.customer_mobile?.toString() || null,
+                p_sect: updates.customer_sect || null,
+            })
 
-            if (updateError) {
-                return { success: false, error: updateError.message }
+            if (rpcError) {
+                return { success: false, error: rpcError.message }
             }
 
             return { success: true, data }

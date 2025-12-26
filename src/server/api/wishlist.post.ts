@@ -16,44 +16,35 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event)
-    const tirthId = body.tirthId || body.itemId
+    const tirthName = body.tirthName || body.tirth_name
 
-    if (!tirthId) {
+    if (!tirthName) {
         throw createError({
             statusCode: 400,
-            message: 'tirthId is required'
+            message: 'tirthName is required'
         })
     }
 
     const supabase = getSupabaseAdmin()
 
     try {
-        // Insert into wishlist (unique constraint will prevent duplicates)
-        const { error: insertError } = await supabase
-            .from('customer_wishlist')
-            .insert({
-                customer_id: userId,
-                tirth_id: parseInt(tirthId, 10)
-            })
+        // Add to wishlist using RPC (handles auth and duplicates)
+        const { error: rpcError } = await supabase.rpc('add_to_wishlist', {
+            p_tirth_name: tirthName
+        })
 
-        if (insertError) {
-            // Handle duplicate entry gracefully
-            if (insertError.code === '23505') {
-                // Already exists, just return current wishlist
-            } else {
-                console.error('Error adding to wishlist:', insertError)
-                throw createError({
-                    statusCode: 500,
-                    message: 'Failed to add to wishlist'
-                })
-            }
+        if (rpcError) {
+            console.error('Error adding to wishlist:', rpcError)
+            throw createError({
+                statusCode: 500,
+                message: 'Failed to add to wishlist'
+            })
         }
 
-        // Return updated wishlist
+        // Return updated wishlist using view
         const { data, error: fetchError } = await supabase
-            .from('customer_wishlist')
-            .select('tirth_id')
-            .eq('customer_id', userId)
+            .from('v_customer_wishlist')
+            .select('tirth_name')
 
         if (fetchError) {
             throw createError({
@@ -62,7 +53,7 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        return data.map(item => String(item.tirth_id))
+        return (data as { tirth_name: string }[]).map(item => item.tirth_name)
     } catch (err: any) {
         if (err.statusCode) throw err
         console.error('Wishlist add error:', err)
