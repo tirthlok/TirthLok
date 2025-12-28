@@ -70,7 +70,7 @@
               <input 
                 v-model="form.firstName"
                 type="text"
-                placeholder="Aarav"
+                placeholder="Nabhi"
                 class="auth-input"
               />
             </div>
@@ -79,7 +79,7 @@
               <input 
                 v-model="form.lastName"
                 type="text"
-                placeholder="Jain"
+                placeholder="Rai"
                 class="auth-input"
               />
             </div>
@@ -92,7 +92,7 @@
               v-model="form.email"
               type="email"
               required
-              placeholder="name@email.com"
+              placeholder="name@gmail.com"
               class="auth-input"
             />
           </div>
@@ -126,7 +126,7 @@
               <input 
                 v-model="form.mobile"
                 type="tel"
-                placeholder="+91 98765 43210"
+                placeholder="+91 XXXXX XXXXX"
                 class="auth-input"
               />
             </div>

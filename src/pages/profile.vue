@@ -1,201 +1,252 @@
 <template>
   <div class="profile-page">
-    <div class="profile-wrapper">
-      <!-- Back Button -->
-      <NuxtLink to="/" class="profile-back-btn">
-        <Icon name="ArrowLeft" :size="16" />
-        <span>Back</span>
-      </NuxtLink>
+    <div class="profile-page-bg">
+      <div class="cosmic-mesh"></div>
+      <div class="cosmic-glow cosmic-glow-1"></div>
+      <div class="cosmic-glow cosmic-glow-2"></div>
+      <div class="cosmic-glow cosmic-glow-3"></div>
+      <div class="cosmic-particles">
+        <div 
+          v-for="n in 60" 
+          :key="n" 
+          class="particle"
+          :style="{
+            top: Math.random() * 100 + '%',
+            left: Math.random() * 100 + '%',
+            animationDelay: (Math.random() * 15) + 's',
+            animationDuration: (10 + Math.random() * 20) + 's'
+          }"
+        ></div>
+      </div>
+    </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="profile-loading">
-        <div class="profile-loading__spinner"></div>
-        <p class="profile-loading__text">Loading profile...</p>
+    <div class="profile-wrapper">
+      <!-- Top Navigation -->
+      <nav class="profile-nav">
+        <NuxtLink to="/" class="profile-nav__back">
+          <Icon name="ArrowLeft" :size="20" />
+          <span>Explore</span>
+        </NuxtLink>
+        <div class="profile-nav__actions">
+             <button 
+              @click="handleLogout"
+              :disabled="isLoggingOut"
+              class="profile-nav__logout"
+              title="Sign Out"
+            >
+              <Icon name="LogOut" :size="18" />
+              <span>{{ isLoggingOut ? '...' : 'Sign Out' }}</span>
+            </button>
+        </div>
+      </nav>
+
+      <!-- Loading State: Out of the Universe -->
+      <div v-if="isLoading" class="profile-loading-screen">
+        <div class="nebula-overlay"></div>
+        <div class="nebula-overlay nebula-overlay--alt"></div>
+        <div class="starfield">
+          <div 
+            v-for="n in 120" 
+            :key="n" 
+            class="star"
+            :style="{
+              top: Math.random() * 100 + '%',
+              left: Math.random() * 100 + '%',
+              animationDelay: (Math.random() * 10) + 's',
+              animationDuration: (5 + Math.random() * 10) + 's'
+            }"
+          ></div>
+        </div>
+        <div class="loading-content">
+          <div class="spiritual-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-core">
+              <Icon name="User" :size="32" />
+            </div>
+            <div class="spinner-orbit"></div>
+          </div>
+          <h2 class="loading-text">Connecting to the Tirthlok...</h2>
+          <p class="loading-subtext">Fetching your Tirthlok profile</p>
+        </div>
       </div>
 
       <template v-else>
-        <!-- Header -->
-        <div class="profile-header">
-          <div class="profile-header__title-group">
-            <h1 class="profile-header__title">Profile</h1>
-            <p class="profile-header__subtitle">Manage your information</p>
-          </div>
-          <!-- Logout Button -->
-          <button 
-            @click="handleLogout"
-            :disabled="isLoggingOut"
-            class="profile-logout-btn"
-          >
-            <Icon name="LogOut" :size="16" />
-            <span class="hidden sm:inline">{{ isLoggingOut ? 'Signing out...' : 'Sign Out' }}</span>
-          </button>
-        </div>
-
-        <!-- Main Grid Layout -->
-        <div class="profile-grid">
-          <!-- Profile Card -->
-          <div class="profile-card">
-            <!-- Profile Header with Avatar -->
-            <div class="profile-card__header">
-              <div class="profile-avatar">
-                <Icon name="User" :size="28" />
+        <!-- Hero Section -->
+        <header class="profile-hero">
+          <div class="profile-hero__content">
+            <div class="profile-avatar-wrapper">
+              <div class="profile-avatar-inner">
+                <Icon name="User" :size="40" />
               </div>
-              <div class="profile-userinfo">
-                <h2 class="profile-userinfo__name">{{ editMode ? 'Edit Profile' : displayName }}</h2>
-                <p class="profile-userinfo__email">{{ profile.email }}</p>
+              <div class="profile-avatar-badge" v-if="profile.sect">
+                {{ profile.sect.charAt(0) }}
               </div>
             </div>
+            <div class="profile-hero__text">
+              <h1 class="profile-hero__name">{{ displayName }}</h1>
+              <p class="profile-hero__email">{{ profile.email }}</p>
+            </div>
+          </div>
+          
 
-            <!-- Profile Form Content -->
-            <div class="profile-card__body">
-              <!-- Name Row (Two columns on tablet+) -->
-              <div class="profile-form__row profile-form__row--half">
-                <!-- First Name Field -->
-                <div class="profile-form__group">
-                  <label class="profile-form__label">First Name</label>
-                  <input 
-                    v-model="profile.firstName"
-                    :disabled="!editMode"
-                    type="text"
-                    placeholder="First Name"
-                    class="profile-form__input"
-                    :class="editMode ? 'profile-form__input--editable' : ''"
-                  />
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="profile-main">
+          <div class="profile-card-group">
+            <!-- Account Information Card -->
+            <section class="profile-glass-card">
+              <div class="profile-card-header">
+                <div class="profile-card-header__info">
+                  <div class="profile-card-title-group">
+                    <Icon name="User" :size="24" class="profile-title-icon" />
+                    <h2 class="profile-card-title">Personal Details</h2>
+                  </div>
+                  <p class="profile-card-subtitle">Manage your personal information and preferences</p>
                 </div>
-
-                <!-- Last Name Field -->
-                <div class="profile-form__group">
-                  <label class="profile-form__label">Last Name</label>
-                  <input 
-                    v-model="profile.lastName"
-                    :disabled="!editMode"
-                    type="text"
-                    placeholder="Last Name"
-                    class="profile-form__input"
-                    :class="editMode ? 'profile-form__input--editable' : ''"
-                  />
-                </div>
-              </div>
-
-              <!-- Email and Phone Row (Two columns on tablet+) -->
-              <div class="profile-form__row profile-form__row--half">
-                <!-- Email Field (Read-only) -->
-                <div class="profile-form__group">
-                  <label class="profile-form__label">Email</label>
-                  <input 
-                    v-model="profile.email"
-                    disabled
-                    type="email"
-                    class="profile-form__input"
-                  />
-                  <p class="profile-form__hint">Email cannot be changed</p>
-                </div>
-
-                <!-- Phone Field -->
-                <div class="profile-form__group">
-                  <label class="profile-form__label">Phone</label>
-                  <input 
-                    v-model="profile.phone"
-                    :disabled="!editMode"
-                    type="tel"
-                    placeholder="Phone Number"
-                    class="profile-form__input"
-                    :class="editMode ? 'profile-form__input--editable' : ''"
-                  />
-                </div>
-              </div>
-
-              <!-- Sect Field -->
-              <div class="profile-form__group">
-                <label class="profile-form__label">Sect</label>
-                <select 
-                  v-model="profile.sect"
-                  :disabled="!editMode"
-                  class="profile-form__input"
-                  :class="editMode ? 'profile-form__input--editable' : ''"
-                >
-                  <option value="">Select your sect</option>
-                  <option value="Shwetambar">Shwetambar</option>
-                  <option value="Digambar">Digambar</option>
-                </select>
-              </div>
-
-              <!-- Error Message -->
-              <Transition
-                enter-active-class="transition-all duration-300"
-                enter-from-class="opacity-0 -translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition-all duration-200"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-2"
-              >
-                <div v-if="errorMessage" class="profile-alert profile-alert--error">
-                  <Icon name="AlertCircle" :size="14" />
-                  <span>{{ errorMessage }}</span>
-                </div>
-              </Transition>
-
-              <!-- Success Message -->
-              <Transition
-                enter-active-class="transition-all duration-300"
-                enter-from-class="opacity-0 -translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition-all duration-200"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-2"
-              >
-                <div v-if="successMessage" class="profile-alert profile-alert--success">
-                  <Icon name="Check" :size="14" />
-                  <span>{{ successMessage }}</span>
-                </div>
-              </Transition>
-
-              <!-- Action Buttons -->
-              <div class="profile-actions">
                 <button 
                   v-if="!editMode"
                   @click="editMode = true"
-                  class="profile-btn profile-btn--primary"
+                  class="profile-edit-trigger"
                 >
-                  <Icon name="Edit" :size="14" />
-                  <span>Edit Profile</span>
+                  <Icon name="Edit3" :size="16" />
+                  <span>Edit</span>
                 </button>
-                <template v-else>
-                  <button 
-                    @click="cancelEdit"
-                    class="profile-btn profile-btn--secondary"
-                  >
-                    <Icon name="X" :size="14" />
-                    <span>Cancel</span>
-                  </button>
-                  <button 
-                    @click="saveDetails"
-                    :disabled="isSaving"
-                    class="profile-btn profile-btn--success"
-                  >
-                    <Icon v-if="!isSaving" name="Check" :size="14" />
-                    <svg v-else class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <span>{{ isSaving ? 'Saving...' : 'Save Changes' }}</span>
-                  </button>
-                </template>
               </div>
-            </div>
-          </div>
 
-          <!-- Info Card - Sidebar on Desktop -->
-          <div class="profile-info-card">
-            <div class="profile-info-card__content">
-              <Icon name="Info" :size="20" class="profile-info-card__icon" />
-              <div class="profile-info-card__text">
-                <h3>Account Info</h3>
-                <p>Keep your information up to date. Your data is secure with us.</p>
+              <div class="profile-form">
+                <!-- Name Grid -->
+                <div class="profile-form-grid">
+                  <div class="profile-form-group">
+                    <label class="profile-field-label">First Name</label>
+                    <div class="profile-input-container">
+                      <Icon name="User" :size="18" class="profile-input-icon" />
+                      <input 
+                        v-model="profile.firstName"
+                        :disabled="!editMode"
+                        type="text"
+                        placeholder="e.g. Nabhi"
+                        class="profile-field-input"
+                        :class="{ 'is-editing': editMode }"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="profile-form-group">
+                    <label class="profile-field-label">Last Name</label>
+                    <div class="profile-input-container">
+                      <Icon name="User" :size="18" class="profile-input-icon" />
+                      <input 
+                        v-model="profile.lastName"
+                        :disabled="!editMode"
+                        type="text"
+                        placeholder="e.g. Rai"
+                        class="profile-field-input"
+                        :class="{ 'is-editing': editMode }"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contact Grid -->
+                <div class="profile-form-grid">
+                  <div class="profile-form-group">
+                    <label class="profile-field-label">Email Address</label>
+                    <div class="profile-input-container is-disabled">
+                      <Icon name="Mail" :size="18" class="profile-input-icon" />
+                      <input 
+                        v-model="profile.email"
+                        disabled
+                        type="email"
+                        class="profile-field-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="profile-form-group">
+                    <label class="profile-field-label">Phone Number</label>
+                    <div class="profile-input-container">
+                      <Icon name="Phone" :size="18" class="profile-input-icon" />
+                      <input 
+                        v-model="profile.phone"
+                        :disabled="!editMode"
+                        type="tel"
+                        placeholder="+91 XXXXX XXXXX"
+                        class="profile-field-input"
+                        :class="{ 'is-editing': editMode }"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="profile-form-group">
+                  <label class="profile-field-label">Sect</label>
+                  <div class="profile-input-container">
+                    <Icon name="User" :size="18" class="profile-input-icon" />
+                    <select 
+                      v-model="profile.sect"
+                      :disabled="!editMode"
+                      class="profile-field-select"
+                      :class="{ 'is-editing': editMode }"
+                    >
+                      <option value="">Choose your sect</option>
+                      <option value="Shwetambar">Shwetambar</option>
+                      <option value="Digambar">Digambar</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Form Feedback -->
+                <Transition name="fade-slide">
+                  <div v-if="errorMessage || successMessage" class="profile-status-box" :class="errorMessage ? 'is-error' : 'is-success'">
+                    <Icon :name="errorMessage ? 'AlertCircle' : 'CheckCircle'" :size="18" />
+                    <span>{{ errorMessage || successMessage }}</span>
+                  </div>
+                </Transition>
+
+                <!-- Action Bar -->
+                <div v-if="editMode" class="profile-form-actions">
+                  <button @click="cancelEdit" class="profile-btn-cancel">
+                    Cancel
+                  </button>
+                  <button 
+                    @click="saveDetails" 
+                    :disabled="isSaving" 
+                    class="profile-btn-save"
+                  >
+                    <span v-if="!isSaving">Save Changes</span>
+                    <div v-else class="profile-btn-spinner"></div>
+                  </button>
+                </div>
               </div>
-            </div>
+            </section>
+
+            <!-- Quick Access / Sidebar -->
+            <aside class="profile-sidebar">
+              <div class="profile-glass-card profile-info-mini">
+                <div class="profile-info-header">
+                  <Icon name="ShieldCheck" :size="20" class="profile-info-icon" />
+                  <h3>Secure Profile</h3>
+                </div>
+                <div class="profile-info-content">
+                  <p>Your Tirthlok journey data is encrypted and private. We never share your personal information with third parties.</p>
+                </div>
+              </div>
+              
+              <div class="profile-glass-card profile-cta-mini">
+                <div class="profile-info-header">
+                  <Icon name="Calendar" :size="20" class="profile-cta-icon" />
+                  <h3>Plan a Yatra</h3>
+                </div>
+                <div class="profile-info-content">
+                  <p>Discover Tirths and plan your next peaceful yatras.</p>
+                  <NuxtLink to="/tirth" class="profile-cta-link">Browse Tirths</NuxtLink>
+                </div>
+              </div>
+            </aside>
           </div>
-        </div>
+        </main>
       </template>
     </div>
   </div>
