@@ -54,7 +54,8 @@ export const useAuth = () => {
         password: string,
         firstName?: string,
         lastName?: string,
-        sect?: string
+        sect?: string,
+        mobile?: string
     ) => {
         loading.value = true
         error.value = null
@@ -67,6 +68,8 @@ export const useAuth = () => {
                     data: {
                         first_name: firstName,
                         last_name: lastName,
+                        mobile: mobile,
+                        sect: sect
                     }
                 }
             })
@@ -82,7 +85,8 @@ export const useAuth = () => {
                     email,
                     firstName,
                     lastName,
-                    sect
+                    sect,
+                    mobile
                 )
 
                 if (!profileResult.success) {
@@ -167,14 +171,15 @@ export const useAuth = () => {
         email: string,
         firstName?: string,
         lastName?: string,
-        sect?: string
+        sect?: string,
+        mobile?: string
     ) => {
         try {
             const { error: rpcError } = await supabase.rpc('create_customer_profile', {
                 p_email: email,
                 p_first_name: firstName || null,
                 p_last_name: lastName || null,
-                p_mobile: null,
+                p_mobile: mobile || null,
                 p_sect: sect || null,
             })
 
@@ -241,6 +246,26 @@ export const useAuth = () => {
         }
     }
 
+    /**
+     * Check if a user already exists with the given email
+     */
+    const checkUserExists = async (email: string) => {
+        try {
+            const { data, error: rpcError } = await supabase.rpc('check_email_exists', {
+                p_email: email
+            })
+
+            if (rpcError) {
+                console.error('RPC Error (check_email_exists):', rpcError)
+                return false
+            }
+
+            return !!data
+        } catch (err) {
+            return false
+        }
+    }
+
     return {
         // State
         user,
@@ -257,5 +282,6 @@ export const useAuth = () => {
         createCustomerProfile,
         getCustomerProfile,
         updateCustomerProfile,
+        checkUserExists,
     }
 }

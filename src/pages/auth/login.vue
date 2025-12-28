@@ -120,6 +120,26 @@
             <p v-if="isSignUp" class="auth-form__hint">Minimum 6 characters</p>
           </div>
 
+          <!-- Mobile Number (Sign Up Only) -->
+          <Transition
+            enter-active-class="transition-all duration-300"
+            enter-from-class="opacity-0 max-h-0"
+            enter-to-class="opacity-100 max-h-20"
+            leave-active-class="transition-all duration-200"
+            leave-from-class="opacity-100 max-h-20"
+            leave-to-class="opacity-0 max-h-0"
+          >
+            <div v-if="isSignUp" class="auth-form__group overflow-hidden">
+              <label class="auth-form__label">Mobile Number</label>
+              <input 
+                v-model="form.mobile"
+                type="tel"
+                placeholder="+91 98765 43210"
+                class="auth-form__input"
+              />
+            </div>
+          </Transition>
+
           <!-- Sect Selection (Sign Up Only) -->
           <Transition
             enter-active-class="transition-all duration-300"
@@ -181,6 +201,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Verification Popup -->
+    <Transition
+      enter-active-class="transition-all duration-300"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition-all duration-200"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div v-if="showVerificationPopup" class="auth-popup-overlay">
+        <div class="auth-popup">
+          <div class="auth-popup__header">
+            <div class="auth-popup__icon">
+                <Icon name="Mail" :size="32" />
+            </div>
+            <h2 class="auth-popup__title">Verify your email</h2>
+            <p class="auth-popup__message">
+              A verification email has been sent to <strong>{{ form.email }}</strong>. Please check your inbox and verify your email to login.
+            </p>
+          </div>
+          <button @click="showVerificationPopup = false" class="auth-btn-primary w-full">
+            Understood
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -194,7 +241,7 @@ definePageMeta({
 
 const router = useRouter()
 const route = useRoute()
-const { signUp, signIn, isAuthenticated } = useAuth()
+const { signUp, signIn, isAuthenticated, checkUserExists } = useAuth()
 
 // Form state
 const isSignUp = ref(false)
@@ -202,12 +249,14 @@ const isLoading = ref(false)
 const showPassword = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
+const showVerificationPopup = ref(false)
 
 const form = ref({
   email: '',
   password: '',
   firstName: '',
   lastName: '',
+  mobile: '',
   sect: '',
 })
 
@@ -223,6 +272,7 @@ const toggleMode = () => {
   isSignUp.value = !isSignUp.value
   errorMessage.value = ''
   successMessage.value = ''
+  showVerificationPopup.value = false
 }
 
 const handleSubmit = async () => {
@@ -232,21 +282,31 @@ const handleSubmit = async () => {
 
   try {
     if (isSignUp.value) {
+      // Check if user already exists
+      const exists = await checkUserExists(form.value.email)
+      if (exists) {
+          errorMessage.value = 'An account with this email already exists. Switching to Sign In...'
+          setTimeout(() => {
+              isSignUp.value = false
+              errorMessage.value = ''
+          }, 2000)
+          return
+      }
+
       // Sign Up
       const result = await signUp(
         form.value.email,
         form.value.password,
         form.value.firstName,
         form.value.lastName,
-        form.value.sect
+        form.value.sect,
+        form.value.mobile
       )
 
       if (result.success) {
-        successMessage.value = 'Account created successfully! Redirecting...'
-        setTimeout(() => {
-          const redirectTo = route.query.redirect as string || '/profile'
-          router.push(redirectTo)
-        }, 1500)
+        showVerificationPopup.value = true
+        // Clear form after success
+        form.value.password = ''
       } else {
         errorMessage.value = result.error || 'Sign up failed. Please try again.'
       }
@@ -261,6 +321,19 @@ const handleSubmit = async () => {
           router.push(redirectTo)
         }, 1000)
       } else {
+        // If user not found, suggest signup
+        if (result.error?.toLowerCase().includes('invalid login credentials')) {
+            // We'll check exists to be sure it's "user not found" scenario
+            const exists = await checkUserExists(form.value.email)
+            if (!exists) {
+                errorMessage.value = 'Account not found. Switching to Sign Up...'
+                setTimeout(() => {
+                    isSignUp.value = true
+                    errorMessage.value = ''
+                }, 2000)
+                return
+            }
+        }
         errorMessage.value = result.error || 'Invalid email or password.'
       }
     }

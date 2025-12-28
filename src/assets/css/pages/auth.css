@@ -500,3 +500,98 @@
         transform: rotate(360deg);
     }
 }
+
+/* -----------------------------------------------------------------------------
+   Verification Popup / Modal
+   ----------------------------------------------------------------------------- */
+.auth-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+.auth-popup {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    border-radius: var(--auth-radius);
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: popup-slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.auth-popup__header {
+    margin-bottom: 2rem;
+}
+
+.auth-popup__icon {
+    width: 72px;
+    height: 72px;
+    background: var(--auth-primary-light);
+    color: var(--auth-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.auth-popup__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.75rem;
+}
+
+.auth-popup__message {
+    font-size: 0.938rem;
+    color: #4B5563;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.auth-popup__message strong {
+    color: var(--auth-primary);
+    font-weight: 600;
+}
+
+.auth-btn-primary {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--auth-gradient-start), var(--auth-gradient-end));
+    border: none;
+    border-radius: var(--auth-radius-sm);
+    cursor: pointer;
+    transition: var(--auth-transition);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+.auth-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes popup-slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

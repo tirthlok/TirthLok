@@ -30,6 +30,7 @@ export const useSupabase = () => {
     // Create singleton instance
     supabaseInstance = createClient(supabaseUrl, supabaseKey, {
         auth: {
+            storage: typeof window !== 'undefined' ? window.sessionStorage : undefined,
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: true,
