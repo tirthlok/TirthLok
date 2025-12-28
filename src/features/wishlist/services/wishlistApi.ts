@@ -27,13 +27,14 @@ export const useFavoriteApi = () => {
         .select('tirth_name')
 
       if (error) {
-        console.error('Error fetching wishlist:', error)
+        console.error('[Wishlist] Error fetching favorites:', error)
         throw error
       }
 
+      console.log('[Wishlist] Fetched data:', data)
       return (data || []).map(item => item.tirth_name)
     } catch (error) {
-      console.error('Error fetching wishlist:', error)
+      console.error('[Wishlist] Error fetching favorites:', error)
       throw error
     }
   }
@@ -64,7 +65,7 @@ export const useFavoriteApi = () => {
         if (rpcError.code === '23505') {
           console.log('[Wishlist] Already in wishlist')
         } else {
-          console.error('Error adding to wishlist:', rpcError)
+          console.error('[Wishlist] Error adding to wishlist:', rpcError)
           throw rpcError
         }
       }
@@ -72,7 +73,7 @@ export const useFavoriteApi = () => {
       // Return updated wishlist
       return await fetchFavorites()
     } catch (error) {
-      console.error(`Error adding to wishlist ${tirthName}:`, error)
+      console.error(`[Wishlist] Error adding to wishlist ${tirthName}:`, error)
       throw error
     }
   }
@@ -99,14 +100,14 @@ export const useFavoriteApi = () => {
       })
 
       if (rpcError) {
-        console.error('Error removing from wishlist:', rpcError)
+        console.error('[Wishlist] Error removing from wishlist:', rpcError)
         throw rpcError
       }
 
       // Return updated wishlist
       return await fetchFavorites()
     } catch (error) {
-      console.error(`Error removing from wishlist ${tirthName}:`, error)
+      console.error(`[Wishlist] Error removing from wishlist ${tirthName}:`, error)
       throw error
     }
   }
@@ -119,7 +120,7 @@ export const useFavoriteApi = () => {
       const favorites = await fetchFavorites()
       return favorites.includes(tirthName)
     } catch (error) {
-      console.error(`Error checking wishlist status for ${tirthName}:`, error)
+      console.error(`[Wishlist] Error checking wishlist status for ${tirthName}:`, error)
       return false
     }
   }
@@ -136,11 +137,11 @@ export const useFavoriteApi = () => {
       const { error: rpcError } = await supabase.rpc('clear_wishlist')
 
       if (rpcError) {
-        console.error('Error clearing wishlist:', rpcError)
+        console.error('[Wishlist] Error clearing wishlist:', rpcError)
         throw rpcError
       }
     } catch (error) {
-      console.error('Error clearing wishlist:', error)
+      console.error('[Wishlist] Error clearing wishlist:', error)
       throw error
     }
   }

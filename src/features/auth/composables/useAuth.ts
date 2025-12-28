@@ -179,6 +179,7 @@ export const useAuth = () => {
             })
 
             if (rpcError) {
+                console.error('RPC Error (create_customer_profile):', rpcError)
                 return { success: false, error: rpcError.message }
             }
 
@@ -217,7 +218,7 @@ export const useAuth = () => {
         updates: {
             customer_first_name?: string
             customer_last_name?: string
-            customer_mobile?: number
+            customer_mobile?: string
             customer_sect?: string
         }
     ) => {
@@ -225,11 +226,12 @@ export const useAuth = () => {
             const { data, error: rpcError } = await supabase.rpc('update_customer_profile', {
                 p_first_name: updates.customer_first_name || null,
                 p_last_name: updates.customer_last_name || null,
-                p_mobile: updates.customer_mobile?.toString() || null,
+                p_mobile: updates.customer_mobile || null,
                 p_sect: updates.customer_sect || null,
             })
 
             if (rpcError) {
+                console.error('RPC Error (update_customer_profile):', rpcError)
                 return { success: false, error: rpcError.message }
             }
 

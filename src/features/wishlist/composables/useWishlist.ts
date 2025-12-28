@@ -49,6 +49,7 @@ export const useWishlist = () => {
                 throw fetchError
             }
 
+            console.log('[Wishlist] Fetched items:', data)
             wishlistItems.value = (data || []).map(item => item.tirth_name)
             return wishlistItems.value
         } catch (err: any) {

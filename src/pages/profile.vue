@@ -247,13 +247,19 @@ onMounted(async () => {
     profile.value.email = user.value.email || ''
     
     // Fetch customer profile from database
-    const result = await getCustomerProfile(user.value.id)
+    const result = await getCustomerProfile()
     
     if (result.success && result.data) {
-      profile.value.firstName = result.data.customer_first_name || ''
-      profile.value.lastName = result.data.customer_last_name || ''
+      console.log('[Profile] Loaded data:', result.data)
+      // Use database data, fallback to auth metadata if empty
+      profile.value.firstName = result.data.customer_first_name || user.value.user_metadata?.first_name || ''
+      profile.value.lastName = result.data.customer_last_name || user.value.user_metadata?.last_name || ''
       profile.value.phone = result.data.customer_mobile?.toString() || ''
       profile.value.sect = result.data.customer_sect || ''
+    } else {
+      console.warn('[Profile] Failed to load data from DB, using metadata fallback:', result)
+      profile.value.firstName = user.value.user_metadata?.first_name || ''
+      profile.value.lastName = user.value.user_metadata?.last_name || ''
     }
     
     originalProfile.value = { ...profile.value }
@@ -277,10 +283,10 @@ const saveDetails = async () => {
   successMessage.value = ''
   
   try {
-    const result = await updateCustomerProfile(user.value.id, {
+    const result = await updateCustomerProfile({
       customer_first_name: profile.value.firstName || undefined,
       customer_last_name: profile.value.lastName || undefined,
-      customer_mobile: profile.value.phone ? parseInt(profile.value.phone.replace(/\D/g, '')) : undefined,
+      customer_mobile: profile.value.phone ? profile.value.phone.replace(/\D/g, '') : undefined,
       customer_sect: profile.value.sect || undefined,
     })
 
