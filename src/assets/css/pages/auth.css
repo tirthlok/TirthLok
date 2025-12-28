@@ -479,3 +479,36 @@
         transform: translateY(0);
     }
 }
+
+/* Helper Rows & Links */
+.auth-helper-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.auth-link {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--auth-primary);
+    text-decoration: none;
+    transition: var(--auth-transition);
+}
+
+.auth-link:hover {
+    color: var(--auth-primary-hover);
+    text-decoration: underline;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.w-full {
+    width: 100%;
+}

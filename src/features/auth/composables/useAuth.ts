@@ -13,12 +13,14 @@ const currentSession = ref<Session | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const initialized = ref(false)
+const isRecoveryMode = ref(false)
 
 export const useAuth = () => {
     const { supabase } = useSupabase()
 
     // Computed states
     const isAuthenticated = computed(() => !!currentSession.value)
+    const isFullyAuthenticated = computed(() => !!currentSession.value && !isRecoveryMode.value)
     const user = computed(() => currentUser.value)
     const session = computed(() => currentSession.value)
 
@@ -153,6 +155,7 @@ export const useAuth = () => {
 
             currentUser.value = null
             currentSession.value = null
+            isRecoveryMode.value = false
 
             return { success: true }
         } catch (err: any) {
@@ -199,6 +202,9 @@ export const useAuth = () => {
      * View automatically filters to show only user's own profile
      */
     const getCustomerProfile = async () => {
+        if (isRecoveryMode.value) {
+            return { success: false, error: 'Restricted access: Please complete password reset first.', data: null }
+        }
         try {
             const { data, error: fetchError } = await supabase
                 .from('v_customer_profile')
@@ -247,6 +253,89 @@ export const useAuth = () => {
     }
 
     /**
+     * Verify password reset token
+     */
+    const verifyResetToken = async (email: string, token: string) => {
+        loading.value = true
+        error.value = null
+
+        try {
+            const { error: verifyError } = await supabase.auth.verifyOtp({
+                email,
+                token,
+                type: 'recovery'
+            })
+
+            if (verifyError) {
+                error.value = verifyError.message
+                return { success: false, error: verifyError.message }
+            }
+
+            // Successful verification puts us in recovery mode
+            isRecoveryMode.value = true
+
+            return { success: true }
+        } catch (err: any) {
+            error.value = err.message || 'Verification failed'
+            return { success: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
+    /**
+     * Send password reset email
+     */
+    const resetPassword = async (email: string) => {
+        loading.value = true
+        error.value = null
+
+        try {
+            const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/auth/reset-password`,
+            })
+
+            if (resetError) {
+                error.value = resetError.message
+                return { success: false, error: resetError.message }
+            }
+
+            return { success: true }
+        } catch (err: any) {
+            error.value = err.message || 'Password reset failed'
+            return { success: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
+    /**
+     * Update user password
+     */
+    const updatePassword = async (newPassword: string) => {
+        loading.value = true
+        error.value = null
+
+        try {
+            const { error: updateError } = await supabase.auth.updateUser({
+                password: newPassword
+            })
+
+            if (updateError) {
+                error.value = updateError.message
+                return { success: false, error: updateError.message }
+            }
+
+            return { success: true }
+        } catch (err: any) {
+            error.value = err.message || 'Password update failed'
+            return { success: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
+    /**
      * Check if a user already exists with the given email
      */
     const checkUserExists = async (email: string) => {
@@ -271,6 +360,8 @@ export const useAuth = () => {
         user,
         session,
         isAuthenticated,
+        isFullyAuthenticated,
+        isRecoveryMode,
         loading,
         error,
         initialized,
@@ -279,6 +370,9 @@ export const useAuth = () => {
         signUp,
         signIn,
         signOut,
+        resetPassword,
+        verifyResetToken,
+        updatePassword,
         createCustomerProfile,
         getCustomerProfile,
         updateCustomerProfile,

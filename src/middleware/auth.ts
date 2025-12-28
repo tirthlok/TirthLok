@@ -10,13 +10,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // Only run on client side
     if (import.meta.server) return
 
-    const { initialize, isAuthenticated } = useAuth()
+    const { initialize, isFullyAuthenticated } = useAuth()
 
     // Initialize auth state
     await initialize()
 
-    // If not authenticated, redirect to login
-    if (!isAuthenticated.value) {
+    // If not fully authenticated (e.g. in recovery mode or not logged in), redirect to login
+    if (!isFullyAuthenticated.value) {
         return navigateTo({
             path: '/auth/login',
             query: { redirect: to.fullPath }

@@ -117,6 +117,13 @@
                 <Icon :name="showPassword ? 'EyeOff' : 'Eye'" :size="18" />
               </button>
             </div>
+            
+            <!-- Forgot Password Link -->
+            <div v-if="!isSignUp" class="auth-helper-row">
+              <NuxtLink :to="{ path: '/auth/forgot-password', query: { email: form.email } }" class="auth-link">
+                Forgot Password?
+              </NuxtLink>
+            </div>
           </div>
 
           <!-- Extra Fields for Sign Up -->
