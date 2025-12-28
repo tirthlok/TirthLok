@@ -1,172 +1,154 @@
 <template>
   <div class="auth-page">
-    <div class="auth-wrapper">
-      <!-- Back Button -->
-      <NuxtLink to="/" class="auth-back-btn">
-        <Icon name="ArrowLeft" :size="16" />
-        <span>Back to Home</span>
-      </NuxtLink>
-
-      <!-- Auth Card -->
-      <div class="auth-card">
-        <!-- Header -->
-        <div class="auth-card__header">
-          <div class="auth-avatar">
-            <Icon name="User" :size="28" />
+    <!-- Centered Form Side -->
+    <div class="auth-form-side">
+      <div class="auth-form-container" :class="{ 'auth-form-container--wide': isSignUp }">
+        <!-- Header Row: Back Button + Title -->
+        <div class="auth-header-row">
+          <button type="button" @click="handleBack" class="auth-back-link">
+            <Icon name="ArrowLeft" :size="20" />
+          </button>
+          
+          <div class="auth-logo-area">
+            <h1 class="auth-title">
+              {{ isSignUp ? 'Begin Journey' : 'Welcome Back' }}
+            </h1>
+            <p class="auth-subtitle">
+              {{ isSignUp ? 'Join the Tirthlok community' : '' }}
+            </p>
           </div>
-          <h1 class="auth-header__title">
-            {{ isSignUp ? 'Create Account' : 'Welcome Back' }}
-          </h1>
-          <p class="auth-header__subtitle">
-            {{ isSignUp ? 'Join TirthLok today' : 'Sign in to your account' }}
-          </p>
+
+          <!-- Dummy spacer to help center the title area -->
+          <div class="auth-header-spacer"></div>
         </div>
 
-        <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="auth-card__body">
-          <!-- Error Message -->
-          <Transition
-            enter-active-class="transition-all duration-300"
-            enter-from-class="opacity-0 -translate-y-2"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-2"
+        <!-- Segmented Toggle (Switch) -->
+        <div class="auth-switcher">
+          <button 
+            type="button" 
+            class="auth-switcher-btn"
+            :class="{ 'auth-switcher-btn--active': !isSignUp }"
+            @click="isSignUp = false"
           >
-            <div v-if="errorMessage" class="auth-alert auth-alert--error">
+            Sign In
+          </button>
+          <button 
+            type="button" 
+            class="auth-switcher-btn"
+            :class="{ 'auth-switcher-btn--active': isSignUp }"
+            @click="isSignUp = true"
+          >
+            Sign Up
+          </button>
+          <div 
+            class="auth-switcher-bg"
+            :class="{ 'auth-switcher-bg--right': isSignUp }"
+          ></div>
+        </div>
+
+        <!-- Main Form -->
+        <form @submit.prevent="handleSubmit" class="auth-main-form">
+          <!-- Feedback Messages -->
+          <Transition name="slide-down">
+            <div v-if="errorMessage" class="auth-feedback auth-feedback--error">
               <Icon name="AlertCircle" :size="16" />
               <span>{{ errorMessage }}</span>
             </div>
           </Transition>
 
-          <!-- Success Message -->
-          <Transition
-            enter-active-class="transition-all duration-300"
-            enter-from-class="opacity-0 -translate-y-2"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-2"
-          >
-            <div v-if="successMessage" class="auth-alert auth-alert--success">
+          <Transition name="slide-down">
+            <div v-if="successMessage" class="auth-feedback auth-feedback--success">
               <Icon name="Check" :size="16" />
               <span>{{ successMessage }}</span>
             </div>
           </Transition>
 
-          <!-- Name Fields (Sign Up Only) -->
-          <Transition
-            enter-active-class="transition-all duration-300"
-            enter-from-class="opacity-0 max-h-0"
-            enter-to-class="opacity-100 max-h-40"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 max-h-40"
-            leave-to-class="opacity-0 max-h-0"
-          >
-            <div v-if="isSignUp" class="auth-form__row overflow-hidden">
-              <div class="auth-form__group">
-                <label class="auth-form__label">First Name</label>
-                <input 
-                  v-model="form.firstName"
-                  type="text"
-                  placeholder="John"
-                  class="auth-form__input"
-                />
-              </div>
-              <div class="auth-form__group">
-                <label class="auth-form__label">Last Name</label>
-                <input 
-                  v-model="form.lastName"
-                  type="text"
-                  placeholder="Doe"
-                  class="auth-form__input"
-                />
-              </div>
+          <!-- Sign Up Name Row -->
+          <div v-if="isSignUp" class="auth-grid-row">
+            <div class="auth-input-group">
+              <label class="auth-label">First Name</label>
+              <input 
+                v-model="form.firstName"
+                type="text"
+                placeholder="Aarav"
+                class="auth-input"
+              />
             </div>
-          </Transition>
+            <div class="auth-input-group">
+              <label class="auth-label">Last Name</label>
+              <input 
+                v-model="form.lastName"
+                type="text"
+                placeholder="Jain"
+                class="auth-input"
+              />
+            </div>
+          </div>
 
-          <!-- Email Field -->
-          <div class="auth-form__group">
-            <label class="auth-form__label">Email</label>
+          <!-- Email -->
+          <div class="auth-input-group">
+            <label class="auth-label">Email Address</label>
             <input 
               v-model="form.email"
               type="email"
               required
-              placeholder="you@example.com"
-              class="auth-form__input"
+              placeholder="name@email.com"
+              class="auth-input"
             />
           </div>
 
-          <!-- Password Field -->
-          <div class="auth-form__group">
-            <label class="auth-form__label">Password</label>
-            <div class="auth-form__input-wrapper">
+          <!-- Password -->
+          <div class="auth-input-group">
+            <label class="auth-label">Password</label>
+            <div class="auth-input-wrapper">
               <input 
                 v-model="form.password"
                 :type="showPassword ? 'text' : 'password'"
                 required
                 minlength="6"
                 placeholder="••••••••"
-                class="auth-form__input"
+                class="auth-input"
               />
               <button 
                 type="button"
                 @click="showPassword = !showPassword"
-                class="auth-form__toggle-password"
+                class="auth-input-icon"
               >
                 <Icon :name="showPassword ? 'EyeOff' : 'Eye'" :size="18" />
               </button>
             </div>
-            <p v-if="isSignUp" class="auth-form__hint">Minimum 6 characters</p>
           </div>
 
-          <!-- Mobile Number (Sign Up Only) -->
-          <Transition
-            enter-active-class="transition-all duration-300"
-            enter-from-class="opacity-0 max-h-0"
-            enter-to-class="opacity-100 max-h-20"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 max-h-20"
-            leave-to-class="opacity-0 max-h-0"
-          >
-            <div v-if="isSignUp" class="auth-form__group overflow-hidden">
-              <label class="auth-form__label">Mobile Number</label>
+          <!-- Extra Fields for Sign Up -->
+          <template v-if="isSignUp">
+            <div class="auth-input-group">
+              <label class="auth-label">Mobile Number</label>
               <input 
                 v-model="form.mobile"
                 type="tel"
                 placeholder="+91 98765 43210"
-                class="auth-form__input"
+                class="auth-input"
               />
             </div>
-          </Transition>
 
-          <!-- Sect Selection (Sign Up Only) -->
-          <Transition
-            enter-active-class="transition-all duration-300"
-            enter-from-class="opacity-0 max-h-0"
-            enter-to-class="opacity-100 max-h-20"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 max-h-20"
-            leave-to-class="opacity-0 max-h-0"
-          >
-            <div v-if="isSignUp" class="auth-form__group overflow-hidden">
-              <label class="auth-form__label">Sect (Optional)</label>
+            <div class="auth-input-group">
+              <label class="auth-label">Sect (Optional)</label>
               <select 
                 v-model="form.sect"
-                class="auth-form__input"
+                class="auth-input auth-select"
               >
                 <option value="">Select your sect</option>
                 <option value="Shwetambar">Shwetambar</option>
                 <option value="Digambar">Digambar</option>
               </select>
             </div>
-          </Transition>
+          </template>
 
-          <!-- Submit Button -->
+          <!-- Action Button -->
           <button 
             type="submit"
             :disabled="isLoading"
-            class="auth-btn-submit"
+            class="auth-submit-btn"
           >
             <svg v-if="isLoading" class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -175,54 +157,22 @@
             <span>{{ isLoading ? 'Please wait...' : (isSignUp ? 'Create Account' : 'Sign In') }}</span>
           </button>
 
-          <!-- Toggle Mode -->
-          <div class="auth-toggle">
-            <p class="auth-toggle__text">
-              {{ isSignUp ? 'Already have an account?' : "Don't have an account?" }}
-              <button 
-                type="button"
-                @click="toggleMode"
-                class="auth-toggle__btn"
-              >
-                {{ isSignUp ? 'Sign In' : 'Sign Up' }}
-              </button>
-            </p>
-          </div>
         </form>
-      </div>
-
-      <!-- Info Card -->
-      <div class="auth-info-card">
-        <div class="auth-info-card__content">
-          <Icon name="Info" :size="18" class="auth-info-card__icon" />
-          <p class="auth-info-card__text">
-            By creating an account, you can save your favorite Tirths, track visited places, and get personalized recommendations.
-          </p>
-        </div>
       </div>
     </div>
 
-    <!-- Verification Popup -->
-    <Transition
-      enter-active-class="transition-all duration-300"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition-all duration-200"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-95"
-    >
-      <div v-if="showVerificationPopup" class="auth-popup-overlay">
-        <div class="auth-popup">
-          <div class="auth-popup__header">
-            <div class="auth-popup__icon">
-                <Icon name="Mail" :size="32" />
-            </div>
-            <h2 class="auth-popup__title">Verify your email</h2>
-            <p class="auth-popup__message">
-              A verification email has been sent to <strong>{{ form.email }}</strong>. Please check your inbox and verify your email to login.
-            </p>
+    <!-- Verification Modal -->
+    <Transition name="pop">
+      <div v-if="showVerificationPopup" class="auth-modal-overlay">
+        <div class="auth-modal">
+          <div class="auth-modal-icon">
+              <Icon name="Mail" :size="32" />
           </div>
-          <button @click="showVerificationPopup = false" class="auth-btn-primary w-full">
+          <h2 class="auth-modal-title">Check your inbox</h2>
+          <p class="auth-modal-text">
+            A verification email has been sent to <strong>{{ form.email }}</strong>. Please verify your email to continue.
+          </p>
+          <button @click="showVerificationPopup = false" class="auth-submit-btn w-full">
             Understood
           </button>
         </div>
@@ -241,6 +191,15 @@ definePageMeta({
 
 const router = useRouter()
 const route = useRoute()
+
+const handleBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/')
+  }
+}
+
 const { signUp, signIn, isAuthenticated, checkUserExists } = useAuth()
 
 // Form state
@@ -268,12 +227,6 @@ watchEffect(() => {
   }
 })
 
-const toggleMode = () => {
-  isSignUp.value = !isSignUp.value
-  errorMessage.value = ''
-  successMessage.value = ''
-  showVerificationPopup.value = false
-}
 
 const handleSubmit = async () => {
   errorMessage.value = ''
@@ -344,3 +297,34 @@ const handleSubmit = async () => {
   }
 }
 </script>
+
+<style scoped>
+/* Scoped transitions for Vue */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease-out;
+}
+.slide-down-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.pop-enter-active {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pop-leave-active {
+  transition: all 0.3s ease-in;
+}
+.pop-enter-from {
+  opacity: 0;
+  transform: scale(0.9);
+}
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+</style>
