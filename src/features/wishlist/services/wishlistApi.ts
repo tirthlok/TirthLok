@@ -1,13 +1,13 @@
 /**
- * useFavoriteApi Composable
- * Favorite/Wishlist API - uses Supabase client directly with authenticated session
+ * useWishlistApi Composable
+ * Wishlist API - uses Supabase client directly with authenticated session
  * Uses tirth_name as the unique identifier (since v_tirth_cards view lacks tirth_id)
  */
 
 import { useSupabase } from '~/features/auth/composables/useSupabase'
 import { useAuth } from '~/features/auth/composables/useAuth'
 
-export const useFavoriteApi = () => {
+export const useWishlistApi = () => {
   const { supabase } = useSupabase()
   const { session } = useAuth()
 
@@ -15,7 +15,7 @@ export const useFavoriteApi = () => {
    * Fetch user's wishlist (Tirth names) using secure view
    * View automatically filters to show only user's own wishlist
    */
-  const fetchFavorites = async (): Promise<string[]> => {
+  const getWishlist = async (): Promise<string[]> => {
     if (!session.value?.user?.id) {
       console.log('[Wishlist] No user session, returning empty wishlist')
       return []
@@ -27,14 +27,14 @@ export const useFavoriteApi = () => {
         .select('tirth_name')
 
       if (error) {
-        console.error('[Wishlist] Error fetching favorites:', error)
+        console.error('[Wishlist] Error fetching wishlist:', error)
         throw error
       }
 
       console.log('[Wishlist] Fetched data:', data)
       return (data || []).map(item => item.tirth_name)
     } catch (error) {
-      console.error('[Wishlist] Error fetching favorites:', error)
+      console.error('[Wishlist] Error fetching wishlist:', error)
       throw error
     }
   }
@@ -43,7 +43,7 @@ export const useFavoriteApi = () => {
    * Add tirth to wishlist using RPC function
    * @param tirthName - The tirth name (used as unique identifier)
    */
-  const addFavorite = async (tirthName: string, _entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'): Promise<string[]> => {
+  const addToWishlist = async (tirthName: string, _entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'): Promise<string[]> => {
     if (!session.value?.user?.id) {
       throw new Error('Not authenticated')
     }
@@ -71,7 +71,7 @@ export const useFavoriteApi = () => {
       }
 
       // Return updated wishlist
-      return await fetchFavorites()
+      return await getWishlist()
     } catch (error) {
       console.error(`[Wishlist] Error adding to wishlist ${tirthName}:`, error)
       throw error
@@ -82,7 +82,7 @@ export const useFavoriteApi = () => {
    * Remove tirth from wishlist using RPC function
    * @param tirthName - The tirth name (used as unique identifier)
    */
-  const removeFavorite = async (tirthName: string): Promise<string[]> => {
+  const removeFromWishlist = async (tirthName: string): Promise<string[]> => {
     if (!session.value?.user?.id) {
       throw new Error('Not authenticated')
     }
@@ -105,7 +105,7 @@ export const useFavoriteApi = () => {
       }
 
       // Return updated wishlist
-      return await fetchFavorites()
+      return await getWishlist()
     } catch (error) {
       console.error(`[Wishlist] Error removing from wishlist ${tirthName}:`, error)
       throw error
@@ -115,10 +115,10 @@ export const useFavoriteApi = () => {
   /**
    * Check if item is in wishlist
    */
-  const isFavorite = async (tirthName: string): Promise<boolean> => {
+  const isInWishlist = async (tirthName: string): Promise<boolean> => {
     try {
-      const favorites = await fetchFavorites()
-      return favorites.includes(tirthName)
+      const wishlist = await getWishlist()
+      return wishlist.includes(tirthName)
     } catch (error) {
       console.error(`[Wishlist] Error checking wishlist status for ${tirthName}:`, error)
       return false
@@ -126,9 +126,9 @@ export const useFavoriteApi = () => {
   }
 
   /**
-   * Clear all favorites using RPC function
+   * Clear all items from wishlist using RPC function
    */
-  const clearFavorites = async (): Promise<void> => {
+  const clearWishlist = async (): Promise<void> => {
     if (!session.value?.user?.id) {
       return
     }
@@ -147,10 +147,10 @@ export const useFavoriteApi = () => {
   }
 
   return {
-    fetchFavorites,
-    addFavorite,
-    removeFavorite,
-    isFavorite,
-    clearFavorites,
+    getWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+    clearWishlist,
   }
 }

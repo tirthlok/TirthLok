@@ -16,12 +16,12 @@
         />
       </div>
 
-      <!-- Wishlist/Favorite Button -->
-      <FavoriteButton
+      <!-- Wishlist Button -->
+      <WishlistButton
         v-if="showWishlist"
         :item-id="item.id"
         :entity-type="cardType"
-        :is-favorited="isFavorited"
+        :is-in-wishlist="isInWishlist"
         class='absolute top-4 right-4 z-10'
       />
 
@@ -66,10 +66,9 @@ import { computed } from 'vue'
 import type { CardType, CardItem, CardDisplayField, ColorScheme } from './types'
 import { DEFAULT_COLOR_SCHEMES, DEFAULT_COLOR_SCHEMES_LIGHT } from './types'
 import { useCard } from './composables/useCard'
-import { useFavoritesStore } from '~/stores/favorites'
+import { WishlistButton, useWishlistStore } from '~/features/wishlist'
 import { useThemeStore } from '~/stores/theme'
 import ImageCarousel from '../carousel/ImageCarousel.vue'
-import FavoriteButton from '../FavoriteButton.vue'
 import Icon from '../Icon.vue'
 
 interface Props {
@@ -100,7 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
 })
 
-const favoritesStore = useFavoritesStore()
+const wishlistStore = useWishlistStore()
 const themeStore = useThemeStore()
 const { handleCardClick } = useCard(props.item)
 
@@ -131,9 +130,9 @@ const imageHeightFinal = computed(() => {
   return props.imageHeight
 })
 
-// Check if item is favorited
-const isFavorited = computed(() => {
-  return favoritesStore.isFavorite(props.item.id)
+// Check if item is in wishlist
+const isInWishlist = computed(() => {
+  return wishlistStore.isInWishlist(props.item.id)
 })
 
 // Details section background

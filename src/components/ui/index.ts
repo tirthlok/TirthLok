@@ -44,7 +44,6 @@ export type { ButtonVariant as ActionButtonVariant, ButtonSize as ActionButtonSi
 // Common UI Components (from merged common folder)
 // =============================================================================
 export { default as Icon } from './Icon.vue'
-export { default as FavoriteButton } from './FavoriteButton.vue'
 export { default as BottomNav } from './BottomNav.vue'
 export { default as FacilityGrid } from './FacilityGrid.vue'
 export { default as InfoSection } from './InfoSection.vue'

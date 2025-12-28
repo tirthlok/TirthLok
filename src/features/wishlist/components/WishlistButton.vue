@@ -3,27 +3,28 @@
     @click.stop="handleClick"
     @mouseenter="() => (isHovered = true)"
     @mouseleave="() => (isHovered = false)"
-    :aria-pressed="isFavorited"
-    :title="isFavorited ? 'Remove from wishlist' : 'Add to wishlist'"
+    :aria-pressed="isInWishlist"
+    :aria-label="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
+    :title="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
     :disabled="isLoading"
     class="w-11 h-11 flex items-center justify-center transition-all duration-300"
     :class="[
       isLoading ? 'opacity-50 cursor-wait' : '',
-      isFavorited
+      isInWishlist
         ? `${heartColor} scale-110`
         : `text-white hover:scale-110`
     ]"
   >
     <!-- Loading spinner -->
     <div v-if="isLoading" class="animate-spin w-6 h-6 border-2 border-current border-t-transparent rounded-full"></div>
-    <!-- Icon: stroked when not favorited, filled when favorited. Hover tracked via isHovered. -->
+    <!-- Icon: stroked when not in wishlist, filled when in wishlist. Hover tracked via isHovered. -->
     <Icon
       v-else
       name="Heart"
       :size="32"
-      :class="(isFavorited || isHovered) ? 'fill-current' : 'stroke-current'"
+      :class="(isInWishlist || isHovered) ? 'fill-current' : 'stroke-current'"
       stroke-width="2"
-      :fill="(isFavorited || isHovered) ? 'currentColor' : 'none'"
+      :fill="(isInWishlist || isHovered) ? 'currentColor' : 'none'"
       aria-hidden
     />
   </button>
@@ -31,31 +32,31 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { useFavoritesStore } from '~/stores/favorites'
+import { useWishlistStore } from '../composables/useWishlistStore'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import Icon from './Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 interface Props {
   itemId: string
   entityType?: 'tirth' | 'dharamshala' | 'bhojanshala'
-  isFavorited?: boolean
+  isInWishlist?: boolean
   heartColor?: string
   heartFilledColor?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   entityType: 'tirth',
-  isFavorited: false,
+  isInWishlist: false,
   heartColor: 'text-red-500',
   heartFilledColor: 'bg-red-500',
 })
 
 const emit = defineEmits<{
-  'toggle-favorite': [{ id: string; isFavorited: boolean }]
+  'toggle-wishlist': [{ id: string; isInWishlist: boolean }]
   'auth-required': []
 }>()
 
-const favoritesStore = useFavoritesStore()
+const wishlistStore = useWishlistStore()
 const { isAuthenticated, initialize } = useAuth()
 const router = useRouter()
 
@@ -64,9 +65,9 @@ onMounted(async () => {
   await initialize()
 })
 
-// Determine if favorited
-const isFavorited = computed(() => {
-  return favoritesStore.isFavorite(props.itemId)
+// Determine if in wishlist
+const isInWishlist = computed(() => {
+  return wishlistStore.isInWishlist(props.itemId)
 })
 
 // Local hover state (used instead of group-hover)
@@ -85,21 +86,21 @@ const handleClick = async () => {
     return
   }
 
-  // Toggle favorite
-  await toggleFavorite()
+  // Toggle wishlist
+  await toggleWishlist()
 }
 
-// Toggle favorite
-const toggleFavorite = async () => {
+// Toggle wishlist
+const toggleWishlist = async () => {
   if (isLoading.value) return
   
   isLoading.value = true
   try {
-    const newState = !isFavorited.value
-    await favoritesStore.toggleFavorite(props.itemId, props.entityType)
-    emit('toggle-favorite', { id: props.itemId, isFavorited: newState })
+    const newState = !isInWishlist.value
+    await wishlistStore.toggleWishlist(props.itemId, props.entityType)
+    emit('toggle-wishlist', { id: props.itemId, isInWishlist: newState })
   } catch (e) {
-    console.error('Error toggling favorite:', e)
+    console.error('Error toggling wishlist:', e)
   } finally {
     isLoading.value = false
   }

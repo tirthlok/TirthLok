@@ -111,7 +111,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useDharamshalaStore } from '~/stores/dharamshala'
-import { useFavoritesStore } from '~/stores/favorites'
+import { useWishlistStore } from '~/features/wishlist'
 import { useThemeStore } from '~/stores/theme'
 import type { Dharamshala } from '~/types/models'
 import { BaseCard, Icon } from '~/components/ui'
@@ -125,7 +125,7 @@ const dharamshalaStore = useDharamshalaStore()
 const themeStore = useThemeStore()
 const route = useRoute()
 const hasId = computed(() => !!(route && route.params && route.params.id))
-const favoritesStore = useFavoritesStore()
+const wishlistStore = useWishlistStore()
 
 // Server-side fetch and hydrate store
 // cache: 'no-store' ensures fresh data on every page reload (fixes refresh issue)
@@ -149,7 +149,7 @@ const filteredDharamshalas = computed(() => dharamshalaStore.filteredDharamshala
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Favorites (${favoritesStore.getFavoriteCount})` },
+  { id: 'wishlist', label: `Wishlist (${wishlistStore.getWishlistCount})` },
 ])
 
 const getFilterIcon = (id: string) => {
@@ -166,7 +166,7 @@ const displayedDharamshalas = computed(() => {
   if (selectedFilter.value === 'all') return all
   
   if (selectedFilter.value === 'wishlist') {
-    return all.filter((d: CardItem) => favoritesStore.isFavorite(d.id))
+    return all.filter((d: CardItem) => wishlistStore.isInWishlist(d.id))
   }
 
   return all

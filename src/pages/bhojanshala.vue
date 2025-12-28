@@ -112,7 +112,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
-import { useFavoritesStore } from '~/stores/favorites'
+import { useWishlistStore } from '~/features/wishlist'
 import { useThemeStore } from '~/stores/theme'
 import type { Bhojanshala } from '~/types/models'
 import { BaseCard, Icon } from '~/components/ui'
@@ -123,7 +123,7 @@ definePageMeta({
 })
 
 const bhojanshalaStore = useBhojanshalaStore()
-const favoritesStore = useFavoritesStore()
+const wishlistStore = useWishlistStore()
 const themeStore = useThemeStore()
 
 // Server-side fetch and hydrate store
@@ -148,7 +148,7 @@ const filteredBhojanShalas = computed(() => bhojanshalaStore.filteredBhojanshala
 const selectedFilter = defineModel<string>('filter', { default: 'all' })
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Favorites (${favoritesStore.getFavoriteCount})` },
+  { id: 'wishlist', label: `Wishlist (${wishlistStore.getWishlistCount})` },
 ])
 
 const getFilterIcon = (id: string) => {
@@ -168,7 +168,7 @@ const displayedBhojanShalas = computed(() => {
   if (selectedFilter.value === 'all') return all
   
   if (selectedFilter.value === 'wishlist') {
-    return all.filter((b: CardItem) => favoritesStore.isFavorite(b.id))
+    return all.filter((b: CardItem) => wishlistStore.isInWishlist(b.id))
   }
 
   return all

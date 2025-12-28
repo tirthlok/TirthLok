@@ -152,7 +152,7 @@
 import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/stores/tirth'
-import { useFavoritesStore } from '~/stores/favorites'
+import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'
 import { BaseCard, Icon, FilterPanel, TirthCardSkeleton } from '~/components/ui'
@@ -164,7 +164,7 @@ definePageMeta({
 
 const themeStore = useThemeStore()
 const tirthStore = useTirthStore()
-const favoritesStore = useFavoritesStore()
+const wishlistStore = useWishlistStore()
 const { isAuthenticated } = useAuth()
 const { getUniqueGroupings, formatGroupingTitle } = useGrouping()
 const route = useRoute()
@@ -226,7 +226,7 @@ const uniqueGroupings = computed(() => getUniqueGroupings(allTirths.value))
 
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Wishlist (${favoritesStore.getFavoriteCount})` },
+  { id: 'wishlist', label: `Wishlist (${wishlistStore.getWishlistCount})` },
   ...uniqueGroupings.value.map(grouping => ({
     id: grouping,
     label: formatGroupingTitle(grouping)
@@ -253,7 +253,7 @@ const applyFilters = () => {
     if (!isAuthenticated.value) {
       result = []
     } else {
-      result = result.filter((t: Tirth) => favoritesStore.isFavorite(t.id))
+      result = result.filter((t: Tirth) => wishlistStore.isInWishlist(t.id))
     }
   }
   // Apply grouping filter
@@ -313,12 +313,12 @@ watch(
   { deep: true }
 )
 
-// Watch favorites changes to re-apply filter when wishlist is updated
+// Watch wishlist changes to re-apply filter when wishlist is updated
 watch(
-  () => favoritesStore.favorites,
+  () => wishlistStore.wishlistItems,
   () => {
     if (selectedGrouping.value === 'wishlist') {
-      console.log('❤️ Tirth page: Favorites changed, re-applying wishlist filter')
+      console.log('📜 Tirth page: Wishlist changed, re-applying wishlist filter')
       applyFilters()
     }
   },

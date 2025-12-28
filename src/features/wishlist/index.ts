@@ -4,10 +4,10 @@
  */
 
 // Components
-export { default as FavoriteButton } from './components/FavoriteButton.vue'
+export { default as WishlistButton } from './components/WishlistButton.vue'
 
 // Composables (State)
-export { useFavoritesStore } from './composables/useFavoritesStore'
+export { useWishlistStore } from './composables/useWishlistStore'
 
 // Services (API)
-export { useFavoriteApi } from './services/wishlistApi'
+export { useWishlistApi } from './services/wishlistApi'
