@@ -6,6 +6,7 @@
 
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
+import { useSupabase } from '~/features/auth/composables/useSupabase'
 
 export default defineNuxtPlugin(async () => {
     // Only run on client side
@@ -30,7 +31,7 @@ export default defineNuxtPlugin(async () => {
         }
 
         // Set up auth state change listener to sync wishlist
-        const { supabase } = await import('~/features/auth/composables/useSupabase').then(m => m.useSupabase())
+        const { supabase } = useSupabase()
 
         supabase.auth.onAuthStateChange(async (event, newSession) => {
             console.log('🔐 Auth Plugin: Auth state changed:', event)

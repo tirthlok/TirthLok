@@ -9,12 +9,12 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Jain Tirth Explorer - Discover Sacred Pilgrimage Sites',
+  title: 'Tirthlok',
   meta: [
     {
       name: 'description',
       content:
-        'Explore Jain Tirth pilgrimage sites with detailed information, nearby facilities, and interactive maps.',
+        'Explore Jain Tirths with Tirthlok. Discover detailed information, nearby facilities like Dharamshala and Bhojanshala .',
     },
     {
       name: 'viewport',

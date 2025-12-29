@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useWishlistApi } from '../services/wishlistApi'
 
 interface WishlistState {
   wishlistItems: string[]
@@ -49,7 +50,6 @@ export const useWishlistStore = defineStore('wishlist', {
       this.loading = true
       this.error = null
       try {
-        const { useWishlistApi } = await import('../services/wishlistApi')
         const { getWishlist } = useWishlistApi()
         this.wishlistItems = await getWishlist()
         this.initialized = true
@@ -70,7 +70,6 @@ export const useWishlistStore = defineStore('wishlist', {
       }
 
       try {
-        const { useWishlistApi } = await import('../services/wishlistApi')
         const { addToWishlist } = useWishlistApi()
         const updatedWishlist = await addToWishlist(itemId, entityType)
         this.wishlistItems = updatedWishlist
@@ -90,7 +89,6 @@ export const useWishlistStore = defineStore('wishlist', {
       }
 
       try {
-        const { useWishlistApi } = await import('../services/wishlistApi')
         const { removeFromWishlist } = useWishlistApi()
         const updatedWishlist = await removeFromWishlist(itemId)
         this.wishlistItems = updatedWishlist
@@ -117,7 +115,6 @@ export const useWishlistStore = defineStore('wishlist', {
      */
     async clearAllItems() {
       try {
-        const { useWishlistApi } = await import('../services/wishlistApi')
         const { clearWishlist } = useWishlistApi()
         await clearWishlist()
         this.wishlistItems = []
