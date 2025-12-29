@@ -113,16 +113,10 @@ export const useAuth = () => {
             }
 
             if (data.user) {
-                // We rely on the DB trigger for creation, 
-                // but we call ensureProfileExists as a safety fallback.
-                // This handles both the trigger-less transition period and edge cases.
-                await ensureProfileExists({
-                    email,
-                    firstName,
-                    lastName,
-                    sect,
-                    mobile
-                })
+                // We rely on the DB trigger for creation.
+                // We call ensureProfileExists just to verify and wait for the trigger 
+                // to finish so the UI sees the new profile immediately.
+                await ensureProfileExists()
 
                 currentUser.value = data.user
                 currentSession.value = data.session

@@ -70,34 +70,12 @@ export const useCustomerProfile = () => {
     }
 
     /**
-     * Create customer profile using RPC function
-     * RPC handles auth.uid() automatically and prevents duplicates
+     * Check if profile exists
+     * The DB trigger handles creation automatically.
      */
-    const createProfile = async (params: CreateProfileParams) => {
-        loading.value = true
-        error.value = null
-
-        try {
-            const { data, error: rpcError } = await supabase.rpc('create_customer_profile', {
-                p_email: params.email,
-                p_first_name: params.firstName || null,
-                p_last_name: params.lastName || null,
-                p_mobile: params.mobile || null,
-                p_sect: params.sect || null,
-            })
-
-            if (rpcError) {
-                error.value = rpcError.message
-                return { success: false, error: rpcError.message, data: null }
-            }
-
-            return { success: true, data: data as CustomerProfile[] }
-        } catch (err: any) {
-            error.value = err.message || 'Failed to create profile'
-            return { success: false, error: error.value, data: null }
-        } finally {
-            loading.value = false
-        }
+    const checkProfileExists = async () => {
+        const { success, data } = await getProfile()
+        return success && !!data
     }
 
     /**
@@ -132,18 +110,23 @@ export const useCustomerProfile = () => {
     }
 
     /**
-     * Check if profile exists and create if missing
-     * Useful as a fallback for trigger or for users who signed up before trigger
+     * Check if profile exists and wait slightly for trigger if not found immediately
+     * Useful for newly signed up users where trigger might take a few milliseconds
      */
-    const ensureProfileExists = async (params: CreateProfileParams) => {
-        const { success, data } = await getProfile()
+    const ensureProfileExists = async () => {
+        // Try immediately
+        let { success, data } = await getProfile()
 
         if (!success || !data) {
-            console.log('[useCustomerProfile] Profile missing, creating...')
-            return await createProfile(params)
+            console.log('[useCustomerProfile] Profile not found, waiting for trigger...')
+            // Wait 500ms and try one more time (safety for trigger latency)
+            await new Promise(resolve => setTimeout(resolve, 500))
+            const retry = await getProfile()
+            success = retry.success
+            data = retry.data
         }
 
-        return { success: true, data }
+        return { success, data }
     }
 
     return {
@@ -152,7 +135,7 @@ export const useCustomerProfile = () => {
         error,
         // Methods
         getProfile,
-        createProfile,
+        checkProfileExists,
         updateProfile,
         ensureProfileExists,
     }
