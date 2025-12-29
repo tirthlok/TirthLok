@@ -6,6 +6,7 @@
 import { ref, computed } from 'vue'
 import type { User, Session } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
+import { useCustomerProfile } from './useCustomerProfile'
 
 // Shared state across all instances
 const currentUser = ref<User | null>(null)
@@ -17,6 +18,11 @@ const isRecoveryMode = ref(false)
 
 export const useAuth = () => {
     const { supabase } = useSupabase()
+    const {
+        getProfile,
+        updateProfile,
+        ensureProfileExists
+    } = useCustomerProfile()
 
     // Computed states
     const isAuthenticated = computed(() => !!currentSession.value)
@@ -36,10 +42,35 @@ export const useAuth = () => {
             currentSession.value = initialSession
             currentUser.value = initialSession?.user ?? null
 
+            // Detect recovery mode from URL hash or sessionStorage on initial load
+            if (typeof window !== 'undefined') {
+                if (window.location.hash.includes('type=recovery') || sessionStorage.getItem('isRecoveryMode') === 'true') {
+                    isRecoveryMode.value = true
+                    console.log('[Auth] Recovery mode activated')
+                    if (window.location.hash.includes('type=recovery')) {
+                        sessionStorage.setItem('isRecoveryMode', 'true')
+                    }
+                }
+            }
+
             // Listen for auth state changes
-            supabase.auth.onAuthStateChange((_event, session) => {
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('[Auth] State change:', event)
                 currentSession.value = session
                 currentUser.value = session?.user ?? null
+
+                if (event === 'PASSWORD_RECOVERY') {
+                    isRecoveryMode.value = true
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.setItem('isRecoveryMode', 'true')
+                    }
+                } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+                    // USER_UPDATED happens after password update
+                    isRecoveryMode.value = false
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.removeItem('isRecoveryMode')
+                    }
+                }
             })
 
             initialized.value = true
@@ -82,18 +113,16 @@ export const useAuth = () => {
             }
 
             if (data.user) {
-                // Create customer profile in the database
-                const profileResult = await createCustomerProfile(
+                // We rely on the DB trigger for creation, 
+                // but we call ensureProfileExists as a safety fallback.
+                // This handles both the trigger-less transition period and edge cases.
+                await ensureProfileExists({
                     email,
                     firstName,
                     lastName,
                     sect,
                     mobile
-                )
-
-                if (!profileResult.success) {
-                    console.error('Profile creation error:', profileResult.error)
-                }
+                })
 
                 currentUser.value = data.user
                 currentSession.value = data.session
@@ -163,92 +192,6 @@ export const useAuth = () => {
             return { success: false, error: error.value }
         } finally {
             loading.value = false
-        }
-    }
-
-    /**
-     * Create customer profile using RPC function
-     * Uses secure create_customer_profile RPC instead of direct INSERT
-     */
-    const createCustomerProfile = async (
-        email: string,
-        firstName?: string,
-        lastName?: string,
-        sect?: string,
-        mobile?: string
-    ) => {
-        try {
-            const { error: rpcError } = await supabase.rpc('create_customer_profile', {
-                p_email: email,
-                p_first_name: firstName || null,
-                p_last_name: lastName || null,
-                p_mobile: mobile || null,
-                p_sect: sect || null,
-            })
-
-            if (rpcError) {
-                console.error('RPC Error (create_customer_profile):', rpcError)
-                return { success: false, error: rpcError.message }
-            }
-
-            return { success: true }
-        } catch (err: any) {
-            return { success: false, error: err.message || 'Profile creation failed' }
-        }
-    }
-
-    /**
-     * Get customer profile using secure view
-     * View automatically filters to show only user's own profile
-     */
-    const getCustomerProfile = async () => {
-        if (isRecoveryMode.value) {
-            return { success: false, error: 'Restricted access: Please complete password reset first.', data: null }
-        }
-        try {
-            const { data, error: fetchError } = await supabase
-                .from('v_customer_profile')
-                .select('*')
-                .single()
-
-            if (fetchError) {
-                return { success: false, error: fetchError.message, data: null }
-            }
-
-            return { success: true, data }
-        } catch (err: any) {
-            return { success: false, error: err.message || 'Failed to fetch profile', data: null }
-        }
-    }
-
-    /**
-     * Update customer profile using RPC function
-     * RPC handles auth.uid() and updated_at automatically
-     */
-    const updateCustomerProfile = async (
-        updates: {
-            customer_first_name?: string
-            customer_last_name?: string
-            customer_mobile?: string
-            customer_sect?: string
-        }
-    ) => {
-        try {
-            const { data, error: rpcError } = await supabase.rpc('update_customer_profile', {
-                p_first_name: updates.customer_first_name || null,
-                p_last_name: updates.customer_last_name || null,
-                p_mobile: updates.customer_mobile || null,
-                p_sect: updates.customer_sect || null,
-            })
-
-            if (rpcError) {
-                console.error('RPC Error (update_customer_profile):', rpcError)
-                return { success: false, error: rpcError.message }
-            }
-
-            return { success: true, data }
-        } catch (err: any) {
-            return { success: false, error: err.message || 'Profile update failed' }
         }
     }
 
@@ -373,9 +316,25 @@ export const useAuth = () => {
         resetPassword,
         verifyResetToken,
         updatePassword,
-        createCustomerProfile,
-        getCustomerProfile,
-        updateCustomerProfile,
+        // Profile Methods (Delegated to useCustomerProfile)
+        createCustomerProfile: ensureProfileExists,
+        getCustomerProfile: async () => {
+            if (isRecoveryMode.value) {
+                return { success: false, error: 'Restricted access: Please complete password reset first.', data: null }
+            }
+            return await getProfile()
+        },
+        updateCustomerProfile: async (updates: any) => {
+            if (isRecoveryMode.value) {
+                return { success: false, error: 'Restricted access: Please complete password reset first.' }
+            }
+            return await updateProfile({
+                firstName: updates.customer_first_name,
+                lastName: updates.customer_last_name,
+                mobile: updates.customer_mobile,
+                sect: updates.customer_sect
+            })
+        },
         checkUserExists,
     }
 }

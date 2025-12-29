@@ -131,6 +131,21 @@ export const useCustomerProfile = () => {
         }
     }
 
+    /**
+     * Check if profile exists and create if missing
+     * Useful as a fallback for trigger or for users who signed up before trigger
+     */
+    const ensureProfileExists = async (params: CreateProfileParams) => {
+        const { success, data } = await getProfile()
+
+        if (!success || !data) {
+            console.log('[useCustomerProfile] Profile missing, creating...')
+            return await createProfile(params)
+        }
+
+        return { success: true, data }
+    }
+
     return {
         // State
         loading,
@@ -139,5 +154,6 @@ export const useCustomerProfile = () => {
         getProfile,
         createProfile,
         updateProfile,
+        ensureProfileExists,
     }
 }
