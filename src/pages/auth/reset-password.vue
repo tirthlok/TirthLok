@@ -113,7 +113,7 @@ const isTokenVerified = ref(false)
 const isUpdateSuccessful = ref(false)
 
 // Handle navigation away from reset page
-onBeforeRouteLeave(async (to, from) => {
+onBeforeRouteLeave(async (_to, _from) => {
   // If update wasn't successful and we are navigating away, sign out
   if (!isUpdateSuccessful.value) {
     console.log('[ResetPassword] Navigating away without success, signing out...')
@@ -126,6 +126,11 @@ const token = ref((route.query.token as string) || '')
 const email = ref((route.query.email as string) || '')
 
 onMounted(async () => {
+  // Check for reset success message from query params
+  if (route.query.resetSuccess === '1') {
+    successMessage.value = 'Password reset successfully! Please sign in with your new password.'
+  }
+
   // If user is already authenticated and trying to use a reset link, sign them out first.
   // This prevents logged-in users from using a reset link when they should use "change password".
   if (user.value && token.value && email.value) {
@@ -185,7 +190,7 @@ const handleUpdatePassword = async () => {
       await signOut()
       
       setTimeout(() => {
-        router.push('/auth/login')
+        router.push({ path: '/auth/login', query: { resetSuccess: '1' } })
       }, 3000)
     } else {
       errorMessage.value = result.error || 'Failed to update password. Your session might have expired.'

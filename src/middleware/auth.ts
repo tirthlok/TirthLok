@@ -7,9 +7,6 @@
 import { useAuth } from '~/features/auth/composables/useAuth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-    // Only run on client side
-    if (import.meta.server) return
-
     const { initialize, isFullyAuthenticated } = useAuth()
 
     // Initialize auth state
@@ -20,6 +17,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return navigateTo({
             path: '/auth/login',
             query: { redirect: to.fullPath }
-        })
+        }, { replace: true })
     }
 })

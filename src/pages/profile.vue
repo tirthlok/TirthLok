@@ -244,11 +244,147 @@
                   <NuxtLink to="/tirth" class="profile-cta-link">Browse Tirths</NuxtLink>
                 </div>
               </div>
+
+              <div class="profile-glass-card profile-security-mini">
+                <div class="profile-info-header">
+                  <Icon name="Lock" :size="20" class="profile-security-icon" />
+                  <h3>Account Security</h3>
+                </div>
+                <div class="profile-info-content">
+                  <p>Change your password periodically to keep your account secure and prevent unauthorized access.</p>
+                  <button 
+                    @click="showPasswordModal = true"
+                    class="profile-cta-link profile-btn-full"
+                  >
+                    <span>Update Password</span>
+                    <Icon name="ChevronRight" :size="16" />
+                  </button>
+                </div>
+              </div>
             </aside>
           </div>
         </main>
       </template>
     </div>
+
+    <!-- Modal Backdrop -->
+    <Transition name="fade">
+      <div v-if="showPasswordModal" class="cosmic-modal-backdrop" @click.self="closePasswordModal">
+        <Transition name="modal-scale">
+          <div class="cosmic-modal">
+            <div class="modal-header">
+              <div class="modal-header-info">
+                <Icon name="Lock" :size="24" class="modal-title-icon" />
+                <h2 class="modal-title">Update Credentials</h2>
+              </div>
+              <button @click="closePasswordModal" class="modal-close-btn">
+                <Icon name="X" :size="20" />
+              </button>
+            </div>
+            
+            <div class="modal-body">
+              <p class="modal-description">For security, please verify your identity before changing your password.</p>
+              
+              <!-- Feedback Move Above Form -->
+              <Transition name="fade-slide">
+                <div v-if="passwordError || passwordSuccess" class="profile-status-box modal-feedback" :class="passwordError ? 'is-error' : 'is-success'">
+                  <Icon :name="passwordError ? 'AlertCircle' : 'CheckCircle'" :size="18" class="feedback-icon" />
+                  <span class="feedback-text">{{ passwordError || passwordSuccess }}</span>
+                </div>
+              </Transition>
+
+              <div class="profile-form">
+                <!-- Old Password -->
+                <div class="profile-form-group">
+                  <label class="profile-field-label">Current Password</label>
+                  <div class="profile-input-container">
+                    <Icon name="ShieldAlert" :size="18" class="profile-input-icon" />
+                    <input 
+                      v-model="passwordForm.oldPassword"
+                      :type="showOldPassword ? 'text' : 'password'"
+                      placeholder="••••••••"
+                      class="profile-field-input is-editing pr-12"
+                      :disabled="isUpdatingPassword"
+                    />
+                    <button 
+                      type="button"
+                      @click="showOldPassword = !showOldPassword"
+                      class="password-toggle"
+                      tabindex="-1"
+                    >
+                      <Icon :name="showOldPassword ? 'EyeOff' : 'Eye'" :size="18" />
+                    </button>
+                  </div>
+                </div>
+
+                <div class="modal-divider"></div>
+
+                <!-- New Password -->
+                <div class="profile-form-group">
+                  <label class="profile-field-label">New Password</label>
+                  <div class="profile-input-container">
+                    <Icon name="Key" :size="18" class="profile-input-icon" />
+                    <input 
+                      v-model="passwordForm.newPassword"
+                      :type="showNewPassword ? 'text' : 'password'"
+                      placeholder="••••••••"
+                      class="profile-field-input is-editing pr-12"
+                      :disabled="isUpdatingPassword"
+                    />
+                    <button 
+                      type="button"
+                      @click="showNewPassword = !showNewPassword"
+                      class="password-toggle"
+                      tabindex="-1"
+                    >
+                      <Icon :name="showNewPassword ? 'EyeOff' : 'Eye'" :size="18" />
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Confirm Password -->
+                <div class="profile-form-group">
+                  <label class="profile-field-label">Confirm New Password</label>
+                  <div class="profile-input-container">
+                    <Icon name="ShieldCheck" :size="18" class="profile-input-icon" />
+                    <input 
+                      v-model="passwordForm.confirmPassword"
+                      :type="showConfirmPassword ? 'text' : 'password'"
+                      placeholder="••••••••"
+                      class="profile-field-input is-editing pr-12"
+                      :disabled="isUpdatingPassword"
+                    />
+                    <button 
+                      type="button"
+                      @click="showConfirmPassword = !showConfirmPassword"
+                      class="password-toggle"
+                      tabindex="-1"
+                    >
+                      <Icon :name="showConfirmPassword ? 'EyeOff' : 'Eye'" :size="18" />
+                    </button>
+                  </div>
+                </div>
+
+
+                <div class="modal-actions">
+                  <button @click="closePasswordModal" class="profile-btn-cancel" :disabled="isUpdatingPassword">
+                    Cancel
+                  </button>
+                  <button 
+                    @click="handlePasswordChange" 
+                    :disabled="isUpdatingPassword" 
+                    class="profile-btn-save"
+                  >
+                    <span v-if="!isUpdatingPassword">Securely Update</span>
+                    <div v-else class="profile-btn-spinner"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -270,6 +406,37 @@ const isSaving = ref(false)
 const isLoggingOut = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
+
+// Password Change Modal State
+const showPasswordModal = ref(false)
+const isUpdatingPassword = ref(false)
+const passwordSuccess = ref('')
+const passwordError = ref('')
+const passwordForm = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+// Visibility Toggles
+const showOldPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const closePasswordModal = () => {
+  if (isUpdatingPassword.value) return
+  showPasswordModal.value = false
+  passwordForm.value = {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+  showOldPassword.value = false
+  showNewPassword.value = false
+  showConfirmPassword.value = false
+}
 
 const profile = ref({
   firstName: '',
@@ -369,6 +536,75 @@ const handleLogout = async () => {
     console.error('Logout error:', err)
   } finally {
     isLoggingOut.value = false
+  }
+}
+
+const handlePasswordChange = async () => {
+  passwordError.value = ''
+  passwordSuccess.value = ''
+
+  // Validation
+  if (!passwordForm.value.oldPassword) {
+    passwordError.value = 'Please enter your current password'
+    return
+  }
+
+  if (!passwordForm.value.newPassword) {
+    passwordError.value = 'Please enter a new password'
+    return
+  }
+  
+  if (passwordForm.value.newPassword.length < 6) {
+    passwordError.value = 'Password must be at least 6 characters'
+    return
+  }
+
+  if (passwordForm.value.newPassword === passwordForm.value.oldPassword) {
+    passwordError.value = 'New password must be different from current password'
+    return
+  }
+
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    passwordError.value = 'Passwords do not match'
+    return
+  }
+
+  isUpdatingPassword.value = true
+  try {
+    const { signIn, updatePassword } = useAuth()
+    
+    // 1. Verify Old Password by trying to sign in again
+    if (user.value?.email) {
+      const verifyResult = await signIn(user.value.email, passwordForm.value.oldPassword)
+      
+      if (!verifyResult.success) {
+        passwordError.value = 'Incorrect current password'
+        isUpdatingPassword.value = false
+        return
+      }
+    } else {
+      passwordError.value = 'User session not found'
+      isUpdatingPassword.value = false
+      return
+    }
+
+    // 2. Update to New Password
+    const result = await updatePassword(passwordForm.value.newPassword)
+    
+    if (result.success) {
+      passwordSuccess.value = 'Password updated successfully!'
+      
+      // Auto close after success
+      setTimeout(() => {
+        closePasswordModal()
+      }, 2000)
+    } else {
+      passwordError.value = result.error || 'Failed to update password'
+    }
+  } catch (err: any) {
+    passwordError.value = err.message || 'An unexpected error occurred'
+  } finally {
+    isUpdatingPassword.value = false
   }
 }
 </script>

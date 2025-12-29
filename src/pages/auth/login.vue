@@ -209,6 +209,12 @@ const handleBack = () => {
 
 const { signUp, signIn, isAuthenticated, checkUserExists } = useAuth()
 
+onMounted(() => {
+  if (route.query.resetSuccess === '1') {
+    successMessage.value = 'Password reset successfully! Please sign in with your new password.'
+  }
+})
+
 // Form state
 const isSignUp = ref(false)
 const isLoading = ref(false)

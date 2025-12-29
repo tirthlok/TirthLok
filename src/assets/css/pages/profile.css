@@ -821,3 +821,205 @@
     grid-template-columns: 1fr;
   }
 }
+/* -----------------------------------------------------------------------------
+   Security & Password Section
+   ----------------------------------------------------------------------------- */
+.profile-security-mini {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 56, 92, 0.03) 100%) !important;
+}
+
+.profile-security-icon {
+  color: var(--p-primary);
+  filter: drop-shadow(0 0 15px rgba(255, 56, 92, 0.5));
+}
+
+.status-text-small {
+  font-size: 0.813rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.profile-btn-full {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.profile-status-box.is-success .status-text-small {
+  color: #84A98C;
+}
+
+.profile-status-box.is-error .status-text-small {
+  color: #FF5A5F;
+}
+
+/* -----------------------------------------------------------------------------
+   Cosmic Password Modal Styles
+   ----------------------------------------------------------------------------- */
+.cosmic-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.cosmic-modal {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 32px;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: modal-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 56, 92, 0.05);
+}
+
+.modal-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-title-icon {
+  color: var(--p-primary);
+  filter: drop-shadow(0 0 10px rgba(255, 56, 92, 0.4));
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--p-transition);
+}
+
+.modal-close-btn:hover {
+  background: var(--p-primary);
+  border-color: var(--p-primary);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-description {
+  color: var(--p-text-muted);
+  font-size: 0.938rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.modal-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 1.5rem 0;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Animations */
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.modal-scale-enter-active, .modal-scale-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-scale-enter-from, .modal-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+/* Overrides to ensure modal is on top */
+.cosmic-modal-backdrop {
+  z-index: 9999 !important; shadow: 0 0 100px rgba(0,0,0,0.8);
+}
+
+/* UI Refinements for Modal */
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--p-transition);
+  z-index: 10;
+}
+
+.password-toggle:hover {
+  color: var(--p-primary);
+  transform: scale(1.1);
+}
+
+.modal-feedback {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 1rem 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.feedback-icon {
+  flex-shrink: 0;
+}
+
+.feedback-text {
+  font-size: 0.938rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
