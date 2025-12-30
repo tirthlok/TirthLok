@@ -5,7 +5,7 @@
  * Fetches:
  * - v_tirth_details view for detailed information
  * - v_tirth_cards view for basic card data
- * - festivals table for related festivals
+ * - events table for related events
  */
 import { createClient } from '@supabase/supabase-js'
 
@@ -114,36 +114,36 @@ export default defineEventHandler(async (event) => {
     // Merge card and detail data, with details taking precedence
     data = { ...cardData, ...detailedData }
 
-    // Now fetch festivals from the v_tirth_festivals_and_events view for this tirth
-    console.log(`🔍 Querying v_tirth_festivals_and_events view for tirth: ${id}`)
-    let festivals: any[] = []
+    // Now fetch events from the v_tirth_events view for this tirth
+    console.log(`🔍 Querying v_tirth_events view for tirth: ${id}`)
+    let events: any[] = []
 
     try {
-      const { data: festivalsData, error: festivalsError } = await supabase
-        .from('v_tirth_festivals_and_events')
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('v_tirth_events')
         .select('*')
         .eq('tirth_name', id)
         .order('time_frame', { ascending: true })
 
-      if (!festivalsError && festivalsData && festivalsData.length > 0) {
-        // Transform backend fields to Festival interface
-        festivals = festivalsData.map((f: any) => ({
+      if (!eventsError && eventsData && eventsData.length > 0) {
+        // Transform backend fields to EventItem interface
+        events = eventsData.map((f: any) => ({
           name: f.event_name || '',
           date: f.tithi || '',
           month: f.time_frame || '',
           description: f.event_description || '',
           specialEvent: f.event_details || undefined,
         }))
-        console.log(`✅ Found ${festivals.length} festivals for tirth_name: ${id}`)
-        console.log(`📋 Raw festivals data:`, JSON.stringify(festivalsData, null, 2))
-        console.log(`📋 Transformed festivals data:`, JSON.stringify(festivals, null, 2))
-      } else if (festivalsError) {
-        console.log(`⚠️ Error querying v_tirth_festivals_and_events: ${festivalsError.message}`)
+        console.log(`✅ Found ${events.length} events for tirth_name: ${id}`)
+        console.log(`📋 Raw events data:`, JSON.stringify(eventsData, null, 2))
+        console.log(`📋 Transformed events data:`, JSON.stringify(events, null, 2))
+      } else if (eventsError) {
+        console.log(`⚠️ Error querying v_tirth_events: ${eventsError.message}`)
       } else {
-        console.log(`⚠️ No festivals found for tirth_name: ${id}`)
+        console.log(`⚠️ No events found for tirth_name: ${id}`)
       }
     } catch (err) {
-      console.log(`⚠️ Error querying festivals: ${err}`)
+      console.log(`⚠️ Error querying events: ${err}`)
     }
 
     // Transform database row to Tirth interface
@@ -179,7 +179,7 @@ export default defineEventHandler(async (event) => {
       specialFacts: data.tirth_special_facts || data.special_facts ? (Array.isArray(data.tirth_special_facts || data.special_facts) ? (data.tirth_special_facts || data.special_facts) : [data.tirth_special_facts || data.special_facts]) : [],
       poojaTimings: data.tirth_pooja_timings || data.pooja_timings || 'To be Updated Soon',
       darshanTimings: data.tirth_darshan_timings || data.darshan_timings || 'To be Updated Soon',
-      festivals: festivals, // Use fetched festivals data from festivals table
+      events: events, // Use fetched events data from events table
       location: {
         city: data.tirth_city || '',
         state: data.tirth_state || '',

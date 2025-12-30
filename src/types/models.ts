@@ -48,7 +48,7 @@ export interface Tirth {
   specialFacts: string[]
   poojaTimings: string
   darshanTimings: string
-  festivals: Festival[]
+  events: EventItem[]
   location: Location
   contact?: ContactInfo
   images: string[]
@@ -63,7 +63,7 @@ export interface Tirth {
   tirth_tags?: string[] // e.g., ['featured', 'seasonal', 'architectural-wonder']
 }
 
-export interface Festival {
+export interface EventItem {
   name: string
   date: string
   month: string

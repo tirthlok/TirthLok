@@ -149,7 +149,7 @@ export const useTirthStore = defineStore('tirth', {
             specialFacts: raw.special_facts ? (Array.isArray(raw.special_facts) ? raw.special_facts : [raw.special_facts]) : [],
             poojaTimings: raw.pooja_timings || raw.poojaTimings || '',
             darshanTimings: raw.darshan_timings || raw.darshanTimings || '',
-            festivals: raw.festivals || [],
+            events: raw.events || [],
             images: raw.images || [],
             rating: raw.rating || 0,
             reviews: 0,

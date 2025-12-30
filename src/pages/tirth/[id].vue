@@ -70,7 +70,7 @@
               <!-- Sect Card -->
               <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 p-4 rounded-lg">
                 <div class="flex items-center gap-2 mb-2">
-                  <Icon name="Users" :size="16" class="text-blue-600" />
+                  <Icon name="User" :size="16" class="text-blue-600" />
                   <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Sect</div>
                 </div>
                 <div class="text-xl font-bold text-blue-700">{{ tirth.sect }}</div>
@@ -162,7 +162,7 @@
             <div :key="activeTab">
               <TirthAbout v-if="activeTab === 'about'" :tirth="tirth" />
               <TirthFacilities v-if="activeTab === 'facilities'" :tirth="tirth" />
-              <TirthFestivals v-if="activeTab === 'festivals'" :tirth="tirth" />
+              <TirthEvents v-if="activeTab === 'events'" :tirth="tirth" />
             </div>
           </Transition>
         </div>
@@ -218,7 +218,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { BaseCard } from '~/components/ui'
 import TirthAbout from '~/features/tirth/components/TirthAbout.vue'
 import TirthFacilities from '~/features/tirth/components/TirthFacilities.vue'
-import TirthFestivals from '~/features/tirth/components/TirthFestivals.vue'
+import TirthEvents from '~/features/tirth/components/TirthEvents.vue'
 
 definePageMeta({
   layout: 'default',
@@ -231,7 +231,7 @@ const activeTab = ref('about')
 const tabs = [
   { id: 'about', label: 'About' },
   { id: 'facilities', label: 'Facilities' },
-  { id: 'festivals', label: 'Festivals & Events' },
+  { id: 'events', label: 'Events' },
 ]
 
 // Watch route params to ensure data is fetched when params change

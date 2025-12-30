@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
           specialFacts: row.tirth_special_facts ? (Array.isArray(row.tirth_special_facts) ? row.tirth_special_facts : [row.tirth_special_facts]) : [],
           poojaTimings: row.tirth_pooja_timings || 'To be Updated Soon',
           darshanTimings: row.tirth_darshan_timings || 'To be Updated Soon',
-          festivals: row.tirth_festivals || [],
+          events: row.tirth_events || [],
           location: {
             city: row.tirth_city || '',
             state: row.tirth_state || '',

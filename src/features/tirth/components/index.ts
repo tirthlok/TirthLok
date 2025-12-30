@@ -4,4 +4,4 @@
  */
 export { default as TirthAbout } from './TirthAbout.vue'
 export { default as TirthFacilities } from './TirthFacilities.vue'
-export { default as TirthFestivals } from './TirthFestivals.vue'
+export { default as TirthEvents } from './TirthEvents.vue'

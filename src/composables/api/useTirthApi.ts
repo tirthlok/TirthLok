@@ -109,7 +109,7 @@ const transformTirthData = (raw: any, details?: any): Tirth => {
     specialFacts: detailsObj.special_facts ? [detailsObj.special_facts] : raw.special_facts ? [raw.special_facts] : [],
     poojaTimings: detailsObj.events || detailsObj.pooja_timings || raw.pooja_timings || raw.poojaTimings || '',
     darshanTimings: detailsObj.events || detailsObj.darshan_timings || raw.darshan_timings || raw.darshanTimings || '',
-    festivals: detailsObj.festival ? [{ name: detailsObj.festival, date: '', month: '', description: '' }] : raw.festivals || [],
+    events: detailsObj.event ? [{ name: detailsObj.event, date: '', month: '', description: '' }] : raw.events || [],
     images: raw.images || [],
     rating: raw.rating || 0,
     reviews: 0,

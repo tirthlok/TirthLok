@@ -37,7 +37,7 @@ export const sampleTirths = [
     ],
     poojaTimings: '6:00 AM - 10:00 PM',
     darshanTimings: '6:00 AM - 8:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Mahavir Jayanti',
         date: 'Chaitra Shukla 13',
@@ -49,7 +49,7 @@ export const sampleTirths = [
         name: 'Diwali',
         date: 'Kartik Amavasya',
         month: 'October-November',
-        description: 'Festival of lights',
+        description: 'Event of lights',
         specialEvent: 'Oil lamps light up all temples',
       },
     ],
@@ -163,7 +163,7 @@ export const sampleTirths = [
     ],
     poojaTimings: '5:00 AM - 10:00 PM',
     darshanTimings: '5:00 AM - 9:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Kartik Purnima',
         date: 'Kartik Purnima',
@@ -210,7 +210,7 @@ export const sampleTirths = [
     id: 'manas-mandir',
     name: 'Manas Mandir',
     description: 'A revered Jain temple known for its serene atmosphere and active community rituals.',
-    historicalBackground: 'Manas Mandir has been maintained by local Jain communities for centuries and serves as an important center for daily worship and festivals.',
+    historicalBackground: 'Manas Mandir has been maintained by local Jain communities for centuries and serves as an important center for daily worship and events.',
     foundingYear: 1800,
     foundingDetails: 'Community-funded reconstruction and maintenance',
     pratisthaYear: 1820,
@@ -225,15 +225,15 @@ export const sampleTirths = [
         details: 'Main deity of the temple',
       },
     ],
-    specialFacts: ['Active community kitchen', 'Regular festivals and satsangs', 'Accessible location'],
+    specialFacts: ['Active community kitchen', 'Regular events and satsangs', 'Accessible location'],
     poojaTimings: '5:30 AM - 9:30 PM',
     darshanTimings: '5:00 AM - 9:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Paryushan',
         date: 'Bhadrapada (varies)',
         month: 'August-September',
-        description: 'An important Jain festival observed with great reverence',
+        description: 'An important Jain event observed with great reverence',
       },
     ],
     location: {
@@ -290,7 +290,7 @@ export const sampleTirths = [
     specialFacts: ['Major Jain pilgrimage', 'Multiple temples across the hill', 'Annual large-scale yatras'],
     poojaTimings: '6:00 AM - 7:00 PM',
     darshanTimings: '6:00 AM - 6:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Mahavir Jayanti',
         date: 'Chaitra Shukla 13',
@@ -355,7 +355,7 @@ export const sampleTirths = [
     specialFacts: ['Mountain pilgrimage', 'Scenic views', 'Historic inscriptions'],
     poojaTimings: '5:30 AM - 7:30 PM',
     darshanTimings: '5:00 AM - 8:00 PM',
-    festivals: [],
+    events: [],
     location: {
       latitude: 21.1039,
       longitude: 70.784,
