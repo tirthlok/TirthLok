@@ -146,6 +146,8 @@ export interface Dharamshala {
   operatingHours?: string
   rules?: string[]
   rooms?: Room[]
+  dharamshala_grouping?: string | string[]
+  dharamshala_tags?: string[]
 }
 
 export interface Bhojanshala {

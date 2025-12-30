@@ -139,7 +139,7 @@
     </div>
 
     <!-- Advanced Filter Panel -->
-    <FilterPanel
+    <TirthFilterPanel
       :is-open="showAdvancedFilters"
       @update:is-open="showAdvancedFilters = $event"
       @apply="showAdvancedFilters = false"
@@ -155,7 +155,7 @@ import { useTirthStore } from '~/stores/tirth'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'
-import { BaseCard, Icon, FilterPanel, TirthCardSkeleton } from '~/components/ui'
+import { BaseCard, Icon, TirthFilterPanel, TirthCardSkeleton } from '~/components/ui'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({

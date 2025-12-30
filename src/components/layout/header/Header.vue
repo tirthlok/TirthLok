@@ -74,7 +74,7 @@
                   @blur="handleBlur"
                   @input="handleSearch"
                 />
-                <Icon name="Search" :size="18" class="absolute left-4 group-focus-within:text-primary transition-colors text-gray-500 group-focus-within:text-primary dark:text-gray-400" />
+                <Icon name="Search" :size="18" class="absolute left-4 transition-colors text-gray-500 group-focus-within:text-primary dark:text-gray-400" />
                 
                 <!-- Filter Button inside Search -->
                 <button 
@@ -336,14 +336,32 @@
       </div>
     </Transition>
 
-    <!-- Filter Panel Component -->
-    <FilterPanel
+    <!-- Filter Panel Component - Context Aware -->
+    <DharamshalaFilterPanel
+      v-if="currentPage === 'dharamshala'"
       :is-open="filterOpen"
       :search-query="searchQuery"
       @update:is-open="filterOpen = $event"
       @apply="filterOpen = false"
       @reset="searchQuery = ''"
     />
+    <TirthFilterPanel
+      v-else-if="currentPage === 'tirth'"
+      :is-open="filterOpen"
+      :search-query="searchQuery"
+      @update:is-open="filterOpen = $event"
+      @apply="filterOpen = false"
+      @reset="searchQuery = ''"
+    />
+    <!-- Add BhojanshalaFilterPanel when it's created -->
+    <!-- <BhojanshalaFilterPanel
+      v-else-if="currentPage === 'bhojanshala'"
+      :is-open="filterOpen"
+      :search-query="searchQuery"
+      @update:is-open="filterOpen = $event"
+      @apply="filterOpen = false"
+      @reset="searchQuery = ''"
+    /> -->
   </header>
 </template>
 
@@ -352,7 +370,8 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '~/components/ui/Icon.vue'
 import SearchSuggestions from '~/components/layout/header/SearchSuggestions.vue'
-import FilterPanel from '~/components/ui/filters/FilterPanel.vue'
+import TirthFilterPanel from '~/components/ui/filters/TirthFilterPanel.vue'
+import DharamshalaFilterPanel from '~/components/ui/filters/DharamshalaFilterPanel.vue'
 import { useTirthStore } from '~/stores/tirth'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
@@ -422,7 +441,7 @@ const userEmail = computed(() => {
 // Load customer profile when user is authenticated
 const loadCustomerProfile = async () => {
   if (user.value?.id) {
-    const result = await getCustomerProfile(user.value.id)
+    const result = await getCustomerProfile()
     if (result.success && result.data) {
       customerProfile.value = result.data
     }
@@ -454,17 +473,36 @@ const navLinks = [
 
 const isActive = (path: string) => route.path.startsWith(path)
 
+// Determine current page context for filter panel
+const currentPage = computed(() => {
+  const p = route.path || ''
+  if (p.startsWith('/dharamshala')) return 'dharamshala'
+  if (p.startsWith('/bhojanshala')) return 'bhojanshala'
+  if (p.startsWith('/tirth')) return 'tirth'
+  return 'tirth' // default
+})
+
 // Calculate active filter count for current page (mobile filter badge)
 const activeFilterCount = computed(() => {
   const p = route.path || ''
   
-  // Only show filter count on Tirth page (other pages don't have mobile filter badge)
+  // Tirth page filters
   if (p.startsWith('/tirth')) {
     const filters = tirthStore.currentFilters
     let count = 0
     if (filters.state) count++
     if (filters.sect) count++
     if (filters.amenities && filters.amenities.length > 0) count += filters.amenities.length
+    return count
+  }
+  
+  // Dharamshala page filters
+  if (p.startsWith('/dharamshala')) {
+    const filters = dStore.currentFilters
+    let count = 0
+    if (filters.state) count++
+    if (filters.city) count++
+    if (filters.facilities && filters.facilities.length > 0) count += filters.facilities.length
     return count
   }
   

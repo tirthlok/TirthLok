@@ -42,14 +42,27 @@
         <div class="space-y-6">
           <!-- State Filter -->
           <div>
-            <label
-              :class="[
-                'block text-sm font-semibold mb-2',
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              ]"
-            >
-              State
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label
+                :class="[
+                  'block text-sm font-semibold',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                State
+              </label>
+              <button
+                v-if="selectedState"
+                @click="selectedState = ''"
+                :class="[
+                  'p-1 rounded-full transition-colors',
+                  isDarkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                ]"
+                title="Clear state filter"
+              >
+                <Icon name="X" :size="14" />
+              </button>
+            </div>
             <div class="relative">
               <select
                 v-model="selectedState"
@@ -75,14 +88,27 @@
 
           <!-- Sect Filter -->
           <div>
-            <label
-              :class="[
-                'block text-sm font-semibold mb-2',
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              ]"
-            >
-              Sect
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label
+                :class="[
+                  'block text-sm font-semibold',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                Sect
+              </label>
+              <button
+                v-if="selectedSect"
+                @click="selectedSect = ''"
+                :class="[
+                  'p-1 rounded-full transition-colors',
+                  isDarkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                ]"
+                title="Clear sect filter"
+              >
+                <Icon name="X" :size="14" />
+              </button>
+            </div>
             <div class="flex gap-2">
               <button
                 v-for="sect in availableSects"
@@ -104,14 +130,27 @@
 
           <!-- Facilities Filter -->
           <div>
-            <label
-              :class="[
-                'block text-sm font-semibold mb-3',
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              ]"
-            >
-              Facilities
-            </label>
+            <div class="flex items-center justify-between mb-3">
+              <label
+                :class="[
+                  'block text-sm font-semibold',
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                ]"
+              >
+                Facilities
+              </label>
+              <button
+                v-if="selectedFacilities.length > 0"
+                @click="selectedFacilities = []"
+                :class="[
+                  'p-1 rounded-full transition-colors',
+                  isDarkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                ]"
+                title="Clear all facilities"
+              >
+                <Icon name="X" :size="14" />
+              </button>
+            </div>
             <div class="grid grid-cols-2 gap-3">
               <label
                 v-for="facility in availableFacilities"
@@ -133,7 +172,7 @@
                 />
                 <span
                   :class="[
-                    'text-sm',
+                    'text-sm flex-1',
                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
                   ]"
                 >

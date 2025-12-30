@@ -29,7 +29,7 @@ export type {
 // =============================================================================
 // Filter Components
 // =============================================================================
-export { default as FilterPanel } from './filters/FilterPanel.vue'
+export { default as TirthFilterPanel } from './filters/TirthFilterPanel.vue'
 export { default as SearchBox } from './filters/SearchBox.vue'
 export type { SearchResult } from './filters/SearchBox.vue'
 

@@ -7,6 +7,17 @@ interface DharamshalaState {
   filteredDharamshalas: Dharamshala[]
   loading: boolean
   error: string | null
+  filterOptions: {
+    states: string[]
+    cities: string[]
+    facilities: string[]
+  }
+  currentFilters: {
+    state?: string
+    city?: string
+    facilities?: string[]
+    searchTerm?: string
+  }
 }
 
 /**
@@ -20,6 +31,12 @@ export const useDharamshalaStore = defineStore('dharamshala', {
     filteredDharamshalas: [],
     loading: false,
     error: null,
+    filterOptions: {
+      states: [],
+      cities: [],
+      facilities: [],
+    },
+    currentFilters: {},
   }),
 
   getters: {
@@ -90,12 +107,16 @@ export const useDharamshalaStore = defineStore('dharamshala', {
     },
 
     filterDharamshalas(filters: {
+      state?: string
       city?: string
       type?: string
       capacity?: number
-      amenities?: string[]
+      facilities?: string[]
       searchTerm?: string
     }) {
+      // Store current filters
+      this.currentFilters = filters
+
       let results = [...this.dharamshalas]
 
       if (filters.searchTerm) {
@@ -106,6 +127,10 @@ export const useDharamshalaStore = defineStore('dharamshala', {
             d.description?.toLowerCase().includes(term) ||
             d.location.city.toLowerCase().includes(term)
         )
+      }
+
+      if (filters.state) {
+        results = results.filter((d) => d.location.state === filters.state)
       }
 
       if (filters.city) {
@@ -120,10 +145,10 @@ export const useDharamshalaStore = defineStore('dharamshala', {
         results = results.filter((d) => d.capacity && d.capacity >= filters.capacity!)
       }
 
-      if (filters.amenities && filters.amenities.length > 0) {
+      if (filters.facilities && filters.facilities.length > 0) {
         results = results.filter((d) =>
-          filters.amenities!.every((amenity) =>
-            d.amenities?.some((a) => a.toLowerCase() === amenity.toLowerCase())
+          filters.facilities!.some((facility) =>
+            d.amenities?.some((a) => a.toLowerCase() === facility.toLowerCase())
           )
         )
       }
@@ -133,6 +158,30 @@ export const useDharamshalaStore = defineStore('dharamshala', {
 
     setSelectedDharmadhala(dharamshala: Dharamshala | null) {
       this.selectedDharmadhala = dharamshala
+    },
+
+    async fetchFilterOptions() {
+      // Extract unique states, cities, and facilities from dharamshalas
+      const states = new Set<string>()
+      const cities = new Set<string>()
+      const facilities = new Set<string>()
+
+      this.dharamshalas.forEach((d) => {
+        if (d.location?.state) states.add(d.location.state)
+        if (d.location?.city) cities.add(d.location.city)
+        if (d.amenities) {
+          d.amenities.forEach((amenity) => {
+            const normalized = amenity.toLowerCase()
+            facilities.add(normalized)
+          })
+        }
+      })
+
+      this.filterOptions = {
+        states: Array.from(states).sort(),
+        cities: Array.from(cities).sort(),
+        facilities: Array.from(facilities).sort(),
+      }
     },
 
     clearFilters() {
