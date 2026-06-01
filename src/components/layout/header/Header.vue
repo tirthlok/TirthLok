@@ -466,7 +466,7 @@ const isScrolled = ref(false)
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
 const navLinks = [
-  { name: 'Tirth', path: '/tirth', icon: 'Building2', color: 'red' },
+  { name: 'Tirth', path: '/tirth', icon: 'Mandir', color: 'red' },
   { name: 'Dharamshala', path: '/dharamshala', icon: 'Building', color: 'blue' },
   { name: 'Bhojanshala', path: '/bhojanshala', icon: 'UtensilsCrossed', color: 'green' },
 ]

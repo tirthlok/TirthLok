@@ -25,7 +25,7 @@
         aria-label="Tirths"
         title="All Tirths"
       >
-        <Icon name="Building2" :size="20" />
+        <Icon name="Mandir" :size="20" />
       </NuxtLink>
 
       <!-- Dharamshala - Blue -->
