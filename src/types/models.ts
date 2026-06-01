@@ -38,14 +38,12 @@ export interface Tirth {
   id: string
   name: string
   description: string
-  historicalBackground: string
-  foundingYear: number
-  foundingDetails: string
-  pratisthaYear: number
-  acharya: string
   architecture: string
+  mythology?: string
+  foundingDetails?: string
+  direction?: string
+  mainTemples?: string[]
   moolnayak: Idol[]
-  specialFacts: string[]
   poojaTimings: string
   darshanTimings: string
   events: EventItem[]
@@ -53,14 +51,10 @@ export interface Tirth {
   contact?: ContactInfo
   images: string[]
   sect: 'Shwetambar' | 'Digambar'
-  type: 'Gyan-sthan' | 'Siddhakshetra' | 'Atishay-Kshetra' | 'Other'
   facilities: Facility[]
-  rating: number
-  reviews: number
-  travelDuration?: string
   rules?: string[]
-  tirth_grouping?: string // e.g., 'popular', 'newly-added', 'most-visited', 'hidden-gems'
-  tirth_tags?: string[] // e.g., ['featured', 'seasonal', 'architectural-wonder']
+  tirth_grouping?: string
+  tirth_tags?: string[]
 }
 
 export interface EventItem {

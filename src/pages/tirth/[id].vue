@@ -66,7 +66,7 @@
 
 
             <!-- Key Details - Two Column Layout -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Sect Card -->
               <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 p-4 rounded-lg">
                 <div class="flex items-center gap-2 mb-2">
@@ -74,15 +74,6 @@
                   <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Sect</div>
                 </div>
                 <div class="text-xl font-bold text-blue-700">{{ tirth.sect }}</div>
-              </div>
-
-              <!-- Type Card -->
-              <div class="bg-gradient-to-br from-purple-50 to-purple-100 border-l-4 border-purple-600 p-4 rounded-lg">
-                <div class="flex items-center gap-2 mb-2">
-                  <Icon name="Landmark" :size="16" class="text-purple-600" />
-                  <div class="text-gray-600 text-xs font-semibold uppercase tracking-wide">Type</div>
-                </div>
-                <div class="text-xl font-bold text-purple-700">{{ tirth.type }}</div>
               </div>
 
               <!-- Contact Card -->
@@ -117,7 +108,7 @@
             <!-- Directions Button -->
             <div class="mt-6">
               <a 
-                :href="getDirectionsUrl"
+                :href="tirth.direction || getDirectionsUrl"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white rounded-2xl font-semibold text-base overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/50 hover:-translate-y-0.5"
@@ -181,7 +172,7 @@
               :show-wishlist="true"
               :show-details="true"
               route-prefix="/tirth"
-              :tag-fields="[relatedTirth.sect, relatedTirth.type]"
+              :tag-fields="[relatedTirth.sect]"
             />
           </div>
         </div>
