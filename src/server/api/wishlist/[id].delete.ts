@@ -1,8 +1,10 @@
 /**
  * DELETE /api/wishlist/[id]
  * Remove tirth from user's wishlist
+ * The :id param is the tirth_id (e.g. TL-GJ-0001)
+ * Queries tirthlok.customer_wishlist directly
  */
-import { getSupabaseAdmin, getUserIdFromEvent } from '../../utils/supabase'
+import { getSupabaseTirthlok, getUserIdFromEvent } from '../../utils/supabase'
 
 export default defineEventHandler(async (event) => {
     const userId = await getUserIdFromEvent(event)
@@ -14,35 +16,38 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const tirthName = getRouterParam(event, 'id')
+    const tirthId = getRouterParam(event, 'id')
 
-    if (!tirthName) {
+    if (!tirthId) {
         throw createError({
             statusCode: 400,
-            message: 'Tirth name is required'
+            message: 'Tirth ID is required'
         })
     }
 
-    const supabase = getSupabaseAdmin()
+    const supabase = getSupabaseTirthlok()
 
     try {
-        // Remove from wishlist using RPC
-        const { error: rpcError } = await supabase.rpc('remove_from_wishlist', {
-            p_tirth_name: decodeURIComponent(tirthName)
-        })
+        // Remove from wishlist by deleting directly from customer_wishlist table
+        const { error: deleteError } = await supabase
+            .from('customer_wishlist')
+            .delete()
+            .eq('customer_id', userId)
+            .eq('tirth_id', decodeURIComponent(tirthId))
 
-        if (rpcError) {
-            console.error('Error removing from wishlist:', rpcError)
+        if (deleteError) {
+            console.error('[wishlist] remove failed:', deleteError.message)
             throw createError({
                 statusCode: 500,
                 message: 'Failed to remove from wishlist'
             })
         }
 
-        // Return updated wishlist using view
+        // Return updated wishlist
         const { data, error: fetchError } = await supabase
-            .from('v_customer_wishlist')
-            .select('tirth_name')
+            .from('customer_wishlist')
+            .select('tirth_id')
+            .eq('customer_id', userId)
 
         if (fetchError) {
             throw createError({
@@ -51,10 +56,10 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        return (data as { tirth_name: string }[]).map(item => item.tirth_name)
+        return (data as { tirth_id: string }[]).map(item => item.tirth_id)
     } catch (err: any) {
         if (err.statusCode) throw err
-        console.error('Wishlist remove error:', err)
+        console.error('[wishlist] remove failed:', err.message)
         throw createError({
             statusCode: 500,
             message: 'Internal server error'

@@ -1,24 +1,37 @@
 /**
  * useRoomBookingApi Composable
  * Room Booking and availability management API endpoints
+ * Supports both old Room[] and new RoomType[] schemas
  */
 
-import type { Room, Booking } from '~/types/models'
+import type { Room, RoomType, Booking, PricingBreakdown, GuestBreakdown, RoomAvailabilityStatus } from '~/types/models'
+
+/** API response wrapper for room endpoints */
+interface RoomApiResponse {
+  success: boolean
+  data: RoomType[]
+  source: 'supabase' | 'sample' | 'empty'
+}
+
+/** API response wrapper for booking endpoint */
+interface BookingApiResponse {
+  success: boolean
+  booking: Booking
+}
 
 export const useRoomBookingApi = () => {
   const config = useRuntimeConfig()
 
   /**
-   * Get available rooms for a dharamshala
+   * Get available rooms for a dharamshala (returns RoomType[])
    */
-  const getAvailableRooms = async (dharamshalaId: string): Promise<Room[]> => {
+  const getAvailableRooms = async (dharamshalaId: string): Promise<RoomType[]> => {
     try {
-      return await $fetch(`/api/dharamshala/${dharamshalaId}/rooms`, {
-        baseURL: config.public.apiBaseUrl,
-      })
+      const response = await $fetch<RoomApiResponse>(`/api/dharamshala/${dharamshalaId}/rooms`)
+      return response?.data || []
     } catch (error) {
       console.error(`Error fetching rooms for dharamshala ${dharamshalaId}:`, error)
-      throw error
+      return []
     }
   }
 
@@ -30,32 +43,32 @@ export const useRoomBookingApi = () => {
     checkInDate: string,
     checkOutDate: string,
     guests?: number
-  ): Promise<Room[]> => {
+  ): Promise<RoomType[]> => {
     try {
-      return await $fetch(`/api/dharamshala/${dharamshalaId}/rooms/availability`, {
-        baseURL: config.public.apiBaseUrl,
+      const response = await $fetch<RoomApiResponse>(`/api/dharamshala/${dharamshalaId}/rooms/availability`, {
         query: {
           checkIn: checkInDate,
           checkOut: checkOutDate,
           guests: guests || 1,
         },
       })
+      return response?.data || []
     } catch (error) {
       console.error('Error checking room availability:', error)
-      throw error
+      return []
     }
   }
 
   /**
-   * Create a new booking (server-side)
+   * Create a new booking (server-side validated)
    */
   const createBooking = async (booking: Omit<Booking, 'id' | 'createdAt'>): Promise<Booking> => {
     try {
-      return await $fetch('/api/bookings', {
+      const response = await $fetch<BookingApiResponse>('/api/bookings', {
         method: 'POST',
-        baseURL: config.public.apiBaseUrl,
         body: booking,
       })
+      return response.booking
     } catch (error) {
       console.error('Error creating booking:', error)
       throw error
@@ -110,27 +123,67 @@ export const useRoomBookingApi = () => {
   }
 
   /**
-   * Calculate total price for booking
+   * Calculate number of nights between two dates
+   */
+  const calculateNights = (checkInDate: string, checkOutDate: string): number => {
+    if (!checkInDate || !checkOutDate) return 0
+    const checkIn = new Date(checkInDate)
+    const checkOut = new Date(checkOutDate)
+    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
+    return Math.max(nights, 0)
+  }
+
+  /**
+   * Calculate full pricing breakdown for a booking
+   */
+  const calculatePricing = (
+    roomPrice: number,
+    checkInDate: string,
+    checkOutDate: string,
+    discount: number = 0
+  ): PricingBreakdown => {
+    const nights = calculateNights(checkInDate, checkOutDate)
+    const subtotal = roomPrice * nights
+    const tax = Math.round(subtotal * 0.05 * 100) / 100 // 5% GST
+    const serviceCharge = nights > 0 ? 50 : 0 // flat ₹50
+    const grandTotal = Math.max(subtotal + tax + serviceCharge - discount, 0)
+
+    return {
+      roomPrice,
+      nights,
+      subtotal,
+      tax,
+      serviceCharge,
+      discount,
+      grandTotal,
+    }
+  }
+
+  /**
+   * Calculate total price for booking (backward-compatible wrapper)
    */
   const calculateBookingPrice = (
     roomPrice: number,
     checkInDate: string,
     checkOutDate: string
   ): number => {
-    const checkIn = new Date(checkInDate)
-    const checkOut = new Date(checkOutDate)
-    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
-    return Math.max(nights, 1) * roomPrice
+    return calculatePricing(roomPrice, checkInDate, checkOutDate).grandTotal
   }
 
   /**
-   * Calculate number of nights
+   * Derive availability status from room inventory
    */
-  const calculateNights = (checkInDate: string, checkOutDate: string): number => {
-    const checkIn = new Date(checkInDate)
-    const checkOut = new Date(checkOutDate)
-    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
-    return Math.max(nights, 1)
+  const getRoomAvailabilityStatus = (room: RoomType): RoomAvailabilityStatus => {
+    if (!room.is_available_ui || room.total_inventory <= 0) return 'sold_out'
+    if (room.total_inventory <= 5) return 'limited'
+    return 'available'
+  }
+
+  /**
+   * Get total guest count from breakdown
+   */
+  const getTotalGuests = (guests: GuestBreakdown): number => {
+    return guests.adults + guests.children + guests.seniors
   }
 
   return {
@@ -142,5 +195,8 @@ export const useRoomBookingApi = () => {
     getDharamshalaBookings,
     calculateBookingPrice,
     calculateNights,
+    calculatePricing,
+    getRoomAvailabilityStatus,
+    getTotalGuests,
   }
 }

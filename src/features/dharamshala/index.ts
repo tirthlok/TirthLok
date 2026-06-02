@@ -9,6 +9,7 @@ export { default as RoomBookingModal } from './components/RoomBookingModal.vue'
 
 // Composables (State)
 export { useDharamshalaStore } from './composables/useDharamshalaStore'
+export { useRoomBooking } from './composables/useRoomBooking'
 
 // Services (API)
 export { useDharamshalaApi } from './services/dharamshalaApi'

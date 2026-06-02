@@ -33,7 +33,7 @@
           <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ dharamshala.name }}</span>
-        </div>
+        </div>
         <!-- Header Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           <!-- Image Gallery -->
@@ -183,17 +183,66 @@
           </div>
         </div>
 
-        <!-- Available Rooms Section -->
-        <div v-if="dharamshala?.rooms && dharamshala.rooms.length > 0" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Icon name="Home" :size="28" class="text-blue-600" />
-            Available Rooms
-          </h2>
-          <p class="text-gray-600 mb-6">Book your accommodation with our Airbnb-like room booking system</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- ═══ Available Rooms Section (Supabase-backed) ═══ -->
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 sm:p-8 rounded-2xl border-2 border-blue-200">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <Icon name="Home" :size="28" class="text-blue-600" />
+              Available Rooms
+            </h2>
+            <!-- Live Indicator -->
+            <div v-if="realtimeConnected" class="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span class="text-xs font-semibold text-green-700">Live</span>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6">Book your accommodation with real-time availability</p>
+
+          <!-- Rooms Loading Skeleton -->
+          <div v-if="dharamshalaStore.roomsLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="n in 3" :key="n" class="bg-white rounded-2xl border-2 border-blue-100 overflow-hidden animate-pulse">
+              <div class="h-48 bg-gradient-to-br from-blue-100 to-cyan-100" />
+              <div class="p-5 space-y-3">
+                <div class="flex justify-between">
+                  <div class="h-5 bg-blue-100 rounded-lg w-32" />
+                  <div class="h-5 bg-blue-100 rounded-lg w-16" />
+                </div>
+                <div class="h-3 bg-gray-100 rounded w-full" />
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="h-16 bg-blue-50 rounded-xl" />
+                  <div class="h-16 bg-blue-50 rounded-xl" />
+                </div>
+                <div class="h-10 bg-blue-100 rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Rooms Error State -->
+          <div v-else-if="dharamshalaStore.roomsError" class="text-center py-12 space-y-4">
+            <Icon name="AlertTriangle" :size="48" class="text-red-400 mx-auto" />
+            <p class="text-red-600 font-semibold">{{ dharamshalaStore.roomsError }}</p>
+            <button
+              @click="dharamshalaStore.fetchRoomTypes(dharamshala.id)"
+              class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition"
+            >
+              Retry
+            </button>
+          </div>
+
+          <!-- Rooms Empty State -->
+          <div v-else-if="allRooms.length === 0" class="text-center py-12 space-y-4">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+              <Icon name="Home" :size="36" class="text-blue-400" />
+            </div>
+            <p class="text-gray-500 font-semibold text-lg">No rooms available at this time</p>
+            <p class="text-gray-400 text-sm">Please check back later or contact the dharamshala directly</p>
+          </div>
+
+          <!-- Rooms Grid -->
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <RoomCard
-              v-for="room in dharamshala.rooms"
-              :key="room.id"
+              v-for="room in allRooms"
+              :key="room.room_type_id"
               :room="room"
               :dharamshala-id="dharamshala.id"
               @select-room="openBookingModal"
@@ -244,8 +293,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Dharamshala, Room, Booking } from '~/types/models'
-import { ref, computed, onMounted } from 'vue'
+import type { Dharamshala, RoomType, Booking } from '~/types/models'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useDharamshalaStore } from '~/stores/dharamshala'
 import Icon from '~/components/ui/Icon.vue'
@@ -264,13 +313,44 @@ const dharamshala = ref<Dharamshala | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const isBookingModalOpen = ref(false)
-const selectedRoom = ref<Room | null>(null)
+const selectedRoom = ref<RoomType | null>(null)
+const realtimeConnected = ref(false)
+let realtimeChannel: any = null
 
 const currentImage = computed(() => {
   if (!dharamshala.value?.images || dharamshala.value.images.length === 0) {
-    return 'https://via.placeholder.com/500x500'
+    return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
   }
-  return dharamshala.value.images[currentImageIndex.value] || 'https://via.placeholder.com/500x500'
+  return dharamshala.value.images[currentImageIndex.value] || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop'
+})
+
+/** Merged rooms: Supabase room_types + legacy sample rooms */
+const allRooms = computed<RoomType[]>(() => {
+  // Prefer Supabase room_types from store
+  if (dharamshalaStore.roomTypes.length > 0) {
+    return dharamshalaStore.roomTypes
+  }
+  // Fallback: transform legacy Room[] from sample data to RoomType shape
+  if (dharamshala.value?.rooms && dharamshala.value.rooms.length > 0) {
+    return dharamshala.value.rooms.map((room) => ({
+      room_type_id: room.id,
+      dharamshala_id: dharamshala.value!.id,
+      name: `Room ${room.roomNumber}`,
+      room_category: room.type as any,
+      description: room.description || null,
+      bed_configuration: room.bedType || 'Single Bed',
+      capacity: room.capacity,
+      max_guests: room.maxGuests,
+      base_price: room.price,
+      total_inventory: room.available ? 3 : 0,
+      amenities: room.amenities || [],
+      room_type_images: room.image ? [room.image] : [],
+      is_available_ui: room.available,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }))
+  }
+  return []
 })
 
 const nextImage = () => {
@@ -285,7 +365,7 @@ const previousImage = () => {
   }
 }
 
-const openBookingModal = (room: Room) => {
+const openBookingModal = (room: RoomType) => {
   selectedRoom.value = room
   isBookingModalOpen.value = true
 }
@@ -297,8 +377,71 @@ const closeBookingModal = () => {
 
 const handleBookingConfirmed = (booking: Booking) => {
   console.log('Booking confirmed:', booking)
-  // Handle booking confirmation - server stores it, no client-side storage
+  // Refresh rooms to get updated inventory
+  if (dharamshala.value) {
+    dharamshalaStore.fetchRoomTypes(dharamshala.value.id)
+  }
 }
+
+// ─── Supabase Realtime ─────────────────────────────────
+
+const setupRealtime = async (dharamshalaId: string) => {
+  try {
+    const { useSupabase } = await import('~/composables/useSupabase')
+    const { supabase } = useSupabase()
+
+    // Cleanup previous channel
+    if (realtimeChannel) {
+      supabase.removeChannel(realtimeChannel)
+    }
+
+    realtimeChannel = supabase
+      .channel(`rooms-${dharamshalaId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'tirthlok',
+          table: 'room_types',
+          filter: `dharamshala_id=eq.${dharamshalaId}`,
+        },
+        (payload: any) => {
+          console.log('🔴 Realtime room update:', payload.eventType)
+
+          if (payload.eventType === 'INSERT') {
+            dharamshalaStore.addRoomFromRealtime(payload.new as RoomType)
+          } else if (payload.eventType === 'UPDATE') {
+            dharamshalaStore.updateRoomFromRealtime(payload.new as RoomType)
+          } else if (payload.eventType === 'DELETE') {
+            dharamshalaStore.removeRoomFromRealtime(payload.old?.room_type_id)
+          }
+        }
+      )
+      .subscribe((status: string) => {
+        realtimeConnected.value = status === 'SUBSCRIBED'
+        console.log(`📡 Realtime status: ${status}`)
+      })
+  } catch (err) {
+    console.warn('Realtime subscription failed (non-critical):', err)
+    realtimeConnected.value = false
+  }
+}
+
+const cleanupRealtime = async () => {
+  if (realtimeChannel) {
+    try {
+      const { useSupabase } = await import('~/composables/useSupabase')
+      const { supabase } = useSupabase()
+      supabase.removeChannel(realtimeChannel)
+    } catch {
+      // Ignore cleanup errors
+    }
+    realtimeChannel = null
+    realtimeConnected.value = false
+  }
+}
+
+// ─── Data Loading ──────────────────────────────────────
 
 // Back-to-top behavior handled by global `scroll.client.ts` plugin and anchor link
 
@@ -317,6 +460,12 @@ const loadData = async (idParam?: string) => {
     if (found) {
       dharamshala.value = found
       currentImageIndex.value = 0
+
+      // Fetch rooms from Supabase
+      dharamshalaStore.fetchRoomTypes(id)
+
+      // Setup realtime subscription
+      setupRealtime(id)
     } else {
       error.value = `Dharamshala with ID "${id}" not found`
     }
@@ -332,7 +481,12 @@ onMounted(() => {
   loadData()
 })
 
+onUnmounted(() => {
+  cleanupRealtime()
+})
+
 onBeforeRouteUpdate((to) => {
+  cleanupRealtime()
   const nextId = to.params.id as string
   loadData(nextId)
 })

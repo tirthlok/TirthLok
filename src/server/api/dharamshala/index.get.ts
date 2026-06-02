@@ -1,42 +1,19 @@
 /**
- * GET /api/dharamshala - Fetch all dharamshala locations from Supabase
- * Server-side only endpoint that queries Supabase directly
+ * GET /api/dharamshala - Fetch all dharamshala locations
+ * Queries tirthlok.dharamshala_cards directly
  */
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseTirthlok } from '../../utils/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
-    console.log('🔌 Server API: /api/dharamshala called')
+    const supabase = getSupabaseTirthlok()
 
-    // Get Supabase config - try runtime config first, then fallback to environment
-    const config = useRuntimeConfig()
-    let supabaseUrl = config.public?.supabaseUrl
-    let supabaseKey = config.public?.supabaseAnonKey
-
-    // Fallback to service role key for full schema access
-    if (!supabaseUrl) {
-      supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
-    }
-    if (!supabaseKey) {
-      // Use service role key for full access to all schemas including tirthlok
-      supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmbXZrdnB5anZiY2VucW9yaWZhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTI5MzQyNCwiZXhwIjoyMDgwODY5NDI0fQ.fLyzNci3KFvO--KEo342_3aYvWk6I4qWnxtXMz74ZEA'
-    }
-
-    console.log('📊 Supabase config:', { url: !!supabaseUrl, key: !!supabaseKey })
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase credentials not configured')
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // Query the v_dharamshala_cards view
     const query = getQuery(event)
     const search = String(query.search || '')
 
     try {
       let supabaseQuery = supabase
-        .from('v_dharamshala_cards')
+        .from('dharamshala_cards')
         .select('*')
 
       // Apply search filter if provided
@@ -46,10 +23,8 @@ export default defineEventHandler(async (event) => {
 
       const { data, error } = await supabaseQuery
 
-      console.log('📊 Supabase response:', { dataCount: data?.length, error: error?.message })
-
       if (error) {
-        console.error('❌ Supabase query error:', error)
+        console.error('[dharamshala] list fetch failed:', error.message)
         throw error
       }
 
@@ -74,7 +49,8 @@ export default defineEventHandler(async (event) => {
         }
 
         return {
-          id: row.dharamshala_name || 'unknown',
+          id: row.dharamshala_id || 'unknown',
+          dharamshalaUuid: row.dharamshala_id || '',
           name: row.dharamshala_name || '',
           description: row.dharamshala_description || '',
           location: {
@@ -117,7 +93,7 @@ export default defineEventHandler(async (event) => {
       throw innerError
     }
   } catch (error: any) {
-    console.error('❌ Server API error:', error)
+    console.error('[dharamshala] list fetch failed:', error.message)
     throw createError({
       statusCode: 500,
       statusMessage: error?.message || 'Failed to fetch dharamshala locations from Supabase',

@@ -232,6 +232,34 @@
         </div>
       </section>
 
+      <!-- 9. Special Facts Section -->
+      <section class="relative group" v-if="tirth.specialFacts && tirth.specialFacts.length > 0 && !isMissing(tirth.specialFacts[0])">
+        <div class="flex items-start gap-4 sm:gap-6 mb-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+            <Icon name="Sparkles" :size="24" />
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Special Facts</h3>
+            <div class="h-1 w-20 bg-gradient-to-r from-amber-400 to-transparent rounded-full mb-4"></div>
+            
+            <div class="mt-6">
+              <div class="bg-amber-50/30 p-6 rounded-3xl border border-amber-100">
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <li 
+                    v-for="(fact, idx) in tirth.specialFacts" 
+                    :key="idx"
+                    class="flex items-start gap-3 p-3 bg-white/70 rounded-xl border border-amber-50 shadow-sm group/fact hover:translate-x-1 transition-transform"
+                  >
+                    <Icon name="Star" :size="16" class="text-amber-500 mt-1 flex-shrink-0" />
+                    <span class="text-gray-700 font-medium">{{ fact }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <!-- Contact & Timings Section -->

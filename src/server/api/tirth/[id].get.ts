@@ -1,13 +1,9 @@
 /**
- * GET /api/tirth/:id - Fetch single tirth by name from Supabase
- * Server-side only endpoint that queries Supabase directly
- * The :id parameter should be the tirth_name (e.g., "Palitana")
- * Fetches:
- * - v_tirth_details view for detailed information
- * - v_tirth_cards view for basic card data
- * - events table for related events
+ * GET /api/tirth/:id - Fetch single tirth by ID
+ * The :id parameter should be the tirth_id (e.g. TL-GJ-0001)
+ * Queries tirthlok.tirth_cards + tirthlok.tirth_details + tirthlok.tirth_events
  */
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseTirthlok } from '../../utils/supabase'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -29,104 +25,70 @@ export default defineEventHandler(async (event) => {
     if (!id) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Tirth name is required',
+        statusMessage: 'Tirth ID is required',
       })
     }
 
-    console.log(`🔌 Server API: /api/tirth/${id} called`)
+    const supabase = getSupabaseTirthlok()
+    
+    const isTirthId = /^TL-[A-Z]{2}-\d{4}$/i.test(id)
 
-    // Get Supabase config - try runtime config first, then fallback to environment
-    const config = useRuntimeConfig()
-    let supabaseUrl = config.public?.supabaseUrl
-    let supabaseKey = config.public?.supabaseAnonKey
+    // 1. Fetch basic card data from tirth_cards (supports both ID and name resolution)
+    let cardData: any = null
+    let cardError: any = null
 
-    // Fallback to service role key for full schema access
-    if (!supabaseUrl) {
-      supabaseUrl = 'https://cfmvkvpyjvbcenqorifa.supabase.co'
-    }
-    if (!supabaseKey) {
-      // Use service role key for full access to all schemas including tirthlok
-      supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmbXZrdnB5anZiY2VucW9yaWZhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTI5MzQyNCwiZXhwIjoyMDgwODY5NDI0fQ.fLyzNci3KFvO--KEo342_3aYvWk6I4qWnxtXMz74ZEA'
-    }
-
-    console.log('📊 Supabase config:', { url: !!supabaseUrl, key: !!supabaseKey })
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase credentials not configured')
+    if (isTirthId) {
+      const { data, error } = await supabase.from('tirth_cards').select('*').eq('tirth_id', id).single()
+      cardData = data
+      cardError = error
+    } else {
+      const { data, error } = await supabase.from('tirth_cards').select('*').eq('tirth_name', id).single()
+      cardData = data
+      cardError = error
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    if (cardError || !cardData) {
+      console.error('[tirth] card fetch failed for id/name:', id, cardError?.message)
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Tirth not found',
+      })
+    }
 
-    // First try to get detailed data from v_tirth_details view
+    const actualTirthId = cardData.tirth_id
+
+    // 2. Fetch detailed data from tirth_details
     let data: any = null
     let detailedData: any = null
 
-    console.log(`🔍 Querying v_tirth_details for: ${id}`)
-
     try {
       const { data: detailsResult, error: detailsError } = await supabase
-        .from('v_tirth_details')
+        .from('tirth_details')
         .select('*')
-        .eq('tirth_name', id)
+        .eq('tirth_id', actualTirthId)
         .single()
 
       if (!detailsError && detailsResult) {
         detailedData = detailsResult
-        console.log(`✅ Found detailed data in v_tirth_details`)
-        console.log(`📋 Raw v_tirth_details columns:`, Object.keys(detailsResult))
-        console.log(`📋 Raw v_tirth_details data:`, JSON.stringify(detailsResult, null, 2))
-      } else {
-        console.log(`⚠️ No detailed data found: ${detailsError?.message || 'not found'}`)
       }
     } catch (err) {
-      console.log(`⚠️ Error querying v_tirth_details: ${err}`)
-    }
-
-    // Now get the basic card data
-    const { data: cardData, error: cardError } = await supabase
-      .from('v_tirth_cards')
-      .select('*')
-      .eq('tirth_name', id)
-      .single()
-
-    console.log(`📊 Supabase response for ${id}:`, { found: !!cardData, hasDetails: !!detailedData, error: cardError?.message })
-
-    if (cardData) {
-      console.log(`📋 Raw v_tirth_cards columns:`, Object.keys(cardData))
-      console.log(`📋 Raw v_tirth_cards data:`, JSON.stringify(cardData, null, 2))
-    }
-
-    if (cardError) {
-      console.error(`❌ Error fetching tirth ${id}:`, cardError)
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Tirth not found',
-      })
-    }
-
-    if (!cardData) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Tirth not found',
-      })
+      // Details may not exist for every tirth — not an error
     }
 
     // Merge card and detail data, with details taking precedence
     data = { ...cardData, ...detailedData }
 
-    // Now fetch events from the v_tirth_events view for this tirth
-    console.log(`🔍 Querying v_tirth_events view for tirth: ${id}`)
+    // Fetch events from tirth_events
     let events: any[] = []
 
     try {
       const { data: eventsData, error: eventsError } = await supabase
-        .from('v_tirth_events')
+        .from('tirth_events')
         .select('*')
-        .eq('tirth_name', id)
+        .eq('tirth_id', actualTirthId)
         .order('time_frame', { ascending: true })
 
       if (!eventsError && eventsData && eventsData.length > 0) {
-        // Transform backend fields to EventItem interface
         events = eventsData.map((f: any) => ({
           name: f.event_name || '',
           date: f.tithi || '',
@@ -134,20 +96,12 @@ export default defineEventHandler(async (event) => {
           description: f.event_description || '',
           specialEvent: f.event_details || undefined,
         }))
-        console.log(`✅ Found ${events.length} events for tirth_name: ${id}`)
-        console.log(`📋 Raw events data:`, JSON.stringify(eventsData, null, 2))
-        console.log(`📋 Transformed events data:`, JSON.stringify(events, null, 2))
-      } else if (eventsError) {
-        console.log(`⚠️ Error querying v_tirth_events: ${eventsError.message}`)
-      } else {
-        console.log(`⚠️ No events found for tirth_name: ${id}`)
       }
     } catch (err) {
-      console.log(`⚠️ Error querying events: ${err}`)
+      // Events may not exist — not an error
     }
 
     // Transform database row to Tirth interface
-    // Parse JSON strings if needed
     let images = data.tirth_images || []
     if (typeof images === 'string') {
       try {
@@ -158,15 +112,15 @@ export default defineEventHandler(async (event) => {
     }
 
     const transformedTirth = {
-      id: data.tirth_name || 'unknown',
+      id: data.tirth_id || 'unknown',
       name: data.tirth_name || '',
       description: data.tirth_description || '',
-      architecture: data.tirth_architecture || data.architecture || 'To Be Updated Soon',
-      mythology: data.tirth_mythology || data.mythology || 'To Be Updated Soon',
-      foundingDetails: data.tirth_founding_details || data.founding_details || 'To Be Updated Soon',
+      architecture: data.architecture || data.tirth_architecture || 'To Be Updated Soon',
+      mythology: data.historical_background || data.tirth_mythology || 'To Be Updated Soon',
+      foundingDetails: data.founding_details || data.tirth_founding_details || 'To Be Updated Soon',
       direction: data.tirth_direction || data.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.tirth_name + ' ' + data.tirth_city)}`,
-      mainTemples: data.tirth_main_temples || data.main_temples ? (Array.isArray(data.tirth_main_temples || data.main_temples) ? (data.tirth_main_temples || data.main_temples) : [data.tirth_main_temples || data.main_temples]) : ['To Be Updated Soon'],
-      moolnayak: data.tirth_moolnayak || data.moolnayak || data.mul_nayak || [
+      mainTemples: data.main_temples || data.tirth_main_temples ? (Array.isArray(data.main_temples || data.tirth_main_temples) ? (data.main_temples || data.tirth_main_temples) : [data.main_temples || data.tirth_main_temples]) : ['To Be Updated Soon'],
+      moolnayak: data.mul_nayak || data.tirth_moolnayak || [
         {
           name: data.tirth_name || 'Main Idol',
           height: 'To Be Updated Soon',
@@ -196,19 +150,16 @@ export default defineEventHandler(async (event) => {
       rules: data.tirth_rules || data.rules ? (Array.isArray(data.tirth_rules || data.rules) ? (data.tirth_rules || data.rules) : [data.tirth_rules || data.rules]) : [],
       tirth_grouping: data.tirth_grouping || undefined,
       tirth_tags: data.tirth_tags ? (Array.isArray(data.tirth_tags) ? data.tirth_tags : [data.tirth_tags]) : undefined,
+      specialFacts: data.special_facts ? (Array.isArray(data.special_facts) ? data.special_facts : [data.special_facts]) : [],
     }
-
-    console.log(`📦 Transformed tirth data for ${id}:`, { name: transformedTirth.name, hasImages: transformedTirth.images.length > 0, hasDetails: !!detailedData })
 
     return transformedTirth
   } catch (error: any) {
-    console.error(`❌ Error fetching tirth ${getRouterParam(event, 'id')}:`, error)
-
-    // Handle 404 errors
     if (error.statusCode === 404) {
       throw error
     }
 
+    console.error('[tirth] detail fetch failed:', error.message)
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to fetch tirth details from Supabase',

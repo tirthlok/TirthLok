@@ -1,227 +1,354 @@
 <template>
   <Teleport to="body">
-    <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div class="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <!-- Header -->
-        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-8 flex justify-between items-center rounded-t-2xl shadow-lg">
-          <div class="flex items-center gap-3">
-            <div class="w-1 h-8 bg-white rounded-full opacity-75" />
-            <h2 class="text-2xl font-bold text-white">Book Room {{ room?.roomNumber }}</h2>
-          </div>
-          <button @click="closeDialog" class="text-white hover:text-blue-100 transition transform hover:scale-110">
-            <Icon name="X" :size="28" />
-          </button>
-        </div>
+    <!-- Backdrop -->
+    <Transition name="fade">
+      <div v-if="isOpen" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" @click="closeDialog" />
+    </Transition>
 
-        <!-- Content -->
-        <div class="p-8 space-y-6">
-          <!-- Room Info -->
-          <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-2xl border-2 border-blue-200">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="bg-white p-4 rounded-xl border border-blue-100 hover:shadow-lg transition-all">
-                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Type</p>
-                <p class="text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent capitalize">{{ room?.type }}</p>
-              </div>
-              <div class="bg-white p-4 rounded-xl border border-green-100 hover:shadow-lg transition-all">
-                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Price/Night</p>
-                <p class="text-lg font-bold text-green-600">₹{{ room?.price }}</p>
-              </div>
-              <div class="bg-white p-4 rounded-xl border border-blue-100 hover:shadow-lg transition-all">
-                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Capacity</p>
-                <p class="text-lg font-bold text-blue-600">{{ room?.capacity }}</p>
-              </div>
-              <div class="bg-white p-4 rounded-xl border border-cyan-100 hover:shadow-lg transition-all">
-                <p class="text-xs text-gray-600 uppercase font-bold tracking-wide">Bed Type</p>
-                <p class="text-sm font-bold text-cyan-600">{{ room?.bedType }}</p>
+    <!-- Modal -->
+    <Transition name="slide-up">
+      <div v-if="isOpen" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
+        <div
+          class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-3xl sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="sticky top-0 bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 px-6 py-5 flex justify-between items-center z-10 shadow-lg flex-shrink-0">
+            <div class="flex items-center gap-3">
+              <div class="w-1 h-8 bg-white/70 rounded-full" />
+              <div>
+                <h2 class="text-xl font-bold text-white">Book Room</h2>
+                <p class="text-blue-100 text-sm">{{ room?.name || '' }}</p>
               </div>
             </div>
+            <button @click="closeDialog" class="text-white/80 hover:text-white transition p-2 hover:bg-white/10 rounded-full">
+              <Icon name="X" :size="24" />
+            </button>
           </div>
 
-          <!-- Booking Form -->
-          <form @submit.prevent="submitBooking" class="space-y-5">
-            <!-- Guest Name -->
-            <div>
-              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Icon name="User" :size="18" class="text-blue-600" />
-                Full Name *
-              </label>
-              <input
-                v-model="formData.guestName"
-                type="text"
-                placeholder="Enter your full name"
-                required
-                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-              />
-            </div>
+          <!-- Scrollable Content -->
+          <div class="flex-1 overflow-y-auto overscroll-contain">
+            <div class="p-5 sm:p-6 space-y-5">
 
-            <!-- Email -->
-            <div>
-              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Icon name="Mail" :size="18" class="text-blue-600" />
-                Email Address *
-              </label>
-              <input
-                v-model="formData.guestEmail"
-                type="email"
-                placeholder="your.email@example.com"
-                required
-                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-              />
-            </div>
-
-            <!-- Phone -->
-            <div>
-              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Icon name="Phone" :size="18" class="text-blue-600" />
-                Phone Number *
-              </label>
-              <input
-                v-model="formData.guestPhone"
-                type="tel"
-                placeholder="+91-XXXXXXXXXX"
-                required
-                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-              />
-            </div>
-
-            <!-- Check-in & Check-out -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Icon name="Calendar" :size="18" class="text-blue-600" />
-                  Check-in Date *
-                </label>
-                <input
-                  v-model="formData.checkInDate"
-                  type="date"
-                  required
-                  :min="today"
-                  class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Icon name="Calendar" :size="18" class="text-blue-600" />
-                  Check-out Date *
-                </label>
-                <input
-                  v-model="formData.checkOutDate"
-                  type="date"
-                  required
-                  :min="checkOutMinDate"
-                  class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-                />
-              </div>
-            </div>
-
-            <!-- Number of Guests -->
-            <div>
-              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Icon name="Users" :size="18" class="text-blue-600" />
-                Number of Guests *
-              </label>
-              <select
-                v-model.number="formData.numberOfGuests"
-                required
-                :max="room?.maxGuests"
-                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition"
-              >
-                <option v-for="n in room?.maxGuests" :key="n" :value="n">
-                  {{ n }} Guest{{ n > 1 ? 's' : '' }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Special Requests -->
-            <div>
-              <label class="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <Icon name="MessageSquare" :size="18" class="text-blue-600" />
-                Special Requests (Optional)
-              </label>
-              <textarea
-                v-model="formData.notes"
-                placeholder="Any special requests or notes..."
-                rows="3"
-                class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-600 focus:shadow-lg focus:outline-none transition resize-none"
-              />
-            </div>
-
-            <!-- Price Calculation -->
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl border-2 border-green-200">
-              <div class="space-y-3">
-                <div class="flex justify-between items-center pb-2">
-                  <span class="text-gray-700 font-semibold">Price per night:</span>
-                  <span class="font-bold text-gray-900 text-lg">₹{{ room?.price }}</span>
-                </div>
-                <div class="flex justify-between items-center pb-2 border-b-2 border-green-200">
-                  <span class="text-gray-700 font-semibold">Number of nights:</span>
-                  <span class="font-bold text-gray-900 text-lg">{{ nights }}</span>
-                </div>
-                <div class="flex justify-between items-center pt-2">
-                  <span class="text-lg font-bold text-gray-900">Total Amount:</span>
-                  <span class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">₹{{ totalPrice }}</span>
+              <!-- Room Info Summary -->
+              <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-2xl border border-blue-200">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div class="bg-white p-3 rounded-xl border border-blue-100 text-center">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Category</p>
+                    <p class="text-sm font-bold text-blue-600 capitalize mt-0.5">{{ room?.room_category }}</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-xl border border-green-100 text-center">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Price/Night</p>
+                    <p class="text-sm font-bold text-green-600 mt-0.5">₹{{ room?.base_price }}</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-xl border border-blue-100 text-center">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Capacity</p>
+                    <p class="text-sm font-bold text-blue-600 mt-0.5">{{ room?.capacity }} guests</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-xl border border-cyan-100 text-center">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Bed</p>
+                    <p class="text-sm font-bold text-cyan-600 mt-0.5 truncate">{{ room?.bed_configuration }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Terms -->
-            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
-              <label class="flex items-start gap-3 cursor-pointer">
-                <input
-                  v-model="agreedToTerms"
-                  type="checkbox"
-                  class="mt-1 w-5 h-5 accent-blue-600 cursor-pointer rounded"
-                />
-                <span class="text-sm text-gray-700">
-                  I agree to the dharamshala's
-                  <span class="font-bold text-blue-600">booking terms and conditions</span>
-                </span>
-              </label>
-            </div>
+              <!-- Booking Form -->
+              <form @submit.prevent="handleSubmit" class="space-y-5">
 
-            <!-- Error Message -->
-            <div v-if="errorMessage" class="bg-red-50 p-4 rounded-xl border-2 border-red-200">
-              <p class="text-red-700 font-semibold flex items-center gap-2">
-                <Icon name="AlertCircle" :size="18" />
-                {{ errorMessage }}
-              </p>
-            </div>
+                <!-- Date Selection -->
+                <div class="bg-white rounded-2xl border-2 border-blue-100 p-4 space-y-3">
+                  <h3 class="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                    <Icon name="Calendar" :size="18" class="text-blue-600" />
+                    Select Dates
+                  </h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1.5">Check-in</label>
+                      <input
+                        v-model="booking.checkInDate"
+                        type="date"
+                        required
+                        :min="booking.today"
+                        class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition text-sm font-medium"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1.5">Check-out</label>
+                      <input
+                        v-model="booking.checkOutDate"
+                        type="date"
+                        required
+                        :min="booking.checkOutMinDate"
+                        class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition text-sm font-medium"
+                      />
+                    </div>
+                  </div>
+                  <!-- Night Count Badge -->
+                  <div v-if="booking.nights > 0" class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                    <Icon name="Moon" :size="14" class="text-blue-600" />
+                    <span class="text-sm font-semibold text-blue-700">{{ booking.nights }} night{{ booking.nights > 1 ? 's' : '' }}</span>
+                  </div>
+                </div>
 
-            <!-- Action Buttons -->
-            <div class="flex gap-3 pt-6 border-t-2 border-blue-200">
-              <button
-                type="button"
-                @click="closeDialog"
-                class="flex-1 py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition transform hover:scale-105 duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                :disabled="!agreedToTerms || isSubmitting"
-                class="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition transform hover:scale-105 duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                <Icon v-if="!isSubmitting" name="CheckCircle" :size="18" />
-                <span v-if="isSubmitting">Booking...</span>
-                <span v-else>Confirm Booking</span>
-              </button>
+                <!-- Guest Selection -->
+                <div class="bg-white rounded-2xl border-2 border-blue-100 p-4 space-y-3">
+                  <h3 class="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                    <Icon name="Users" :size="18" class="text-blue-600" />
+                    Guests
+                    <span class="text-xs text-gray-400 font-normal ml-auto">Max {{ room?.max_guests }} guests</span>
+                  </h3>
+
+                  <!-- Guest Type Rows -->
+                  <div class="space-y-2.5">
+                    <!-- Adults -->
+                    <div class="flex items-center justify-between bg-gray-50 px-4 py-3 rounded-xl">
+                      <div>
+                        <p class="font-semibold text-gray-900 text-sm">Adults</p>
+                        <p class="text-xs text-gray-500">13+ years</p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('adults', -1)"
+                          :disabled="booking.guests.adults <= 1"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >−</button>
+                        <span class="w-8 text-center font-bold text-gray-900">{{ booking.guests.adults }}</span>
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('adults', 1)"
+                          :disabled="booking.totalGuests >= (room?.max_guests || 1)"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    <!-- Children -->
+                    <div class="flex items-center justify-between bg-gray-50 px-4 py-3 rounded-xl">
+                      <div>
+                        <p class="font-semibold text-gray-900 text-sm">Children</p>
+                        <p class="text-xs text-gray-500">2-12 years</p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('children', -1)"
+                          :disabled="booking.guests.children <= 0"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >−</button>
+                        <span class="w-8 text-center font-bold text-gray-900">{{ booking.guests.children }}</span>
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('children', 1)"
+                          :disabled="booking.totalGuests >= (room?.max_guests || 1)"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    <!-- Senior Citizens -->
+                    <div class="flex items-center justify-between bg-gray-50 px-4 py-3 rounded-xl">
+                      <div>
+                        <p class="font-semibold text-gray-900 text-sm">Senior Citizens</p>
+                        <p class="text-xs text-gray-500">60+ years</p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('seniors', -1)"
+                          :disabled="booking.guests.seniors <= 0"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >−</button>
+                        <span class="w-8 text-center font-bold text-gray-900">{{ booking.guests.seniors }}</span>
+                        <button
+                          type="button"
+                          @click="booking.updateGuests('seniors', 1)"
+                          :disabled="booking.totalGuests >= (room?.max_guests || 1)"
+                          class="w-8 h-8 rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold hover:bg-blue-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Total Guests Badge -->
+                  <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                    <Icon name="Users" :size="14" class="text-blue-600" />
+                    <span class="text-sm font-semibold text-blue-700">{{ booking.totalGuests }} total guest{{ booking.totalGuests > 1 ? 's' : '' }}</span>
+                  </div>
+                </div>
+
+                <!-- Guest Details -->
+                <div class="bg-white rounded-2xl border-2 border-blue-100 p-4 space-y-3">
+                  <h3 class="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                    <Icon name="User" :size="18" class="text-blue-600" />
+                    Guest Details
+                  </h3>
+
+                  <div class="space-y-3">
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1.5">Full Name *</label>
+                      <input
+                        v-model="booking.guestName"
+                        type="text"
+                        placeholder="Enter your full name"
+                        required
+                        class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition text-sm"
+                      />
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Email *</label>
+                        <input
+                          v-model="booking.guestEmail"
+                          type="email"
+                          placeholder="your@email.com"
+                          required
+                          class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Phone *</label>
+                        <input
+                          v-model="booking.guestPhone"
+                          type="tel"
+                          placeholder="+91-XXXXXXXXXX"
+                          required
+                          class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-600 mb-1.5">Special Requests (Optional)</label>
+                      <textarea
+                        v-model="booking.notes"
+                        placeholder="Any special requests..."
+                        rows="2"
+                        class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition resize-none text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pricing Breakdown -->
+                <div v-if="booking.hasDates" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-200 p-4 space-y-2">
+                  <h3 class="font-bold text-gray-900 flex items-center gap-2 text-sm mb-3">
+                    <Icon name="IndianRupee" :size="18" class="text-green-600" />
+                    Price Breakdown
+                  </h3>
+
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">₹{{ booking.pricing.roomPrice }} × {{ booking.pricing.nights }} night{{ booking.pricing.nights > 1 ? 's' : '' }}</span>
+                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.subtotal.toFixed(2) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">GST (5%)</span>
+                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.tax.toFixed(2) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Service Charge</span>
+                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.serviceCharge.toFixed(2) }}</span>
+                    </div>
+                    <div v-if="booking.pricing.discount > 0" class="flex justify-between text-green-600">
+                      <span>Discount</span>
+                      <span class="font-semibold">-₹{{ booking.pricing.discount.toFixed(2) }}</span>
+                    </div>
+
+                    <div class="border-t-2 border-green-200 pt-3 mt-3">
+                      <div class="flex justify-between items-center">
+                        <span class="text-base font-bold text-gray-900">Grand Total</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                          ₹{{ booking.pricing.grandTotal.toFixed(2) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Terms -->
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input
+                      v-model="booking.agreedToTerms"
+                      type="checkbox"
+                      class="mt-0.5 w-5 h-5 accent-blue-600 cursor-pointer rounded"
+                    />
+                    <span class="text-sm text-gray-700">
+                      I agree to the dharamshala's
+                      <span class="font-bold text-blue-600">booking terms and conditions</span>
+                    </span>
+                  </label>
+                </div>
+
+                <!-- Error Message -->
+                <div v-if="booking.bookingError" class="bg-red-50 p-4 rounded-xl border-2 border-red-200">
+                  <p class="text-red-700 font-semibold flex items-center gap-2 text-sm">
+                    <Icon name="AlertCircle" :size="18" />
+                    {{ booking.bookingError }}
+                  </p>
+                </div>
+
+                <!-- Success Message -->
+                <div v-if="booking.bookingSuccess" class="bg-green-50 p-5 rounded-xl border-2 border-green-200 text-center space-y-3">
+                  <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                    <Icon name="CheckCircle" :size="32" class="text-green-600" />
+                  </div>
+                  <h3 class="text-lg font-bold text-green-800">Booking Confirmed!</h3>
+                  <p class="text-sm text-green-700">
+                    Booking ID: <span class="font-mono font-bold">{{ booking.bookingSuccess.id }}</span>
+                  </p>
+                  <p class="text-xs text-green-600">A confirmation has been sent to your email.</p>
+                  <button
+                    type="button"
+                    @click="closeDialog"
+                    class="px-6 py-2 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition"
+                  >
+                    Done
+                  </button>
+                </div>
+
+                <!-- Action Buttons (hide after success) -->
+                <div v-if="!booking.bookingSuccess" class="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    @click="closeDialog"
+                    class="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 transition active:scale-95"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    :disabled="!booking.isValid || booking.isSubmitting"
+                    class="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold text-sm hover:from-blue-700 hover:to-cyan-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    <template v-if="booking.isSubmitting">
+                      <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Booking...
+                    </template>
+                    <template v-else>
+                      <Icon name="CheckCircle" :size="18" />
+                      Confirm Booking
+                    </template>
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Room, Booking } from '~/types/models'
-import { Icon } from '~/components/ui'
-import { useRoomBookingApi } from '~/composables/api/useRoomBookingApi'
+import { watch } from 'vue'
+import type { RoomType, Booking } from '~/types/models'
+import Icon from '~/components/ui/Icon.vue'
+import { useRoomBooking } from '~/features/dharamshala/composables/useRoomBooking'
 
 interface Props {
   isOpen: boolean
-  room?: Room
+  room?: RoomType
   dharamshalaId: string
 }
 
@@ -232,96 +359,58 @@ const emit = defineEmits<{
   bookingConfirmed: [booking: Booking]
 }>()
 
-const { createBooking, calculateBookingPrice, calculateNights } = useRoomBookingApi()
+const booking = useRoomBooking(props.dharamshalaId)
 
-const formData = ref({
-  guestName: '',
-  guestEmail: '',
-  guestPhone: '',
-  checkInDate: '',
-  checkOutDate: '',
-  numberOfGuests: 1,
-  notes: '',
-})
+// Sync selected room when prop changes
+watch(() => props.room, (newRoom) => {
+  if (newRoom) {
+    booking.selectRoom(newRoom)
+  }
+}, { immediate: true })
 
-const agreedToTerms = ref(false)
-const isSubmitting = ref(false)
-const errorMessage = ref('')
-
-const today = computed(() => {
-  const date = new Date()
-  date.setDate(date.getDate())
-  return date.toISOString().split('T')[0]
-})
-
-const checkOutMinDate = computed(() => {
-  if (!formData.value.checkInDate) return today.value
-  const date = new Date(formData.value.checkInDate)
-  date.setDate(date.getDate() + 1)
-  return date.toISOString().split('T')[0]
-})
-
-const nights = computed(() => {
-  if (!formData.value.checkInDate || !formData.value.checkOutDate) return 0
-  return calculateNights(formData.value.checkInDate, formData.value.checkOutDate)
-})
-
-const totalPrice = computed(() => {
-  if (!props.room || !formData.value.checkInDate || !formData.value.checkOutDate) return 0
-  return calculateBookingPrice(props.room.price, formData.value.checkInDate, formData.value.checkOutDate)
+// Reset when modal closes
+watch(() => props.isOpen, (isOpen) => {
+  if (!isOpen) {
+    booking.resetBooking()
+  }
 })
 
 const closeDialog = () => {
-  resetForm()
   emit('close')
 }
 
-const resetForm = () => {
-  formData.value = {
-    guestName: '',
-    guestEmail: '',
-    guestPhone: '',
-    checkInDate: '',
-    checkOutDate: '',
-    numberOfGuests: 1,
-    notes: '',
-  }
-  agreedToTerms.value = false
-  errorMessage.value = ''
-}
-
-const submitBooking = async () => {
-  if (!props.room || !agreedToTerms.value) return
-
-  errorMessage.value = ''
-  isSubmitting.value = true
-
-  try {
-    const booking = await createBooking({
-      roomId: props.room.id,
-      dharamshalaId: props.dharamshalaId,
-      guestName: formData.value.guestName,
-      guestEmail: formData.value.guestEmail,
-      guestPhone: formData.value.guestPhone,
-      checkInDate: formData.value.checkInDate,
-      checkOutDate: formData.value.checkOutDate,
-      numberOfGuests: formData.value.numberOfGuests,
-      totalPrice: totalPrice.value,
-      status: 'confirmed',
-      notes: formData.value.notes,
-    })
-
-    emit('bookingConfirmed', booking)
-    closeDialog()
-
-    // Show success message
-    const message = `Booking confirmed! Booking ID: ${booking.id}`
-    alert(message)
-  } catch (error) {
-    console.error('Booking error:', error)
-    errorMessage.value = 'Failed to create booking. Please try again.'
-  } finally {
-    isSubmitting.value = false
+const handleSubmit = async () => {
+  const success = await booking.submitBooking()
+  if (success && booking.bookingSuccess.value) {
+    emit('bookingConfirmed', booking.bookingSuccess.value)
   }
 }
 </script>
+
+<style scoped>
+/* Slide-up transition for mobile bottom sheet feel */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
+}
+
+/* Fade transition for backdrop */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Smooth scroll for overscroll */
+.overscroll-contain {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+</style>

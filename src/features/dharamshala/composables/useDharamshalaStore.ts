@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Dharamshala } from '~/types/models'
+import type { Dharamshala, RoomType } from '~/types/models'
 
 interface DharamshalaState {
   dharamshalas: Dharamshala[]
@@ -18,6 +18,10 @@ interface DharamshalaState {
     facilities?: string[]
     searchTerm?: string
   }
+  // Room booking state
+  roomTypes: RoomType[]
+  roomsLoading: boolean
+  roomsError: string | null
 }
 
 /**
@@ -37,6 +41,10 @@ export const useDharamshalaStore = defineStore('dharamshala', {
       facilities: [],
     },
     currentFilters: {},
+    // Room booking state
+    roomTypes: [],
+    roomsLoading: false,
+    roomsError: null,
   }),
 
   getters: {
@@ -186,6 +194,50 @@ export const useDharamshalaStore = defineStore('dharamshala', {
 
     clearFilters() {
       this.filteredDharamshalas = [...this.dharamshalas]
+    },
+
+    // ─── Room Actions ───────────────────────────────────
+
+    async fetchRoomTypes(dharamshalaId: string) {
+      this.roomsLoading = true
+      this.roomsError = null
+      try {
+        const { useRoomBookingApi } = await import('~/features/dharamshala/services/roomBookingApi')
+        const { getAvailableRooms } = useRoomBookingApi()
+        this.roomTypes = await getAvailableRooms(dharamshalaId)
+      } catch (error) {
+        this.roomsError = 'Failed to fetch rooms'
+        console.error('Error fetching room types:', error)
+      } finally {
+        this.roomsLoading = false
+      }
+    },
+
+    /** Handle realtime UPDATE event for a room */
+    updateRoomFromRealtime(updatedRoom: RoomType) {
+      const index = this.roomTypes.findIndex(
+        (r) => r.room_type_id === updatedRoom.room_type_id
+      )
+      if (index !== -1) {
+        this.roomTypes[index] = updatedRoom
+      }
+    },
+
+    /** Handle realtime INSERT event for a room */
+    addRoomFromRealtime(newRoom: RoomType) {
+      const exists = this.roomTypes.some(
+        (r) => r.room_type_id === newRoom.room_type_id
+      )
+      if (!exists && newRoom.is_available_ui) {
+        this.roomTypes.push(newRoom)
+      }
+    },
+
+    /** Handle realtime DELETE event for a room */
+    removeRoomFromRealtime(roomTypeId: string) {
+      this.roomTypes = this.roomTypes.filter(
+        (r) => r.room_type_id !== roomTypeId
+      )
     },
   },
 })
