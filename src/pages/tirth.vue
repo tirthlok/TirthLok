@@ -253,7 +253,7 @@ const applyFilters = () => {
     if (!isAuthenticated.value) {
       result = []
     } else {
-      result = result.filter((t: Tirth) => wishlistStore.isInWishlist(t.id))
+      result = result.filter((t: Tirth) => wishlistStore.isInWishlist(t.name))
     }
   }
   // Apply grouping filter

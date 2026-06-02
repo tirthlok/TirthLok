@@ -5,12 +5,8 @@ import { createClient } from '@supabase/supabase-js'
 import { getHeader, type H3Event } from 'h3'
 
 // Resolve credentials from environment — no hardcoded fallbacks
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || ''
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
-
-if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('[supabase] Missing Supabase environment variables. Check .env file.')
-}
+const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
 
 let supabaseAdmin: ReturnType<typeof createClient> | null = null
 

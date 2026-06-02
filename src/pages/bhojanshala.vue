@@ -168,7 +168,7 @@ const displayedBhojanShalas = computed(() => {
   if (selectedFilter.value === 'all') return all
   
   if (selectedFilter.value === 'wishlist') {
-    return all.filter((b: CardItem) => wishlistStore.isInWishlist(b.id))
+    return all.filter((b: CardItem) => wishlistStore.isInWishlist(b.name))
   }
 
   return all
