@@ -1,142 +1,107 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import { useWishlistApi } from '../services/wishlistApi'
 
-interface WishlistState {
-  wishlistItems: string[]
-  loading: boolean
-  error: string | null
-  initialized: boolean
-}
+export const useWishlistStore = defineStore('wishlist', () => {
+  const wishlistItems = ref<string[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  const initialized = ref(false)
 
-/**
- * Wishlist Store
- * Centralized management of user's wishlist items across all entity types
- */
-export const useWishlistStore = defineStore('wishlist', {
-  state: (): WishlistState => ({
-    wishlistItems: [],
-    loading: false,
-    error: null,
-    initialized: false,
-  }),
+  // Initialize API securely within the Nuxt context
+  const api = useWishlistApi()
 
-  getters: {
-    /**
-     * Get list of all wishlist IDs (tirth names)
-     */
-    getWishlistItems: (state) => state.wishlistItems,
+  const getWishlistItems = computed(() => wishlistItems.value)
+  const isInWishlist = computed(() => (id: string) => wishlistItems.value.includes(id))
+  const getWishlistCount = computed(() => wishlistItems.value.length)
+  const hasItems = computed(() => wishlistItems.value.length > 0)
 
-    /**
-     * Check if specific item is in wishlist
-     */
-    isInWishlist: (state) => (id: string) => state.wishlistItems.includes(id),
+  async function fetchWishlist() {
+    loading.value = true
+    error.value = null
+    try {
+      wishlistItems.value = await api.getWishlist()
+      initialized.value = true
+    } catch (err: any) {
+      error.value = 'Failed to fetch wishlist'
+      console.error(err)
+    } finally {
+      loading.value = false
+    }
+  }
 
-    /**
-     * Get count of wishlist items
-     */
-    getWishlistCount: (state) => state.wishlistItems.length,
+  async function addToWishlist(itemId: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth') {
+    if (wishlistItems.value.includes(itemId)) {
+      return
+    }
 
-    /**
-     * Check if any wishlist items exist
-     */
-    hasItems: (state) => state.wishlistItems.length > 0,
-  },
+    try {
+      const updatedWishlist = await api.addToWishlist(itemId, entityType)
+      wishlistItems.value = updatedWishlist
+    } catch (err: any) {
+      error.value = `Failed to add to wishlist: ${itemId}`
+      console.error(err)
+      throw err
+    }
+  }
 
-  actions: {
-    /**
-     * Load wishlist from API
-     */
-    async fetchWishlist() {
-      this.loading = true
-      this.error = null
-      try {
-        const { getWishlist } = useWishlistApi()
-        this.wishlistItems = await getWishlist()
-        this.initialized = true
-      } catch (error) {
-        this.error = 'Failed to fetch wishlist'
-        console.error(error)
-      } finally {
-        this.loading = false
-      }
-    },
+  async function removeFromWishlist(itemId: string) {
+    if (!wishlistItems.value.includes(itemId)) {
+      return
+    }
 
-    /**
-     * Add item to wishlist
-     */
-    async addToWishlist(itemId: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth') {
-      if (this.wishlistItems.includes(itemId)) {
-        return
-      }
+    try {
+      const updatedWishlist = await api.removeFromWishlist(itemId)
+      wishlistItems.value = updatedWishlist
+    } catch (err: any) {
+      error.value = `Failed to remove from wishlist: ${itemId}`
+      console.error(err)
+      throw err
+    }
+  }
 
-      try {
-        const { addToWishlist } = useWishlistApi()
-        const updatedWishlist = await addToWishlist(itemId, entityType)
-        this.wishlistItems = updatedWishlist
-      } catch (error) {
-        this.error = `Failed to add to wishlist: ${itemId}`
-        console.error(error)
-        throw error
-      }
-    },
+  async function toggleWishlist(itemId: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth') {
+    if (isInWishlist.value(itemId)) {
+      await removeFromWishlist(itemId)
+    } else {
+      await addToWishlist(itemId, entityType)
+    }
+  }
 
-    /**
-     * Remove item from wishlist
-     */
-    async removeFromWishlist(itemId: string) {
-      if (!this.wishlistItems.includes(itemId)) {
-        return
-      }
+  async function clearAllItems() {
+    try {
+      await api.clearWishlist()
+      wishlistItems.value = []
+    } catch (err: any) {
+      error.value = 'Failed to clear wishlist'
+      console.error(err)
+      throw err
+    }
+  }
 
-      try {
-        const { removeFromWishlist } = useWishlistApi()
-        const updatedWishlist = await removeFromWishlist(itemId)
-        this.wishlistItems = updatedWishlist
-      } catch (error) {
-        this.error = `Failed to remove from wishlist: ${itemId}`
-        console.error(error)
-        throw error
-      }
-    },
+  function setWishlist(items: string[]) {
+    wishlistItems.value = items
+  }
 
-    /**
-     * Toggle wishlist status
-     */
-    async toggleWishlist(itemId: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth') {
-      if (this.isInWishlist(itemId)) {
-        await this.removeFromWishlist(itemId)
-      } else {
-        await this.addToWishlist(itemId, entityType)
-      }
-    },
+  function syncWishlist(items: string[]) {
+    wishlistItems.value = [...new Set([...wishlistItems.value, ...items])]
+  }
 
-    /**
-     * Clear all wishlist items
-     */
-    async clearAllItems() {
-      try {
-        const { clearWishlist } = useWishlistApi()
-        await clearWishlist()
-        this.wishlistItems = []
-      } catch (error) {
-        this.error = 'Failed to clear wishlist'
-        console.error(error)
-        throw error
-      }
-    },
-
-    /**
-     * Set wishlist directly (for initialization)
-     */
-    setWishlist(items: string[]) {
-      this.wishlistItems = items
-    },
-
-    /**
-     * Sync with another source
-     */
-    syncWishlist(items: string[]) {
-      this.wishlistItems = [...new Set([...this.wishlistItems, ...items])]
-    },
-  },
+  return {
+    wishlistItems,
+    loading,
+    error,
+    initialized,
+    getWishlistItems,
+    isInWishlist,
+    getWishlistCount,
+    hasItems,
+    fetchWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    toggleWishlist,
+    clearAllItems,
+    setWishlist,
+    syncWishlist,
+  }
 })
