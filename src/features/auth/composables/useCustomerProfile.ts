@@ -51,8 +51,7 @@ export const useCustomerProfile = () => {
 
         try {
             const { data, error: fetchError } = await supabase
-                .from('v_customer_profile')
-                .select('*')
+                .rpc('get_customer_profile')
                 .single()
 
             if (fetchError) {
