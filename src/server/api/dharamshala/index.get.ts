@@ -56,8 +56,6 @@ export default defineEventHandler(async (event) => {
           location: {
             city: row.dharamshala_city || '',
             state: row.dharamshala_state || '',
-            latitude: row.dharamshala_latitude || 0,
-            longitude: row.dharamshala_longitude || 0,
             address: row.dharamshala_address || `${row.dharamshala_city}, ${row.dharamshala_state}`,
           },
           images: Array.isArray(images) ? images : [images].filter(Boolean),
@@ -81,12 +79,6 @@ export default defineEventHandler(async (event) => {
           dharamshala_tags: row.dharamshala_tags ? (Array.isArray(row.dharamshala_tags) ? row.dharamshala_tags : [row.dharamshala_tags]) : undefined,
         }
       })
-
-      // Fallback to sample data for development if database returns empty
-      if (transformedData.length === 0) {
-        const { sampleDharamshalas } = await import('~/server/utils/sampleData')
-        return sampleDharamshalas
-      }
 
       return transformedData
     } catch (innerError: any) {

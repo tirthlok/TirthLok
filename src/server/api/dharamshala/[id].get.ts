@@ -26,14 +26,7 @@ export default defineEventHandler(async (event) => {
       .single()
 
     if (cardError || !cardData) {
-      // Fallback to sample data
-      const { sampleDharamshalas } = await import('~/server/utils/sampleData')
-      const dh = sampleDharamshalas.find((d: any) => d.id === id)
-
-      if (!dh) {
-        throw createError({ statusCode: 404, statusMessage: 'Dharamshala not found' })
-      }
-      return dh
+      throw createError({ statusCode: 404, statusMessage: 'Dharamshala not found' })
     }
 
     // Fetch detail data
@@ -53,7 +46,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // Merge and return
-    return { ...cardData, ...detailData }
+    const result = { ...cardData, ...detailData }
+    delete result.dharamshala_latitude
+    delete result.dharamshala_longitude
+    return result
   } catch (error: any) {
     if (error.statusCode) throw error
     console.error('[dharamshala] detail fetch failed:', error.message)
