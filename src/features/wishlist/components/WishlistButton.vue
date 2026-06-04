@@ -67,7 +67,7 @@ onMounted(async () => {
 
 // Determine if in wishlist
 const isInWishlist = computed(() => {
-  return wishlistStore.isInWishlist(props.itemId)
+  return wishlistStore.isInWishlist(props.itemId, props.entityType)
 })
 
 // Local hover state (used instead of group-hover)

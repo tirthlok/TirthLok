@@ -19,7 +19,7 @@
       <!-- Wishlist Button -->
       <WishlistButton
         v-if="showWishlist"
-        :item-id="item.name"
+        :item-id="item.id"
         :entity-type="cardType"
         :is-in-wishlist="isInWishlist"
         class='absolute top-4 right-4 z-10'
@@ -132,7 +132,8 @@ const imageHeightFinal = computed(() => {
 
 // Check if item is in wishlist
 const isInWishlist = computed(() => {
-  return wishlistStore.isInWishlist(props.item.name)
+  if (!props.showWishlist) return false
+  return wishlistStore.isInWishlist(props.item.id)
 })
 
 // Details section background

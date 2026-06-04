@@ -1,38 +1,36 @@
 /**
  * useWishlistApi Composable
- * Wishlist API - uses Supabase client directly with authenticated session
- * Uses tirth_name as the unique identifier (since v_tirth_cards view lacks tirth_id)
+ * Wishlist API - uses Nuxt backend APIs (ID-based, supports tirth + dharamshala)
  */
 
-import { useSupabase } from '~/features/auth/composables/useSupabase'
 import { useAuth } from '~/features/auth/composables/useAuth'
 
+export type WishlistResult = { tirth: string[]; dharamshala: string[] }
+
 export const useWishlistApi = () => {
-  const { supabase } = useSupabase()
   const { session } = useAuth()
 
+  const getHeaders = () => {
+    if (!session.value?.access_token) return {}
+    return {
+      Authorization: `Bearer ${session.value.access_token}`
+    }
+  }
+
   /**
-   * Fetch user's wishlist (Tirth names) using secure view
-   * View automatically filters to show only user's own wishlist
+   * Fetch user's wishlist (tirth IDs + dharamshala IDs)
    */
-  const getWishlist = async (): Promise<string[]> => {
-    if (!session.value?.user?.id) {
+  const getWishlist = async (): Promise<WishlistResult> => {
+    if (!session.value?.access_token) {
       console.log('[Wishlist] No user session, returning empty wishlist')
-      return []
+      return { tirth: [], dharamshala: [] }
     }
 
     try {
-      const { data, error } = await supabase
-        .from('v_customer_wishlist')
-        .select('tirth_name')
-
-      if (error) {
-        console.error('[Wishlist] Error fetching wishlist:', error)
-        throw error
-      }
-
-      console.log('[Wishlist] Fetched data:', data)
-      return (data || []).map(item => item.tirth_name)
+      const data = await $fetch<WishlistResult>('/api/wishlist', {
+        headers: getHeaders()
+      })
+      return data ?? { tirth: [], dharamshala: [] }
     } catch (error) {
       console.error('[Wishlist] Error fetching wishlist:', error)
       throw error
@@ -40,74 +38,64 @@ export const useWishlistApi = () => {
   }
 
   /**
-   * Add tirth to wishlist using RPC function
-   * @param tirthName - The tirth name (used as unique identifier)
+   * Add item to wishlist
+   * @param itemId - The item ID
+   * @param entityType - 'tirth' or 'dharamshala'
    */
-  const addToWishlist = async (tirthName: string, _entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'): Promise<string[]> => {
-    if (!session.value?.user?.id) {
+  const addToWishlist = async (
+    itemId: string,
+    entityType: 'tirth' | 'dharamshala' = 'tirth'
+  ): Promise<WishlistResult> => {
+    if (!session.value?.access_token) {
       throw new Error('Not authenticated')
     }
 
-    if (!tirthName || tirthName === 'undefined') {
-      console.error('[Wishlist] Invalid tirth name:', tirthName)
-      throw new Error(`Invalid tirth name: ${tirthName}`)
+    if (!itemId || itemId === 'undefined') {
+      console.error('[Wishlist] Invalid item id:', itemId)
+      throw new Error(`Invalid item id: ${itemId}`)
     }
 
     try {
-      console.log('[Wishlist] Adding tirth:', { tirthName, userId: session.value.user.id })
-
-      const { error: rpcError } = await supabase.rpc('add_to_wishlist', {
-        p_tirth_name: tirthName
+      const data = await $fetch<WishlistResult>('/api/wishlist', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: { itemId, entityType }
       })
-
-      if (rpcError) {
-        // Handle duplicate entry gracefully
-        if (rpcError.code === '23505') {
-          console.log('[Wishlist] Already in wishlist')
-        } else {
-          console.error('[Wishlist] Error adding to wishlist:', rpcError)
-          throw rpcError
-        }
-      }
-
-      // Return updated wishlist
-      return await getWishlist()
+      return data ?? { tirth: [], dharamshala: [] }
     } catch (error) {
-      console.error(`[Wishlist] Error adding to wishlist ${tirthName}:`, error)
+      console.error(`[Wishlist] Error adding to wishlist ${itemId} (${entityType}):`, error)
       throw error
     }
   }
 
   /**
-   * Remove tirth from wishlist using RPC function
-   * @param tirthName - The tirth name (used as unique identifier)
+   * Remove item from wishlist
+   * @param itemId - The item ID
+   * @param entityType - 'tirth' or 'dharamshala'
    */
-  const removeFromWishlist = async (tirthName: string): Promise<string[]> => {
-    if (!session.value?.user?.id) {
+  const removeFromWishlist = async (
+    itemId: string,
+    entityType: 'tirth' | 'dharamshala' = 'tirth'
+  ): Promise<WishlistResult> => {
+    if (!session.value?.access_token) {
       throw new Error('Not authenticated')
     }
 
-    if (!tirthName || tirthName === 'undefined') {
-      console.error('[Wishlist] Invalid tirth name:', tirthName)
-      throw new Error(`Invalid tirth name: ${tirthName}`)
+    if (!itemId || itemId === 'undefined') {
+      console.error('[Wishlist] Invalid item id:', itemId)
+      throw new Error(`Invalid item id: ${itemId}`)
     }
 
     try {
-      console.log('[Wishlist] Removing tirth:', { tirthName, userId: session.value.user.id })
-
-      const { error: rpcError } = await supabase.rpc('remove_from_wishlist', {
-        p_tirth_name: tirthName
+      const encodedId = encodeURIComponent(itemId)
+      const data = await $fetch<WishlistResult>(`/api/wishlist/${encodedId}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+        query: { entityType }
       })
-
-      if (rpcError) {
-        console.error('[Wishlist] Error removing from wishlist:', rpcError)
-        throw rpcError
-      }
-
-      // Return updated wishlist
-      return await getWishlist()
+      return data ?? { tirth: [], dharamshala: [] }
     } catch (error) {
-      console.error(`[Wishlist] Error removing from wishlist ${tirthName}:`, error)
+      console.error(`[Wishlist] Error removing from wishlist ${itemId} (${entityType}):`, error)
       throw error
     }
   }
@@ -115,31 +103,34 @@ export const useWishlistApi = () => {
   /**
    * Check if item is in wishlist
    */
-  const isInWishlist = async (tirthName: string): Promise<boolean> => {
+  const isInWishlist = async (
+    itemId: string,
+    entityType: 'tirth' | 'dharamshala' = 'tirth'
+  ): Promise<boolean> => {
     try {
       const wishlist = await getWishlist()
-      return wishlist.includes(tirthName)
+      return entityType === 'dharamshala'
+        ? wishlist.dharamshala.includes(itemId)
+        : wishlist.tirth.includes(itemId)
     } catch (error) {
-      console.error(`[Wishlist] Error checking wishlist status for ${tirthName}:`, error)
+      console.error(`[Wishlist] Error checking wishlist status for ${itemId}:`, error)
       return false
     }
   }
 
   /**
-   * Clear all items from wishlist using RPC function
+   * Clear all items from wishlist
    */
   const clearWishlist = async (): Promise<void> => {
-    if (!session.value?.user?.id) {
-      return
+    if (!session.value?.access_token) {
+      throw new Error('Not authenticated')
     }
 
     try {
-      const { error: rpcError } = await supabase.rpc('clear_wishlist')
-
-      if (rpcError) {
-        console.error('[Wishlist] Error clearing wishlist:', rpcError)
-        throw rpcError
-      }
+      await $fetch('/api/wishlist/clear', {
+        method: 'POST',
+        headers: getHeaders()
+      })
     } catch (error) {
       console.error('[Wishlist] Error clearing wishlist:', error)
       throw error
