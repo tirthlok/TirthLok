@@ -5,6 +5,7 @@
  */
 
 import type { Room, RoomType, Booking, PricingBreakdown, GuestBreakdown, RoomAvailabilityStatus } from '~/types/models'
+import { useAuth } from '~/features/auth/composables/useAuth'
 
 /** API response wrapper for room endpoints */
 interface RoomApiResponse {
@@ -27,10 +28,15 @@ interface BookingsListResponse {
   limit: number
 }
 
-/** Returns auth headers — Nuxt $fetch sends session cookies automatically */
-const getAuthHeaders = (): Record<string, string> => ({})
-
 export const useRoomBookingApi = () => {
+  const { session } = useAuth()
+
+  const getAuthHeaders = (): Record<string, string> => {
+    if (!session.value?.access_token) return {}
+    return {
+      Authorization: `Bearer ${session.value.access_token}`
+    }
+  }
 
   /**
    * Get available rooms for a dharamshala (returns RoomType[])
@@ -76,6 +82,7 @@ export const useRoomBookingApi = () => {
     try {
       const response = await $fetch<BookingApiResponse>('/api/bookings', {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: booking,
       })
       return response.booking

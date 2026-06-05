@@ -449,9 +449,10 @@
 
     <!-- Room Booking Modal -->
     <RoomBookingModal
+      v-if="dharamshala"
       :is-open="isBookingModalOpen"
       :room="selectedRoom || undefined"
-      :dharamshala-id="dharamshala?.id || ''"
+      :dharamshala-id="dharamshala.id"
       @close="closeBookingModal"
       @booking-confirmed="handleBookingConfirmed"
     />
