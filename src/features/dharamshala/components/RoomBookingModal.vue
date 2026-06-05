@@ -238,27 +238,27 @@
 
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
-                      <span class="text-gray-600">₹{{ booking.pricing.roomPrice }} × {{ booking.pricing.nights }} night{{ booking.pricing.nights > 1 ? 's' : '' }}</span>
-                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.subtotal.toFixed(2) }}</span>
+                      <span class="text-gray-600">₹{{ booking.pricing?.roomPrice ?? 0 }} × {{ booking.pricing?.nights ?? 0 }} night{{ (booking.pricing?.nights ?? 0) > 1 ? 's' : '' }}</span>
+                      <span class="font-semibold text-gray-900">₹{{ Number(booking.pricing?.subtotal ?? 0).toFixed(2) }}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-gray-600">GST (5%)</span>
-                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.tax.toFixed(2) }}</span>
+                      <span class="font-semibold text-gray-900">₹{{ Number(booking.pricing?.tax ?? 0).toFixed(2) }}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-gray-600">Service Charge</span>
-                      <span class="font-semibold text-gray-900">₹{{ booking.pricing.serviceCharge.toFixed(2) }}</span>
+                      <span class="font-semibold text-gray-900">₹{{ Number(booking.pricing?.serviceCharge ?? 0).toFixed(2) }}</span>
                     </div>
                     <div v-if="booking.pricing.discount > 0" class="flex justify-between text-green-600">
                       <span>Discount</span>
-                      <span class="font-semibold">-₹{{ booking.pricing.discount.toFixed(2) }}</span>
+                      <span class="font-semibold">-₹{{ Number(booking.pricing?.discount ?? 0).toFixed(2) }}</span>
                     </div>
 
                     <div class="border-t-2 border-green-200 pt-3 mt-3">
                       <div class="flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900">Grand Total</span>
                         <span class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                          ₹{{ booking.pricing.grandTotal.toFixed(2) }}
+                          ₹{{ Number(booking.pricing?.grandTotal ?? 0).toFixed(2) }}
                         </span>
                       </div>
                     </div>
@@ -341,7 +341,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch, reactive } from 'vue'
 import type { RoomType, Booking } from '~/types/models'
 import Icon from '~/components/ui/Icon.vue'
 import { useRoomBooking } from '~/features/dharamshala/composables/useRoomBooking'
@@ -359,7 +359,7 @@ const emit = defineEmits<{
   bookingConfirmed: [booking: Booking]
 }>()
 
-const booking = useRoomBooking(props.dharamshalaId)
+const booking = reactive(useRoomBooking(props.dharamshalaId))
 
 // Sync selected room when prop changes
 watch(() => props.room, (newRoom) => {

@@ -62,12 +62,21 @@ export function useRoomBooking(dharamshalaId: string) {
     if (!selectedRoom.value || !checkInDate.value || !checkOutDate.value) {
       return { roomPrice: 0, nights: 0, subtotal: 0, tax: 0, serviceCharge: 0, discount: 0, grandTotal: 0 }
     }
-    return calculatePricing(
+    const result = calculatePricing(
       selectedRoom.value.base_price,
       checkInDate.value,
       checkOutDate.value,
       discount.value
     )
+    return {
+      roomPrice:     Number(result?.roomPrice     ?? selectedRoom.value.base_price ?? 0),
+      nights:        Number(result?.nights        ?? 0),
+      subtotal:      Number(result?.subtotal      ?? 0),
+      tax:           Number(result?.tax           ?? 0),
+      serviceCharge: Number(result?.serviceCharge ?? 0),
+      discount:      Number(result?.discount      ?? 0),
+      grandTotal:    Number(result?.grandTotal    ?? 0),
+    }
   })
 
   /** Room availability status */
