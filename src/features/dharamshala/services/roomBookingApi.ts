@@ -19,8 +19,18 @@ interface BookingApiResponse {
   booking: Booking
 }
 
+/** API response wrapper for dharamshala bookings list */
+interface BookingsListResponse {
+  bookings: Booking[]
+  total: number
+  page: number
+  limit: number
+}
+
+/** Returns auth headers — Nuxt $fetch sends session cookies automatically */
+const getAuthHeaders = (): Record<string, string> => ({})
+
 export const useRoomBookingApi = () => {
-  const config = useRuntimeConfig()
 
   /**
    * Get available rooms for a dharamshala (returns RoomType[])
@@ -80,8 +90,8 @@ export const useRoomBookingApi = () => {
    */
   const getBookingById = async (bookingId: string): Promise<Booking> => {
     try {
-      return await $fetch(`/api/bookings/${bookingId}`, {
-        baseURL: config.public.apiBaseUrl,
+      return await $fetch<Booking>(`/api/bookings/${bookingId}`, {
+        headers: getAuthHeaders(),
       })
     } catch (error) {
       console.error(`Error fetching booking ${bookingId}:`, error)
@@ -94,13 +104,14 @@ export const useRoomBookingApi = () => {
    */
   const updateBookingStatus = async (
     bookingId: string,
-    status: Booking['status']
+    status: Booking['status'],
+    reason?: string
   ): Promise<Booking> => {
     try {
-      return await $fetch(`/api/bookings/${bookingId}`, {
+      return await $fetch<Booking>(`/api/bookings/${bookingId}`, {
         method: 'PATCH',
-        baseURL: config.public.apiBaseUrl,
-        body: { status },
+        headers: getAuthHeaders(),
+        body: { status, reason },
       })
     } catch (error) {
       console.error(`Error updating booking ${bookingId}:`, error)
@@ -113,9 +124,11 @@ export const useRoomBookingApi = () => {
    */
   const getDharamshalaBookings = async (dharamshalaId: string): Promise<Booking[]> => {
     try {
-      return await $fetch(`/api/dharamshala/${dharamshalaId}/bookings`, {
-        baseURL: config.public.apiBaseUrl,
-      })
+      const response = await $fetch<BookingsListResponse>(
+        `/api/dharamshala/${dharamshalaId}/bookings`,
+        { headers: getAuthHeaders() }
+      )
+      return response?.bookings || []
     } catch (error) {
       console.error(`Error fetching bookings for dharamshala ${dharamshalaId}:`, error)
       throw error

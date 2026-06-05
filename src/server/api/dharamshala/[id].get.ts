@@ -56,7 +56,6 @@ export default defineEventHandler(async (event) => {
       description: detail.about || card.dharamshala_description || '',
       type: card.dharamshala_type || 'General',
       rating: Number(card.dharamshala_rating) || 0,
-      reviews: 0,
       priceRange: detail.dharamshala_price_range || '',
       amenities: Array.isArray(detail.dharamshala_amenities)
         ? detail.dharamshala_amenities

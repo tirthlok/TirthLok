@@ -159,7 +159,7 @@ export function useRoomBooking(dharamshalaId: string) {
     bookingError.value = ''
 
     try {
-      const booking = await createBooking({
+      const result = await createBooking({
         roomId: selectedRoom.value.room_type_id,
         dharamshalaId,
         guestName: guestName.value.trim(),
@@ -171,10 +171,10 @@ export function useRoomBooking(dharamshalaId: string) {
         guests: guests.value,
         totalPrice: pricing.value.grandTotal,
         pricing: pricing.value,
-        status: 'confirmed',
         notes: notes.value.trim() || undefined,
       })
 
+      const booking = result?.booking || result
       bookingSuccess.value = booking
       return true
     } catch (error: any) {

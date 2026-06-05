@@ -4,10 +4,15 @@
  * Queries tirthlok.room_types directly
  */
 import type { Booking } from '~/types/models'
-import { getSupabaseTirthlok } from '~/server/utils/supabase'
+import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+
+  const userId = await getUserIdFromEvent(event)
+  if (!userId) {
+    throw createError({ statusCode: 401, statusMessage: 'Authentication required' })
+  }
 
   // Validate required fields
   const requiredFields = ['roomId', 'dharamshalaId', 'guestName', 'guestEmail', 'guestPhone', 'checkInDate', 'checkOutDate']
@@ -103,54 +108,95 @@ export default defineEventHandler(async (event) => {
     const grandTotal = subtotal + tax + serviceCharge - discount
 
     // Step 6: Create booking record
-    const bookingId = `BK-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
-    const newBooking: Booking = {
-      id: bookingId,
-      roomId: body.roomId,
-      dharamshalaId: body.dharamshalaId,
-      guestName: body.guestName,
-      guestEmail: body.guestEmail,
-      guestPhone: body.guestPhone,
-      checkInDate: body.checkInDate,
-      checkOutDate: body.checkOutDate,
-      numberOfGuests,
-      guests: body.guests || { adults: numberOfGuests, children: 0, seniors: 0 },
-      totalPrice: grandTotal,
-      pricing: {
-        roomPrice: room.base_price,
-        nights,
-        subtotal,
-        tax,
-        serviceCharge,
-        discount,
-        grandTotal,
-      },
-      status: 'confirmed',
-      createdAt: new Date().toISOString(),
-      notes: body.notes || undefined,
-    }
-
-    // Step 7: Decrement inventory atomically
-    const { error: inventoryError } = await supabase
-      .from('room_types')
-      .update({
-        total_inventory: room.total_inventory - 1,
-        updated_at: new Date().toISOString(),
+    const { data: bookingRecord, error: bookingError } = await supabase
+      .from('bookings')
+      .insert({
+        user_id:          userId,
+        dharamshala_id:   body.dharamshalaId,
+        room_type_id:     body.roomId,
+        rooms_count:      1,
+        check_in_date:    body.checkInDate,
+        check_out_date:   body.checkOutDate,
+        total_amount:     grandTotal,
+        status:           'initiated',
+        hold_expires_at:  new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        guest_name:       body.guestName,
+        guest_email:      body.guestEmail,
+        guest_phone:      body.guestPhone,
+        adults_count:     body.guests?.adults || numberOfGuests,
+        children_count:   body.guests?.children || 0,
+        special_requests: body.notes || null,
       })
-      .eq('room_type_id', body.roomId)
-      .gt('total_inventory', 0) // Extra safety: only update if inventory > 0
+      .select()
+      .single()
 
-    if (inventoryError) {
-      console.error('[bookings] inventory update failed:', inventoryError.message)
+    if (bookingError || !bookingRecord) {
+      console.error('[bookings] insert failed:', bookingError?.message)
       throw createError({
         statusCode: 500,
-        statusMessage: 'Failed to update room inventory',
+        statusMessage: 'Failed to create booking record'
       })
     }
 
+    // Step 7: Write to room_inventory_ledger for each booked date
+    const ledgerEntries = []
+    const current = new Date(checkIn)
+    while (current < checkOut) {
+      const dateStr = current.toISOString().split('T')[0]
+      ledgerEntries.push({
+        room_type_id:    body.roomId,
+        booking_date:    dateStr,
+        allocated_rooms: 1,
+        held_rooms:      0,
+      })
+      current.setDate(current.getDate() + 1)
+    }
+
+    const { error: ledgerError } = await supabase
+      .from('room_inventory_ledger')
+      .upsert(ledgerEntries, {
+        onConflict: 'room_type_id,booking_date',
+        ignoreDuplicates: false,
+      })
+
+    if (ledgerError) {
+      console.error('[bookings] ledger update failed:', ledgerError.message)
+      // Roll back booking
+      await supabase
+        .from('bookings')
+        .delete()
+        .eq('booking_id', bookingRecord.booking_id)
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Failed to update room availability'
+      })
+    }
+
+    // Step 8: Return values
     return {
       success: true,
-      booking: newBooking,
+      booking: {
+        id:            bookingRecord.booking_id,
+        bookingId:     bookingRecord.booking_id,
+        status:        bookingRecord.status,
+        totalPrice:    bookingRecord.total_amount,
+        checkInDate:   bookingRecord.check_in_date,
+        checkOutDate:  bookingRecord.check_out_date,
+        guestName:     bookingRecord.guest_name,
+        guestEmail:    bookingRecord.guest_email,
+        dharamshalaId: bookingRecord.dharamshala_id,
+        roomId:        bookingRecord.room_type_id,
+        createdAt:     bookingRecord.created_at,
+        pricing: {
+          roomPrice:     room.base_price,
+          nights,
+          subtotal,
+          tax,
+          serviceCharge,
+          discount,
+          grandTotal,
+        }
+      }
     }
   } catch (error: any) {
     if (error.statusCode) throw error
