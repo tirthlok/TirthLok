@@ -62,7 +62,8 @@ import {
   Plus,
   Minus,
   Mountain,
-  Flower2
+  Flower2,
+  IndianRupee
 } from 'lucide-vue-next'
 
 // Custom Mandir Icon
@@ -159,7 +160,8 @@ const Icons = {
   Minus,
   Mountain,
   Flower2,
-  Mandir
+  Mandir,
+  IndianRupee
 } as const
 
 interface Props {

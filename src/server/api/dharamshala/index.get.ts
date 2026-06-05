@@ -30,53 +30,38 @@ export default defineEventHandler(async (event) => {
 
       // Transform the data to match the Dharamshala model
       const transformedData = (data || []).map((row: any) => {
-        let images = row.dharamshala_images || []
-        if (typeof images === 'string') {
-          try {
-            images = JSON.parse(images)
-          } catch {
-            images = [images]
-          }
-        }
-
-        let amenities = row.dharamshala_amenities || []
-        if (typeof amenities === 'string') {
-          try {
-            amenities = JSON.parse(amenities)
-          } catch {
-            amenities = [amenities]
-          }
-        }
-
         return {
-          id: row.dharamshala_id || 'unknown',
-          dharamshalaUuid: row.dharamshala_id || '',
+          id: row.dharamshala_id,
+          dharamshalaUuid: row.dharamshala_id,
           name: row.dharamshala_name || '',
           description: row.dharamshala_description || '',
+          type: row.dharamshala_type || 'General',
+          rating: Number(row.dharamshala_rating) || 0,
+          reviews: 0,
+          priceRange: '',
+          amenities: Array.isArray(row.dharamshala_amenities)
+            ? row.dharamshala_amenities
+            : [],
           location: {
+            latitude: 0,
+            longitude: 0,
+            address: row.dharamshala_address || `${row.dharamshala_city}, ${row.dharamshala_state}`,
             city: row.dharamshala_city || '',
             state: row.dharamshala_state || '',
-            address: row.dharamshala_address || `${row.dharamshala_city}, ${row.dharamshala_state}`,
           },
-          images: Array.isArray(images) ? images : [images].filter(Boolean),
-          amenities: Array.isArray(amenities) ? amenities : [],
-          capacity: row.dharamshala_capacity || 0,
-          contactInfo: {
-            phone: row.dharamshala_phone || '',
-            email: row.dharamshala_email || '',
-            website: row.dharamshala_website || '',
+          contact: {
+            phone: '',
+            email: '',
+            website: '',
           },
-          bookingInfo: {
-            bookingRequired: row.dharamshala_booking_required || false,
-            bookingUrl: row.dharamshala_booking_url || '',
-            bookingPhone: row.dharamshala_booking_phone || '',
-          },
-          priceRange: row.dharamshala_price_range || '',
-          rating: row.dharamshala_rating || 0,
-          reviews: row.dharamshala_reviews || 0,
-          type: row.dharamshala_type || 'General',
-          dharamshala_grouping: row.dharamshala_grouping || undefined,
-          dharamshala_tags: row.dharamshala_tags ? (Array.isArray(row.dharamshala_tags) ? row.dharamshala_tags : [row.dharamshala_tags]) : undefined,
+          images: Array.isArray(row.dharamshala_images)
+            ? row.dharamshala_images
+            : [],
+          rules: [],
+          dharamshala_grouping: row.dharamshala_grouping || [],
+          dharamshala_tags: Array.isArray(row.dharamshala_tags)
+            ? row.dharamshala_tags
+            : [],
         }
       })
 

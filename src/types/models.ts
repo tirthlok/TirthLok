@@ -194,6 +194,15 @@ export interface Dharamshala {
   roomTypes?: RoomType[]
   dharamshala_grouping?: string | string[]
   dharamshala_tags?: string[]
+  checkInTime?: string
+  checkOutTime?: string
+  languagesSpoken?: string[]
+  nearbyAttractions?: string[]
+  diningInfo?: string
+  specialServices?: string[]
+  paymentMethods?: string[]
+  isFeatured?: boolean
+  establishedYear?: number | null
 }
 
 export interface Bhojanshala {

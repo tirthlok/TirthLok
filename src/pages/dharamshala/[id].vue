@@ -1,6 +1,6 @@
 <template>
-  <div id="top" class="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50 py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
+  <div id="top" class="min-h-screen bg-gray-50 py-4 sm:py-8">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
@@ -25,180 +25,374 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="dharamshala" class="space-y-8 sm:space-y-10">
-              <!-- Breadcrumb -->
-        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
+      <div v-else-if="dharamshala" class="space-y-6 sm:space-y-8">
+
+        <!-- Breadcrumb -->
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-500">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <span class="text-gray-900 font-medium truncate">{{ dharamshala.name }}</span>
         </div>
-        <!-- Header Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-          <!-- Image Gallery -->
-          <div class="space-y-4">
-            <div class="relative group overflow-hidden rounded-2xl shadow-2xl bg-gradient-to-br from-blue-100 to-cyan-100 h-96 lg:h-[500px]">
-              <img
-                :src="currentImage"
-                :alt="dharamshala.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              <!-- Image Counter -->
-              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-full text-white text-sm font-semibold">
-                {{ currentImageIndex + 1 }} / {{ dharamshala.images.length }}
-              </div>
 
-              <!-- Navigation Dots -->
-              <div v-if="dharamshala.images && dharamshala.images.length > 1" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-                <button
-                  v-for="(_, index) in dharamshala.images"
-                  :key="index"
-                  @click="currentImageIndex = index"
-                  :class="[
-                    'transition-all duration-300 backdrop-blur-sm',
-                    index === currentImageIndex 
-                      ? 'w-8 h-3 bg-white rounded-full' 
-                      : 'w-3 h-3 bg-white/50 hover:bg-white/75 rounded-full'
-                  ]"
-                />
-              </div>
-
-              <!-- Arrow Navigation -->
-              <button
-                v-if="dharamshala.images && dharamshala.images.length > 1"
-                @click="previousImage"
-                class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                v-if="dharamshala.images && dharamshala.images.length > 1"
-                @click="nextImage"
-                class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 shadow-lg hover:shadow-xl hover:scale-110"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
+        <!-- ═══ SECTION 1: Image Gallery Grid ═══ -->
+        <div class="relative rounded-2xl overflow-hidden h-64 sm:h-96 lg:h-[480px] grid grid-cols-4 grid-rows-2 gap-1.5 bg-gray-200 shadow-lg">
+          <!-- Main large image -->
+          <div class="col-span-2 row-span-2 relative group overflow-hidden">
+            <img
+              :src="dharamshala.images?.[0] || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop'"
+              :alt="dharamshala.name"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
-
-          <!-- Info Section -->
-          <div class="space-y-6 flex flex-col justify-center">
-            <!-- Header -->
-            <div>
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-2 h-8 bg-gradient-to-b from-blue-500 to-cyan-600 rounded-full" />
-                <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-600 bg-clip-text text-transparent">
-                  {{ dharamshala?.name || '' }}
-                </h1>
+          <!-- 4 smaller images -->
+          <template v-for="(img, idx) in (dharamshala.images || []).slice(1, 5)" :key="idx">
+            <div class="relative group overflow-hidden bg-gray-300">
+              <img
+                :src="img"
+                :alt="`${dharamshala.name} ${idx + 2}`"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div
+                v-if="idx === 3 && dharamshala.images && dharamshala.images.length > 5"
+                class="absolute inset-0 bg-black/55 flex items-center justify-center cursor-pointer hover:bg-black/65 transition-colors"
+                @click="currentImageIndex = 4"
+              >
+                <span class="text-white font-bold text-sm">+{{ dharamshala.images.length - 5 }} photos</span>
               </div>
-              <p class="text-lg text-gray-600 flex items-center gap-2 ml-5">
-                <Icon name="MapPin" :size="18" class="text-blue-600" />
-                {{ dharamshala?.location?.city || '' }}, {{ dharamshala?.location?.state || '' }}
+            </div>
+          </template>
+          <!-- Fallback tiles when fewer than 5 images -->
+          <template v-if="!dharamshala.images || dharamshala.images.length < 2">
+            <div v-for="n in 4" :key="n" class="bg-gradient-to-br from-blue-100 to-cyan-100" />
+          </template>
+          <!-- Featured badge -->
+          <div
+            v-if="dharamshala.isFeatured"
+            class="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 z-10"
+          >
+            <Icon name="Star" :size="12" class="fill-white" />
+            Featured Property
+          </div>
+        </div>
+
+        <!-- ═══ SECTION 2: Two-column layout ═══ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+
+          <!-- ── LEFT COLUMN ── -->
+          <div class="lg:col-span-2 space-y-8">
+
+            <!-- 2A: Property Header -->
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-start justify-between gap-4">
+                  <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                    {{ dharamshala.name }}
+                  </h1>
+                  <WishlistButton
+                    :item-id="dharamshala.id"
+                    entity-type="dharamshala"
+                    heart-color="text-red-500"
+                    class="flex-shrink-0 mt-1"
+                  />
+                </div>
+                <div class="flex items-center gap-2 mt-2 text-gray-500">
+                  <Icon name="MapPin" :size="16" class="text-blue-500 flex-shrink-0" />
+                  <span class="text-base">
+                    {{ dharamshala.location?.address || ((dharamshala.location?.city || '') + ', ' + (dharamshala.location?.state || '')) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Rating + tags row -->
+              <div class="flex flex-wrap items-center gap-2.5">
+                <div class="flex items-center gap-1.5 bg-green-600 text-white px-3 py-1.5 rounded-lg shadow-sm">
+                  <Icon name="Star" :size="13" class="fill-white" />
+                  <span class="font-bold text-sm">{{ dharamshala.rating?.toFixed(1) || '0.0' }}</span>
+                </div>
+                <span class="text-gray-500 text-sm">{{ dharamshala.reviews || 0 }} reviews</span>
+                <span class="text-gray-300 text-sm">•</span>
+                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-sm font-semibold">
+                  {{ dharamshala.type }}
+                </span>
+                <span
+                  v-for="tag in dharamshala.dharamshala_tags"
+                  :key="tag"
+                  class="px-3 py-1 bg-cyan-50 text-cyan-700 rounded-lg text-sm font-medium border border-cyan-200"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+
+              <p v-if="dharamshala.establishedYear" class="text-sm text-gray-400">
+                Established {{ dharamshala.establishedYear }}
               </p>
             </div>
 
-            <!-- Rating & Badges -->
-            <div class="flex flex-wrap items-center gap-3 pb-4 border-b-2 border-gradient-to-r from-blue-200 to-transparent">
-              <div class="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-4 py-2 rounded-xl border border-yellow-200 shadow-sm">
-                <Icon name="Star" :size="20" class="fill-yellow-400 text-yellow-400 animate-pulse" />
-                <span class="font-bold text-gray-900">{{ dharamshala?.rating ?? '-' }}</span>
-                <span class="text-xs text-gray-600">({{ dharamshala?.reviews ?? 0 }} reviews)</span>
-              </div>
-              <span class="px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 rounded-xl text-sm font-bold border border-blue-300 shadow-sm">
-                {{ dharamshala?.type || '' }}
-              </span>
-            </div>
-
-            <!-- Key Info Grid -->
-            <div class="grid grid-cols-3 gap-3">
-              <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200 hover:shadow-lg transition-all">
-                <Icon name="Users" :size="20" class="text-blue-600 mb-2" />
-                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Capacity</p>
-                <p class="text-lg font-bold text-blue-900">{{ dharamshala?.capacity ?? '-' }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 hover:shadow-lg transition-all">
-                <Icon name="IndianRupee" :size="20" class="text-green-600 mb-2" />
-                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Price</p>
-                <p class="text-lg font-bold text-green-900">{{ dharamshala?.priceRange || '-' }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200 hover:shadow-lg transition-all">
-                <Icon name="CheckCircle" :size="20" class="text-purple-600 mb-2" />
-                <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide">Available</p>
-                <p class="text-lg font-bold text-purple-900">24/7</p>
-              </div>
-            </div>
-
-            <!-- Contact Section -->
-            <div class="space-y-3 bg-gradient-to-r from-blue-50 to-cyan-50 p-5 rounded-xl border-l-4 border-blue-600">
-              <div class="flex items-center gap-3 font-semibold text-gray-900">
-                <Icon name="Phone" :size="20" class="text-blue-600" />
-                <span class="uppercase text-sm tracking-wide">Contact</span>
-              </div>
-              <div class="space-y-2 ml-8">
-                <div class="flex items-center gap-2 text-gray-700">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full" />
-                  <a :href="`tel:${dharamshala?.contact?.phone || ''}`" class="text-blue-600 hover:underline font-semibold">{{ dharamshala?.contact?.phone || '' }}</a>
+            <!-- 2B: Quick Highlights strip -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div
+                v-if="dharamshala.checkInTime"
+                class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100"
+              >
+                <div class="p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                  <Icon name="LogIn" :size="18" class="text-blue-700" />
                 </div>
-                <div v-if="dharamshala?.contact?.email" class="flex items-center gap-2 text-gray-700">
-                  <div class="w-2 h-2 bg-cyan-500 rounded-full" />
-                  <a :href="`mailto:${dharamshala?.contact?.email || ''}`" class="text-blue-600 hover:underline font-semibold truncate">{{ dharamshala?.contact?.email || '' }}</a>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium">Check-in</p>
+                  <p class="text-sm font-bold text-gray-900">{{ dharamshala.checkInTime }}</p>
                 </div>
               </div>
+              <div
+                v-if="dharamshala.checkOutTime"
+                class="flex items-center gap-3 p-4 bg-orange-50 rounded-xl border border-orange-100"
+              >
+                <div class="p-2 bg-orange-100 rounded-lg flex-shrink-0">
+                  <Icon name="LogOut" :size="18" class="text-orange-700" />
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium">Check-out</p>
+                  <p class="text-sm font-bold text-gray-900">{{ dharamshala.checkOutTime }}</p>
+                </div>
+              </div>
+              <div
+                v-if="dharamshala.languagesSpoken?.length"
+                class="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100"
+              >
+                <div class="p-2 bg-purple-100 rounded-lg flex-shrink-0">
+                  <Icon name="MessageCircle" :size="18" class="text-purple-700" />
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium">Languages</p>
+                  <p class="text-sm font-bold text-gray-900">{{ dharamshala.languagesSpoken.slice(0, 2).join(', ') }}</p>
+                </div>
+              </div>
+              <div
+                v-if="dharamshala.diningInfo"
+                class="flex items-center gap-3 p-4 bg-green-50 rounded-xl border border-green-100"
+              >
+                <div class="p-2 bg-green-100 rounded-lg flex-shrink-0">
+                  <Icon name="UtensilsCrossed" :size="18" class="text-green-700" />
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium">Dining</p>
+                  <p class="text-sm font-bold text-gray-900 line-clamp-1">Veg Only</p>
+                </div>
+              </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex gap-3 pt-2">
-              <button class="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 group">
-                <Icon name="Phone" :size="20" class="group-hover:animate-bounce" />
-                <span>Call Now</span>
-              </button>
-              <button class="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 group">
-                <Icon name="MapPin" :size="20" class="group-hover:animate-pulse" />
-                <span>Directions</span>
-              </button>
+            <!-- 2C: About -->
+            <div v-if="dharamshala.description" class="space-y-3">
+              <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <div class="w-1 h-6 bg-blue-500 rounded-full" />
+                About this Dharamshala
+              </h2>
+              <p class="text-gray-600 leading-relaxed text-base">{{ dharamshala.description }}</p>
+              <div
+                v-if="dharamshala.diningInfo"
+                class="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-200"
+              >
+                <Icon name="Leaf" :size="18" class="text-green-600 flex-shrink-0 mt-0.5" />
+                <p class="text-green-800 text-sm font-medium">{{ dharamshala.diningInfo }}</p>
+              </div>
+            </div>
+
+            <!-- 2D: Amenities -->
+            <div v-if="dharamshala.amenities?.length" class="space-y-4">
+              <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <div class="w-1 h-6 bg-blue-500 rounded-full" />
+                Amenities
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div
+                  v-for="amenity in dharamshala.amenities"
+                  :key="amenity"
+                  class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm"
+                >
+                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" :size="16" class="text-blue-600" />
+                  </div>
+                  <span class="text-sm font-medium text-gray-800">{{ amenity }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2E: Special Services -->
+            <div v-if="dharamshala.specialServices?.length" class="space-y-4">
+              <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <div class="w-1 h-6 bg-amber-500 rounded-full" />
+                Special Services
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div
+                  v-for="service in dharamshala.specialServices"
+                  :key="service"
+                  class="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200"
+                >
+                  <Icon name="Sparkles" :size="16" class="text-amber-600 flex-shrink-0" />
+                  <span class="text-sm font-medium text-amber-900">{{ service }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2F: Rules -->
+            <div v-if="dharamshala.rules?.length" class="space-y-4">
+              <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <div class="w-1 h-6 bg-red-400 rounded-full" />
+                Property Rules
+              </h2>
+              <div class="space-y-2">
+                <div
+                  v-for="(rule, index) in dharamshala.rules"
+                  :key="index"
+                  class="flex items-start gap-3 p-3 bg-red-50 rounded-xl border border-red-100"
+                >
+                  <div class="w-5 h-5 bg-red-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span class="text-xs font-bold text-red-700">{{ index + 1 }}</span>
+                  </div>
+                  <span class="text-sm text-gray-700">{{ rule }}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── RIGHT COLUMN (sticky) ── -->
+          <div class="lg:col-span-1">
+            <div class="sticky top-24 space-y-4">
+
+              <!-- Price + Contact Card -->
+              <div class="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+                <!-- Price header -->
+                <div class="bg-gradient-to-r from-blue-600 to-cyan-600 p-5">
+                  <p class="text-blue-100 text-sm font-medium">Starting from</p>
+                  <p class="text-2xl font-bold text-white mt-1 leading-tight">
+                    {{ dharamshala.priceRange || 'Contact for pricing' }}
+                  </p>
+                  <p class="text-blue-200 text-xs mt-1">per room per night</p>
+                </div>
+                <!-- Check-in/out times -->
+                <div class="grid grid-cols-2 divide-x divide-gray-100 border-b border-gray-100">
+                  <div class="p-4">
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Check-in</p>
+                    <p class="text-sm font-bold text-gray-900 mt-0.5">{{ dharamshala.checkInTime || '12:00 PM' }}</p>
+                  </div>
+                  <div class="p-4">
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Check-out</p>
+                    <p class="text-sm font-bold text-gray-900 mt-0.5">{{ dharamshala.checkOutTime || '10:00 AM' }}</p>
+                  </div>
+                </div>
+                <!-- Contact buttons -->
+                <div class="p-4 space-y-2.5 border-b border-gray-100">
+                  <a
+                    v-if="dharamshala.contact?.phone"
+                    :href="`tel:${dharamshala.contact.phone}`"
+                    class="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:shadow-md text-sm"
+                  >
+                    <Icon name="Phone" :size="16" />
+                    {{ dharamshala.contact.phone }}
+                  </a>
+                  <a
+                    v-if="dharamshala.contact?.email"
+                    :href="`mailto:${dharamshala.contact.email}`"
+                    class="w-full flex items-center justify-center gap-2 py-3 border-2 border-blue-600 text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition-all text-sm"
+                  >
+                    <Icon name="Mail" :size="16" />
+                    Email Us
+                  </a>
+                  <p
+                    v-if="!dharamshala.contact?.phone && !dharamshala.contact?.email"
+                    class="text-sm text-gray-400 italic text-center py-1"
+                  >
+                    Contact details not available
+                  </p>
+                </div>
+                <!-- Payment methods -->
+                <div v-if="dharamshala.paymentMethods?.length" class="p-4 border-b border-gray-100">
+                  <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-2">Accepted Payments</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span
+                      v-for="method in dharamshala.paymentMethods"
+                      :key="method"
+                      class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium"
+                    >
+                      {{ method }}
+                    </span>
+                  </div>
+                </div>
+                <!-- Nearby attractions -->
+                <div v-if="dharamshala.nearbyAttractions?.length" class="p-4 border-b border-gray-100">
+                  <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-2.5">Nearby</p>
+                  <div class="space-y-2">
+                    <div
+                      v-for="place in dharamshala.nearbyAttractions"
+                      :key="place"
+                      class="flex items-start gap-2 text-sm text-gray-600"
+                    >
+                      <Icon name="MapPin" :size="13" class="text-blue-500 flex-shrink-0 mt-0.5" />
+                      <span>{{ place }}</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Directions button -->
+                <div class="p-4">
+                  <a
+                    :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((dharamshala.location?.address || '') + ' ' + (dharamshala.location?.city || '') + ' ' + (dharamshala.location?.state || ''))}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all text-sm"
+                  >
+                    <Icon name="MapPin" :size="16" />
+                    Get Directions
+                  </a>
+                </div>
+              </div>
+
+              <!-- Trust badges -->
+              <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <div class="space-y-2.5">
+                  <div class="flex items-center gap-2.5 text-sm text-gray-600">
+                    <div class="w-7 h-7 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon name="Shield" :size="14" class="text-green-600" />
+                    </div>
+                    <span>Verified property</span>
+                  </div>
+                  <div class="flex items-center gap-2.5 text-sm text-gray-600">
+                    <div class="w-7 h-7 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon name="Heart" :size="14" class="text-red-500" />
+                    </div>
+                    <span>Pilgrimage friendly</span>
+                  </div>
+                  <div class="flex items-center gap-2.5 text-sm text-gray-600">
+                    <div class="w-7 h-7 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon name="Leaf" :size="14" class="text-green-600" />
+                    </div>
+                    <span>100% Vegetarian</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Amenities Section -->
-        <div v-if="dharamshala?.amenities && dharamshala.amenities.length > 0" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-            <Icon name="Sparkles" :size="28" class="text-blue-600" />
-            Amenities & Features
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="feature in dharamshala.amenities" :key="feature" class="flex items-center gap-3 p-4 bg-white rounded-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-md transition-all">
-              <div class="p-2 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg">
-                <Icon name="Check" :size="20" class="text-white" />
-              </div>
-              <span class="font-semibold text-gray-900">{{ feature }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ Available Rooms Section (Supabase-backed) ═══ -->
+        <!-- ═══ SECTION 3: Full-width Rooms ═══ -->
         <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 sm:p-8 rounded-2xl border-2 border-blue-200">
           <div class="flex items-center justify-between mb-2">
             <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
               <Icon name="Home" :size="28" class="text-blue-600" />
               Available Rooms
             </h2>
-            <!-- Live Indicator -->
             <div v-if="realtimeConnected" class="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
               <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span class="text-xs font-semibold text-green-700">Live</span>
             </div>
           </div>
-          <p class="text-gray-600 mb-6">Book your accommodation with real-time availability</p>
+          <p class="text-gray-500 mb-6 text-sm">Book your accommodation with real-time availability</p>
 
-          <!-- Rooms Loading Skeleton -->
+          <!-- Loading Skeleton -->
           <div v-if="dharamshalaStore.roomsLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="n in 3" :key="n" class="bg-white rounded-2xl border-2 border-blue-100 overflow-hidden animate-pulse">
               <div class="h-48 bg-gradient-to-br from-blue-100 to-cyan-100" />
@@ -217,7 +411,7 @@
             </div>
           </div>
 
-          <!-- Rooms Error State -->
+          <!-- Rooms Error -->
           <div v-else-if="dharamshalaStore.roomsError" class="text-center py-12 space-y-4">
             <Icon name="AlertTriangle" :size="48" class="text-red-400 mx-auto" />
             <p class="text-red-600 font-semibold">{{ dharamshalaStore.roomsError }}</p>
@@ -229,7 +423,7 @@
             </button>
           </div>
 
-          <!-- Rooms Empty State -->
+          <!-- Rooms Empty -->
           <div v-else-if="allRooms.length === 0" class="text-center py-12 space-y-4">
             <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
               <Icon name="Home" :size="36" class="text-blue-400" />
@@ -250,34 +444,6 @@
           </div>
         </div>
 
-        <!-- Location Map Section -->
-        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 rounded-2xl border-2 border-blue-200">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-            <Icon name="MapPin" :size="28" class="text-blue-600" />
-            Location Details
-          </h2>
-          <div class="bg-white p-6 rounded-xl border-2 border-blue-100">
-            <p class="text-gray-700 mb-4">{{ dharamshala?.location?.address || '' }}</p>
-            <div class="text-sm text-gray-600 space-y-2">
-              <p><strong>Latitude:</strong> {{ dharamshala?.location?.latitude ?? '-' }}</p>
-              <p><strong>Longitude:</strong> {{ dharamshala?.location?.longitude ?? '-' }}</p>
-            </div>
-            <button class="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition-all">
-              Open in Maps
-            </button>
-          </div>
-        </div>
-
-        <!-- Back to Top Button -->
-        <div class="flex justify-center pt-8 border-t">
-          <a
-            href="#top"
-            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-bold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
-          >
-            <Icon name="ArrowUp" :size="20" />
-            <span>Back to Top</span>
-          </a>
-        </div>
       </div>
     </div>
 
@@ -300,6 +466,7 @@ import { useDharamshalaStore } from '~/stores/dharamshala'
 import Icon from '~/components/ui/Icon.vue'
 import RoomCard from '~/features/dharamshala/components/RoomCard.vue'
 import RoomBookingModal from '~/features/dharamshala/components/RoomBookingModal.vue'
+import { WishlistButton } from '~/features/wishlist'
 
 definePageMeta({
   layout: 'default',
@@ -458,6 +625,7 @@ const loadData = async (idParam?: string) => {
 
     const found = dharamshalaStore.getDharamshalaById(id)
     if (found) {
+      // Set store data immediately so the page renders without waiting
       dharamshala.value = found
       currentImageIndex.value = 0
 
@@ -466,6 +634,35 @@ const loadData = async (idParam?: string) => {
 
       // Setup realtime subscription
       setupRealtime(id)
+
+      // Always fetch full detail so we get contact, priceRange, rules etc.
+      // from dharamshala_details. Using $fetch directly — composables that call
+      // useRuntimeConfig() cannot be used inside async functions in production.
+      try {
+        const detail = await $fetch<any>(`/api/dharamshala/${encodeURIComponent(id)}`)
+        if (detail?.contact) {
+          dharamshala.value = {
+            ...found,
+            contact: detail.contact,
+            priceRange: detail.priceRange || found.priceRange,
+            description: detail.description || found.description,
+            rules: detail.rules?.length ? detail.rules : (found.rules ?? []),
+            amenities: detail.amenities?.length ? detail.amenities : (found.amenities ?? []),
+            checkInTime: detail.checkInTime,
+            checkOutTime: detail.checkOutTime,
+            languagesSpoken: detail.languagesSpoken,
+            nearbyAttractions: detail.nearbyAttractions,
+            diningInfo: detail.diningInfo,
+            specialServices: detail.specialServices,
+            paymentMethods: detail.paymentMethods,
+            reviews: detail.reviews || found.reviews,
+            isFeatured: detail.isFeatured,
+            establishedYear: detail.establishedYear,
+          }
+        }
+      } catch (detailErr) {
+        console.warn('[dharamshala] detail fetch failed (contact may be missing):', detailErr)
+      }
     } else {
       error.value = `Dharamshala with ID "${id}" not found`
     }
