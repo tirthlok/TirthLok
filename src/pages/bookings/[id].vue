@@ -6,7 +6,7 @@
       <div class="flex items-center gap-3 mb-6">
         <NuxtLink to="/bookings"
           class="p-2 hover:bg-white rounded-xl transition border border-gray-200">
-          <Icon name="ArrowLeft" :size="18" class="text-gray-600" />
+          <Icon :name="('ArrowLeft' as any)" :size="18" class="text-gray-600" />
         </NuxtLink>
         <h1 class="text-xl font-bold text-gray-900">Booking Details</h1>
       </div>
@@ -22,7 +22,7 @@
       <!-- Error -->
       <div v-else-if="error"
            class="text-center py-16 bg-white rounded-2xl border border-gray-200">
-        <Icon name="AlertTriangle" :size="40" class="text-red-400 mx-auto mb-4" />
+        <Icon :name="('AlertTriangle' as any)" :size="40" class="text-red-400 mx-auto mb-4" />
         <p class="text-red-600 font-semibold">{{ error }}</p>
         <NuxtLink to="/bookings"
           class="mt-4 inline-block text-blue-600 font-semibold text-sm">
@@ -35,7 +35,7 @@
 
         <!-- Status Banner -->
         <div :class="statusBannerClass">
-          <Icon :name="statusIcon" :size="20" />
+          <Icon :name="(statusIcon as any)" :size="20" />
           <span class="font-bold">{{ statusLabel }}</span>
         </div>
 
@@ -148,6 +148,27 @@
           </div>
         </div>
 
+        <!-- Invoice Download -->
+        <a
+          v-if="booking?.status !== 'cancelled' && booking?.invoice_number"
+          :href="`/invoice/${booking.booking_id}`"
+          target="_blank"
+          class="flex items-center justify-center gap-2 w-full py-3 px-4
+                 bg-gradient-to-r from-blue-600 to-cyan-600 text-white
+                 rounded-2xl font-bold hover:shadow-lg hover:shadow-blue-200
+                 transition-all"
+        >
+          <Icon :name="('Download' as any)" :size="18" />
+          Download Invoice
+        </a>
+
+        <p
+          v-else-if="booking?.status !== 'cancelled' && !booking?.invoice_number"
+          class="text-center text-xs text-gray-400 py-2"
+        >
+          Invoice being generated...
+        </p>
+
         <!-- Cancel Button -->
         <button
           v-if="canCancel"
@@ -173,7 +194,7 @@ import Icon from '~/components/ui/Icon.vue'
 definePageMeta({ layout: 'default' })
 
 const route = useRoute()
-const router = useRouter()
+
 const { session } = useAuth()
 
 const booking = ref<any>(null)
@@ -209,7 +230,7 @@ const cancelBooking = async () => {
   cancelling.value = true
   try {
     await $fetch(`/api/bookings/${route.params.id}`, {
-      method: 'PATCH',
+      method: 'PATCH' as const,
       headers: authHeaders.value,
       body: { status: 'cancelled', reason: 'Cancelled by guest' }
     })

@@ -176,6 +176,34 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Create invoice record
+    const nights = Math.max(
+      Math.ceil(
+        (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+      ), 1
+    )
+
+    const { data: invoiceRecord } = await supabase
+      .from('invoices')
+      .insert({
+        booking_id:   bookingRecord.booking_id,
+        user_id:      userId,
+        amount:       subtotal,
+        tax_amount:   tax,
+        total_amount: grandTotal,
+      })
+      .select()
+      .single()
+
+    // Update booking with invoice number
+    if (invoiceRecord?.invoice_number) {
+      await supabase
+        .from('bookings')
+        .update({ invoice_number: invoiceRecord.invoice_number })
+        .eq('booking_id', bookingRecord.booking_id)
+      bookingRecord.invoice_number = invoiceRecord.invoice_number
+    }
+
     // Step 8: Fetch dharamshala and room names for email
     const { data: dharamshalaData } = await supabase
       .from('dharamshala_cards')
