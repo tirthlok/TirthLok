@@ -7,6 +7,7 @@
   ]">
     <!-- Header component -->
     <Header />
+    <AdminBanner />
 
     <!-- Main Content -->
     <main class="flex-1 mx-auto w-full">
@@ -18,24 +19,24 @@
       'text-light-gray',
       themeStore?.isDarkMode ? 'bg-gray-950' : 'bg-charcoal'
     ]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-safe">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-safe">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 mb-10">
           <div>
             <h3 :class="[
-              'font-bold text-lg mb-4',
+              'font-bold text-lg mb-3',
               themeStore?.isDarkMode ? 'text-gray-100' : 'text-white'
-            ]">About Jain Tirth Explorer</h3>
+            ]">About Tirthlok</h3>
             <p :class="[
               'text-sm leading-relaxed',
               themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-300'
-            ]">Discover and explore sacred Jain pilgrimage sites with comprehensive information, nearby facilities, and interactive maps.</p>
+            ]">Discover and explore sacred Jain Tirths with comprehensive information, nearby facilities, and interactive maps.</p>
           </div>
           <div>
             <h3 :class="[
-              'font-bold mb-4',
+              'font-bold mb-3',
               themeStore?.isDarkMode ? 'text-gray-100' : 'text-white'
             ]">Quick Links</h3>
-            <ul class="space-y-2 text-sm">
+            <ul class="space-y-2.5 text-sm">
               <li><NuxtLink to="/" :class="[
                 'transition-colors',
                 themeStore?.isDarkMode 
@@ -64,10 +65,10 @@
           </div>
           <div>
             <h3 :class="[
-              'font-bold mb-4',
+              'font-bold mb-3',
               themeStore?.isDarkMode ? 'text-gray-100' : 'text-white'
             ]">Help</h3>
-            <ul class="space-y-2 text-sm">
+            <ul class="space-y-2.5 text-sm">
               <li><a href="#faq" :class="[
                 'transition-colors',
                 themeStore?.isDarkMode 
@@ -90,18 +91,29 @@
           </div>
           <div>
             <h3 :class="[
-              'font-bold mb-4',
+              'font-bold mb-3',
               themeStore?.isDarkMode ? 'text-gray-100' : 'text-white'
             ]">Contact</h3>
             <p :class="[
-              'text-sm mb-2',
+              'text-sm mb-3',
               themeStore?.isDarkMode ? 'text-gray-400' : ''
-            ]">Email: info@jainthirthexplorer.com</p>
+            ]">
+              Email: 
+              <a 
+                href="mailto:tirthlok.contact@gmail.com" 
+                :class="[
+                  'hover:text-white transition-colors underline',
+                  themeStore?.isDarkMode ? 'text-gray-300' : 'text-gray-200'
+                ]"
+              >
+                tirthlok.contact@gmail.com
+              </a>
+            </p>
             <p :class="[
               'text-sm mb-4',
               themeStore?.isDarkMode ? 'text-gray-400' : ''
             ]">Phone: +91 XXXX-XXXX-XXXX</p>
-            <div class="flex gap-3">
+            <div class="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noopener" :class="[
                 'transition-colors',
                 themeStore?.isDarkMode 
@@ -130,13 +142,13 @@
           </div>
         </div>
         <div :class="[
-          'border-t pt-8',
+          'border-t pt-6',
           themeStore?.isDarkMode ? 'border-gray-700' : 'border-gray-800'
         ]">
           <p :class="[
             'text-center text-sm',
             themeStore?.isDarkMode ? 'text-gray-500' : 'text-gray-400'
-          ]">&copy; 2024 Jain Tirth Explorer. All rights reserved.</p>
+          ]">&copy; 2026 Tirthlok. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -145,8 +157,9 @@
 
 <script setup lang="ts">
 import { useThemeStore } from '~/stores/theme'
-import Header from '~/components/header/Header.vue'
-import Icon from '~/components/common/Icon.vue'
+import Header from '~/components/layout/header/Header.vue'
+import AdminBanner from '~/components/admin/AdminBanner.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 const themeStore = useThemeStore()
 </script>

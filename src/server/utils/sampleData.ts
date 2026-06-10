@@ -37,7 +37,7 @@ export const sampleTirths = [
     ],
     poojaTimings: '6:00 AM - 10:00 PM',
     darshanTimings: '6:00 AM - 8:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Mahavir Jayanti',
         date: 'Chaitra Shukla 13',
@@ -49,7 +49,7 @@ export const sampleTirths = [
         name: 'Diwali',
         date: 'Kartik Amavasya',
         month: 'October-November',
-        description: 'Festival of lights',
+        description: 'Event of lights',
         specialEvent: 'Oil lamps light up all temples',
       },
     ],
@@ -60,6 +60,11 @@ export const sampleTirths = [
       city: 'Palitana',
       state: 'Gujarat',
       zipCode: '364270',
+    },
+    contact: {
+      phone: '+91-2848-252100',
+      email: 'info@palitanatemples.org',
+      website: 'www.palitanatemples.org',
     },
     images: [
       'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=400&fit=crop',
@@ -117,6 +122,16 @@ export const sampleTirths = [
     rating: 4.8,
     reviews: 1250,
     travelDuration: '2-3 days',
+    rules: [
+      'Remove shoes before entering the temple premises',
+      'No leather items allowed on the hill',
+      'Strictly vegetarian food only',
+      'Photography is restricted in certain areas',
+      'Maintain silence in prayer halls',
+      'Dress modestly - shoulders and knees must be covered',
+    ],
+    tirth_grouping: 'popular',
+    tirth_tags: ['featured', 'architectural-wonder', 'most-visited'],
   },
   {
     id: 'ranakpur',
@@ -148,7 +163,7 @@ export const sampleTirths = [
     ],
     poojaTimings: '5:00 AM - 10:00 PM',
     darshanTimings: '5:00 AM - 9:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Kartik Purnima',
         date: 'Kartik Purnima',
@@ -164,6 +179,11 @@ export const sampleTirths = [
       state: 'Rajasthan',
       zipCode: '306703',
     },
+    contact: {
+      phone: '+91-2954-224156',
+      email: 'contact@ranakpurtemple.in',
+      website: 'www.ranakpurtemple.in',
+    },
     images: [
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=600&h=400&fit=crop',
@@ -176,12 +196,21 @@ export const sampleTirths = [
     rating: 4.7,
     reviews: 980,
     travelDuration: '1-2 days',
+    rules: [
+      'Entry is free but donations are welcome',
+      'No photography of idols',
+      'Remove footwear at temple entrance',
+      'Maintain cleanliness and respect sacred space',
+      'Non-Jains can visit but must follow temple etiquette',
+    ],
+    tirth_grouping: 'popular',
+    tirth_tags: ['architectural-wonder', 'featured'],
   },
   {
     id: 'manas-mandir',
     name: 'Manas Mandir',
     description: 'A revered Jain temple known for its serene atmosphere and active community rituals.',
-    historicalBackground: 'Manas Mandir has been maintained by local Jain communities for centuries and serves as an important center for daily worship and festivals.',
+    historicalBackground: 'Manas Mandir has been maintained by local Jain communities for centuries and serves as an important center for daily worship and events.',
     foundingYear: 1800,
     foundingDetails: 'Community-funded reconstruction and maintenance',
     pratisthaYear: 1820,
@@ -196,15 +225,15 @@ export const sampleTirths = [
         details: 'Main deity of the temple',
       },
     ],
-    specialFacts: ['Active community kitchen', 'Regular festivals and satsangs', 'Accessible location'],
+    specialFacts: ['Active community kitchen', 'Regular events and satsangs', 'Accessible location'],
     poojaTimings: '5:30 AM - 9:30 PM',
     darshanTimings: '5:00 AM - 9:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Paryushan',
         date: 'Bhadrapada (varies)',
         month: 'August-September',
-        description: 'An important Jain festival observed with great reverence',
+        description: 'An important Jain event observed with great reverence',
       },
     ],
     location: {
@@ -214,6 +243,10 @@ export const sampleTirths = [
       city: 'Gaya',
       state: 'Bihar',
       zipCode: '823001',
+    },
+    contact: {
+      phone: '+91-631-2201234',
+      email: 'info@manasmandir.org',
     },
     images: [
       'https://images.unsplash.com/photo-1504681869696-d977211a0f4d?w=600&h=400&fit=crop',
@@ -226,6 +259,14 @@ export const sampleTirths = [
     rating: 4.4,
     reviews: 210,
     travelDuration: '1 day',
+    rules: [
+      'Respect prayer times',
+      'Dress modestly when visiting',
+      'Mobile phones on silent mode',
+      'Follow temple guidelines for rituals',
+    ],
+    tirth_grouping: 'newly-added',
+    tirth_tags: ['hidden-gems'],
   },
   {
     id: 'shikharji',
@@ -249,7 +290,7 @@ export const sampleTirths = [
     specialFacts: ['Major Jain pilgrimage', 'Multiple temples across the hill', 'Annual large-scale yatras'],
     poojaTimings: '6:00 AM - 7:00 PM',
     darshanTimings: '6:00 AM - 6:00 PM',
-    festivals: [
+    events: [
       {
         name: 'Mahavir Jayanti',
         date: 'Chaitra Shukla 13',
@@ -265,6 +306,11 @@ export const sampleTirths = [
       state: 'Jharkhand',
       zipCode: '815301',
     },
+    contact: {
+      phone: '+91-6554-275123',
+      email: 'contact@shikharji.org',
+      website: 'www.shikharji.org',
+    },
     images: [
       'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
@@ -276,6 +322,16 @@ export const sampleTirths = [
     rating: 4.7,
     reviews: 1324,
     travelDuration: '2-3 days',
+    rules: [
+      'The trek to the hilltop is mandatory - ropeway not permitted',
+      'Start early morning for safe completion of pilgrimage',
+      'Carry sufficient water but no food allowed on hill',
+      'No leather items (belts, wallets, bags) allowed',
+      'Physical fitness required for the climb',
+      'Respect the sanctity of all temple locations',
+    ],
+    tirth_grouping: 'most-visited',
+    tirth_tags: ['featured', 'seasonal'],
   },
   {
     id: 'girnar',
@@ -299,7 +355,7 @@ export const sampleTirths = [
     specialFacts: ['Mountain pilgrimage', 'Scenic views', 'Historic inscriptions'],
     poojaTimings: '5:30 AM - 7:30 PM',
     darshanTimings: '5:00 AM - 8:00 PM',
-    festivals: [],
+    events: [],
     location: {
       latitude: 21.1039,
       longitude: 70.784,
@@ -307,6 +363,10 @@ export const sampleTirths = [
       city: 'Junagadh',
       state: 'Gujarat',
       zipCode: '362001',
+    },
+    contact: {
+      phone: '+91-2852-262900',
+      email: 'info@girnarhills.com',
     },
     images: [
       'https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?w=600&h=400&fit=crop',
@@ -319,6 +379,15 @@ export const sampleTirths = [
     rating: 4.6,
     reviews: 940,
     travelDuration: '1-2 days',
+    rules: [
+      'Climbing requires good physical fitness',
+      'Start the climb early in the morning',
+      'Carry water and light snacks',
+      'Respect all religious sites along the path',
+      'Follow designated trails only',
+    ],
+    tirth_grouping: 'popular',
+    tirth_tags: ['featured'],
   },
 ]
 

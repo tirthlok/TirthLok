@@ -14,16 +14,19 @@
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.10.0",
     "@pinia/nuxt": "^0.4.11",
+    "@supabase/supabase-js": "^2.87.1",
     "axios": "^1.6.0",
     "leaflet": "^1.9.4",
     "lucide-vue-next": "^0.292.0",
     "nuxt": "^3.8.0",
     "pinia": "^2.1.6",
+    "resend": "^6.12.4",
     "vue": "^3.3.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^1.0.0",
     "@types/node": "^24.10.1",
+    "baseline-browser-mapping": "^2.10.33",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.1.0",

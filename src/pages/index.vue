@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-background min-h-screen font-sans">
+  <div class="bg-background min-h-screen font-sans md:mx-auto md:px-4 lg:px-8 md:py-6 max-w-[1920px]">
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
-    <div class="flex flex-1 justify-center md:mx-auto md:px-4 lg:px-8 md:py-6">
+    <div class="flex flex-1 justify-center mx-auto">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
-      <div class="max-w-7xl mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
+      <div class="max-w-[1920px] mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
         <div 
           class="absolute inset-0 md:scale-110 transition-transform duration-700 group-hover:scale-105"
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- Tirth Cards Horizontal Scroll -->
+    <!-- Featured Tirths Horizontal Scroll -->
     <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
       <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
@@ -60,8 +60,8 @@
               class="flex-shrink-0 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
             >
               <!-- New badge with animation -->
-              <div class="absolute -top-3 -right-3 z-10">
-                <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ New</span>
+              <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
+                <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ tirth.tirth_tags[0] }}</span>
               </div>
               <BaseCard
                 :item="tirth"
@@ -71,13 +71,27 @@
                 variant="featured"
                 :image-height="'h-72'"
                 route-prefix="/tirth"
-                :tag-fields="[tirth.sect, tirth.type]"
+                :tag-fields="[tirth.sect]"
               />
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- <TirthCardsHorizontalScroll
+      class="mt-12"
+      :tirths="filteredTirths"
+      :loading="loading"
+      title="Featured Tirths"
+      subtitle="Discover our specially curated sacred destinations"
+      :show-badges="true"
+      :show-details="false"
+      :show-wishlist="true"
+      :require-tags="true"
+      variant="featured"
+      image-height="h-72"
+      view-all-link="/tirth"
+    /> -->
 
 
     <!-- Key Features Section - "Enhance your travel Experiences" style -->
@@ -241,9 +255,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTirthStore } from '~/stores/tirth'
-import type { Tirth } from '~/types/models'
-import { BaseCard } from '~/components/shared'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 // Import images from assets
 import heroImg from '~/assets/images/hero-jain-temple.png'
@@ -258,21 +270,27 @@ definePageMeta({
   layout: 'default',
 })
 
-const tithStore = useTirthStore()
+const tirthStore = useTirthStore()
 
 // Server-side fetch and hydrate tirth store
-const { data: serverTirths } = await useAsyncData<Tirth[]>('tirths', () => $fetch('/api/tirth'))
-if (serverTirths?.value) {
-  tithStore.$patch((state) => {
-    state.tirths = serverTirths.value as Tirth[]
-    state.filteredTirths = serverTirths.value as Tirth[]
+const { data: apiResponse } = await useAsyncData('tirths', () => $fetch('/api/tirth'))
+if (apiResponse?.value) {
+  const response = apiResponse.value as any
+  const tirthsData = response.data || []
+  tirthStore.$patch((state) => {
+    state.tirths = tirthsData
+    state.filteredTirths = tirthsData
+    if (response.pagination) {
+      state.pagination = response.pagination
+    }
   })
 }
 
-const loading = computed(() => tithStore.loading)
-const error = computed(() => tithStore.error)
-const filteredTirths = computed(() => tithStore.filteredTirths)
-
+const loading = computed(() => tirthStore.loading)
+const error = computed(() => tirthStore.error)
+const filteredTirths = computed(() => {
+    return tirthStore.filteredTirths.filter((tirth) => tirth.tirth_tags && tirth.tirth_tags.length > 0)
+})
 
 // Data is fetched and stores hydrated on the server via useAsyncData
 </script>

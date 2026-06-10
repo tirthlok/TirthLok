@@ -4,29 +4,29 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
   ],
-  
+
   css: ['~/assets/css/main.css'],
-  
+
   // Use `src/` as the application's source directory. This groups all app code under `src/`.
   srcDir: 'src/',
 
   ssr: true,
-  
+
   typescript: {
     strict: true,
   },
 
   tailwindcss: {
     exposeConfig: true,
-    injectPosition: 'first',
     viewer: true,
   },
 
   runtimeConfig: {
     public: {
       mapboxToken: process.env.NUXT_PUBLIC_MAPBOX_TOKEN || '',
-  // Use relative `/api` by default so client-side code talks to the same origin (avoids CORS during dev)
-  apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api/v1',
     },
   },
 
@@ -55,4 +55,6 @@ export default defineNuxtConfig({
   },
 
   devtools: { enabled: true },
+
+  vite: {}
 })

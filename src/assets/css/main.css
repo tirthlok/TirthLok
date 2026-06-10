@@ -1,9 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
-@import './theme.css';
+/**
+ * Main CSS Entry Point
+ * Imports all styles in the correct order
+ */
 
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base Styles (Theme, Variables) */
+@import './base/index.css';
+
+/* Page-Specific Styles */
+@import './pages/index.css';
+
+/* Tailwind CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =============================================================================
+   Global Styles
+   ============================================================================= */
 
 * {
   @apply transition-colors duration-200;
@@ -32,7 +48,10 @@ body {
   }
 }
 
-/* Scrollbar styling */
+/* =============================================================================
+   Scrollbar Styling
+   ============================================================================= */
+
 ::-webkit-scrollbar {
   @apply w-2 h-2;
 }
@@ -56,24 +75,27 @@ body {
 
 /* Hide scrollbar utility (cross-browser) */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
 }
 
-/* Portrait aspect utility (3:4) - height = width * 4/3 (e.g., 150x200) */
+/* =============================================================================
+   Utility Classes
+   ============================================================================= */
+
+/* Portrait aspect utility (3:4) */
 .portrait-aspect {
   position: relative;
   width: 100%;
-  /* padding-top = (height/width)*100% = (4/3)*100% = 133.333% */
   padding-top: 133.3333%;
 }
 
-.portrait-aspect > img,
-.portrait-aspect > .absolute-img {
+.portrait-aspect>img,
+.portrait-aspect>.absolute-img {
   position: absolute;
   top: 0;
   left: 0;
@@ -82,11 +104,12 @@ body {
   object-fit: cover;
 }
 
-/* Utility classes */
+/* Line Clamp Utilities */
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 
@@ -94,6 +117,7 @@ body {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -101,15 +125,20 @@ body {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
-/* Animation classes */
+/* =============================================================================
+   Animation Classes
+   ============================================================================= */
+
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -120,24 +149,31 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -147,6 +183,7 @@ body {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -171,51 +208,51 @@ body {
 .animate-shimmer {
   animation: shimmer 2s infinite;
   background-size: 1000px 100%;
-  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
-/* ----------------------------
-   Universal hide scrollbar
-   Keeps native scrolling but hides visual scrollbars across browsers
-   Place at end of file so it overrides earlier scrollbar styles
-   ---------------------------- */
+/* =============================================================================
+   Universal Hide Scrollbar
+   ============================================================================= */
+
 html,
 body,
 #app,
 #__nuxt {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Webkit browsers */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
 #app::-webkit-scrollbar,
 #__nuxt::-webkit-scrollbar,
 *::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
   width: 0;
   height: 0;
 }
 
-/* Utility to re-enable scrollbars when explicitly needed */
+/* Re-enable scrollbars when needed */
 .show-scrollbar {
   -ms-overflow-style: auto !important;
   scrollbar-width: auto !important;
 }
+
 .show-scrollbar::-webkit-scrollbar {
   display: block !important;
   width: 10px !important;
   height: 10px !important;
 }
 
-/* Force-hide scrollbar for filter modal specifically (extra safety) */
+/* Filter modal scrollbar override */
 .filter-modal {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+
 .filter-modal::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari and Opera */
+  display: none !important;
   width: 0 !important;
   height: 0 !important;
 }

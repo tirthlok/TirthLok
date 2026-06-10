@@ -1,0 +1,7 @@
+/**
+ * Page-Specific Styles - Index
+ * Imports all page-specific CSS files
+ */
+
+@import './profile.css';
+@import './auth.css';

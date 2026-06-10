@@ -1,6 +1,6 @@
 <template>
   <div id="top" class="min-h-screen bg-gradient-to-b from-green-50 via-white to-emerald-50 py-4 sm:py-8 md:py-12">
-    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-32">
@@ -27,7 +27,7 @@
       <!-- Content -->
       <div v-else-if="bhojanshala" class="space-y-8 sm:space-y-10">
               <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 text-sm text-gray-500">
+        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/bhojanshala" class="hover:text-gray-900 transition-colors">Bhojanshala</NuxtLink>
@@ -84,23 +84,6 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-            </div>
-
-            <!-- Thumbnails -->
-            <div v-if="bhojanshala.images && bhojanshala.images.length > 1" class="flex gap-2 overflow-x-auto pb-2 scroll-smooth">
-              <button
-                v-for="(image, index) in bhojanshala.images"
-                :key="index"
-                @click="currentImageIndex = index"
-                :class="[
-                  'flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:shadow-lg transform hover:scale-105',
-                  index === currentImageIndex 
-                    ? 'border-green-500 ring-2 ring-green-300 shadow-lg' 
-                    : 'border-gray-200 hover:border-green-400'
-                ]"
-              >
-                <img :src="image" :alt="`${bhojanshala.name} ${index + 1}`" class="w-full h-full object-cover" />
               </button>
             </div>
           </div>
@@ -248,7 +231,7 @@ import type { Bhojanshala } from '~/types/models'
 import { ref, computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
-import Icon from '~/components/common/Icon.vue'
+import Icon from '~/components/ui/Icon.vue'
 
 definePageMeta({
   layout: 'default',

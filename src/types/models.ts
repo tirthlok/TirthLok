@@ -38,29 +38,27 @@ export interface Tirth {
   id: string
   name: string
   description: string
-  historicalBackground: string
-  foundingYear: number
-  foundingDetails: string
-  pratisthaYear: number
-  acharya: string
   architecture: string
+  mythology?: string
+  foundingDetails?: string
+  direction?: string
+  mainTemples?: string[]
   moolnayak: Idol[]
-  specialFacts: string[]
   poojaTimings: string
   darshanTimings: string
-  festivals: Festival[]
+  events: EventItem[]
   location: Location
+  contact?: ContactInfo
   images: string[]
   sect: 'Shwetambar' | 'Digambar'
-  type: 'Gyan-sthan' | 'Siddhakshetra' | 'Atishay-Kshetra' | 'Other'
   facilities: Facility[]
-  rating: number
-  reviews: number
-  travelDuration?: string
   rules?: string[]
+  tirth_grouping?: string
+  tirth_tags?: string[]
+  specialFacts?: string[]
 }
 
-export interface Festival {
+export interface EventItem {
   name: string
   date: string
   month: string
@@ -85,6 +83,17 @@ export interface AdminUser extends User {
   permissions: string[]
 }
 
+export interface CustomerProfile {
+  customer_id: string
+  customer_email_id: string
+  customer_first_name?: string
+  customer_last_name?: string
+  customer_mobile?: number
+  customer_sect?: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Room {
   id: string
   roomNumber: string
@@ -100,6 +109,52 @@ export interface Room {
   bedType: string
 }
 
+/** Room category types matching tirthlok.room_category_type enum */
+export type RoomCategoryType = 'dormitory' | 'standard' | 'deluxe' | 'suite' | 'premium'
+
+/** Availability status derived from inventory */
+export type RoomAvailabilityStatus = 'available' | 'limited' | 'sold_out'
+
+/**
+ * RoomType — maps 1:1 to tirthlok.room_types table
+ * Used for Supabase-backed room data on Dharamshala detail pages
+ */
+export interface RoomType {
+  room_type_id: string
+  dharamshala_id: string
+  name: string
+  room_category: RoomCategoryType
+  description: string | null
+  bed_configuration: string
+  capacity: number
+  max_guests: number
+  base_price: number
+  total_inventory: number
+  amenities: string[]
+  room_type_images: string[]
+  is_available_ui: boolean
+  created_at: string
+  updated_at: string
+}
+
+/** Guest breakdown for booking */
+export interface GuestBreakdown {
+  adults: number
+  children: number
+  seniors: number
+}
+
+/** Pricing breakdown for a booking */
+export interface PricingBreakdown {
+  roomPrice: number
+  nights: number
+  subtotal: number
+  tax: number
+  serviceCharge: number
+  discount: number
+  grandTotal: number
+}
+
 export interface Booking {
   id: string
   roomId: string
@@ -110,7 +165,9 @@ export interface Booking {
   checkInDate: string
   checkOutDate: string
   numberOfGuests: number
+  guests?: GuestBreakdown
   totalPrice: number
+  pricing?: PricingBreakdown
   status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled'
   createdAt: string
   notes?: string
@@ -118,6 +175,8 @@ export interface Booking {
 
 export interface Dharamshala {
   id: string
+  /** UUID from tirthlok.dharamshala_details, used for room_types FK */
+  dharamshalaUuid?: string
   name: string
   description?: string
   type: string
@@ -132,6 +191,18 @@ export interface Dharamshala {
   operatingHours?: string
   rules?: string[]
   rooms?: Room[]
+  roomTypes?: RoomType[]
+  dharamshala_grouping?: string | string[]
+  dharamshala_tags?: string[]
+  checkInTime?: string
+  checkOutTime?: string
+  languagesSpoken?: string[]
+  nearbyAttractions?: string[]
+  diningInfo?: string
+  specialServices?: string[]
+  paymentMethods?: string[]
+  isFeatured?: boolean
+  establishedYear?: number | null
 }
 
 export interface Bhojanshala {

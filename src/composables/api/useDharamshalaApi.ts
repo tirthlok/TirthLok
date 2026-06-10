@@ -48,8 +48,10 @@ export const useDharamshalaApi = () => {
         baseURL: config.public.apiBaseUrl,
       }) as Promise<Dharamshala>
 
-      // on timeout return an empty object cast to Dharamshala to avoid hanging
-      return await fetchWithTimeout<Dharamshala>(promise, 500, {} as Dharamshala)
+      // 8s timeout — detail fetch runs after page already renders from store
+      // data, so a longer budget is fine and prevents Supabase queries being
+      // silently dropped on slow / cold connections
+      return await fetchWithTimeout<Dharamshala>(promise, 8000, {} as Dharamshala)
     } catch (error) {
       console.error(`Error fetching dharamshala ${id}:`, error)
       return {} as Dharamshala
