@@ -118,7 +118,7 @@ export default defineEventHandler(async (event) => {
         check_in_date:    body.checkInDate,
         check_out_date:   body.checkOutDate,
         total_amount:     grandTotal,
-        status:           'initiated',
+        status:           'confirmed',
         hold_expires_at:  new Date(Date.now() + 15 * 60 * 1000).toISOString(),
         guest_name:       body.guestName,
         guest_email:      body.guestEmail,

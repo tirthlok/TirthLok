@@ -289,22 +289,90 @@
                 </div>
 
                 <!-- Success Message -->
-                <div v-if="booking.bookingSuccess" class="bg-green-50 p-5 rounded-xl border-2 border-green-200 text-center space-y-3">
-                  <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <Icon name="CheckCircle" :size="32" class="text-green-600" />
+                <div v-if="booking.bookingSuccess" class="space-y-4 py-2">
+
+                  <!-- Success Header -->
+                  <div class="text-center space-y-3">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center
+                                justify-center mx-auto">
+                      <Icon name="CheckCircle" :size="40" class="text-green-600" />
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Booking Confirmed!</h3>
+                    <p class="text-sm text-gray-500">
+                      Your stay has been successfully reserved
+                    </p>
                   </div>
-                  <h3 class="text-lg font-bold text-green-800">Booking Confirmed!</h3>
-                  <p class="text-sm text-green-700">
-                    Booking ID: <span class="font-mono font-bold">{{ booking.bookingSuccess.id }}</span>
-                  </p>
-                  <p class="text-xs text-green-600">A confirmation has been sent to your email.</p>
-                  <button
-                    type="button"
-                    @click="closeDialog"
-                    class="px-6 py-2 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition"
-                  >
-                    Done
-                  </button>
+
+                  <!-- Booking Summary Card -->
+                  <div class="bg-gray-50 rounded-2xl p-4 space-y-3 border border-gray-200">
+                    <div class="flex justify-between items-center pb-3
+                                border-b border-gray-200">
+                      <span class="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+                        Booking ID
+                      </span>
+                      <span class="font-mono text-sm font-bold text-blue-700
+                                   bg-blue-50 px-3 py-1 rounded-lg">
+                        {{ booking.bookingSuccess.bookingId || booking.bookingSuccess.id }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-600">Room</span>
+                      <span class="font-semibold text-gray-900">{{ room?.name }}</span>
+                    </div>
+
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-600">Check-in</span>
+                      <span class="font-semibold text-gray-900">
+                        {{ booking.bookingSuccess.checkInDate }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-600">Check-out</span>
+                      <span class="font-semibold text-gray-900">
+                        {{ booking.bookingSuccess.checkOutDate }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3
+                                border-t border-gray-200">
+                      <span class="text-sm font-bold text-gray-900">Total Paid</span>
+                      <span class="text-lg font-bold text-green-700">
+                        ₹{{ booking.bookingSuccess.totalPrice }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Status Badge -->
+                  <div class="flex items-center justify-center gap-2
+                              bg-green-50 py-3 rounded-xl border border-green-200">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span class="text-sm font-semibold text-green-700">
+                      Booking Confirmed
+                    </span>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      @click="closeDialog"
+                      class="py-3 px-4 bg-gray-100 text-gray-700 rounded-xl
+                             font-bold text-sm hover:bg-gray-200 transition"
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      @click="goToBookings"
+                      class="py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600
+                             text-white rounded-xl font-bold text-sm
+                             hover:from-blue-700 hover:to-cyan-700 transition"
+                    >
+                      View My Bookings
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Action Buttons (hide after success) -->
@@ -375,8 +443,15 @@ watch(() => props.isOpen, (isOpen) => {
   }
 })
 
+const router = useRouter()
+
 const closeDialog = () => {
   emit('close')
+}
+
+const goToBookings = () => {
+  emit('close')
+  router.push('/bookings')
 }
 
 const handleSubmit = async () => {
