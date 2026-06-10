@@ -177,12 +177,6 @@ export default defineEventHandler(async (event) => {
     }
 
     // Create invoice record
-    const nights = Math.max(
-      Math.ceil(
-        (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
-      ), 1
-    )
-
     const { data: invoiceRecord } = await supabase
       .from('invoices')
       .insert({
