@@ -30,6 +30,18 @@ export default defineEventHandler(async (event) => {
         amount_paid,
         status,
         created_at
+      ),
+      dharamshala:dharamshala_id (
+        dharamshala_name,
+        dharamshala_city,
+        dharamshala_state,
+        dharamshala_images
+      ),
+      room:room_type_id (
+        name,
+        room_category,
+        base_price,
+        bed_configuration
       )
     `)
     .eq('booking_id', bookingId)

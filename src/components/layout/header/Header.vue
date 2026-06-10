@@ -200,6 +200,15 @@
                     <Icon name="User" :size="16" />
                     Profile
                   </NuxtLink>
+                  <NuxtLink to="/bookings" @click="profileOpen = false" :class="[
+                    'flex items-center gap-3 px-4 py-2.5 text-sm hover:text-primary transition-colors',
+                    themeStore?.isDarkMode 
+                      ? 'text-gray-300 hover:bg-gray-700' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  ]">
+                    <Icon name="CalendarCheck" :size="16" />
+                    My Bookings
+                  </NuxtLink>
                   <NuxtLink to="/settings" @click="profileOpen = false" :class="[
                     'flex items-center gap-3 px-4 py-2.5 text-sm hover:text-primary transition-colors',
                     themeStore?.isDarkMode 
@@ -311,6 +320,15 @@
               ]">
                 <Icon name="User" :size="18" />
                 <span>Profile</span>
+              </NuxtLink>
+              <NuxtLink to="/bookings" @click="mobileMenuOpen = false" :class="[
+                'flex items-center gap-3 px-4 py-3 rounded-xl',
+                themeStore?.isDarkMode 
+                  ? 'text-gray-300 hover:bg-gray-700' 
+                  : 'text-gray-700 hover:bg-gray-50'
+              ]">
+                <Icon name="CalendarCheck" :size="18" />
+                <span>My Bookings</span>
               </NuxtLink>
               <NuxtLink to="/settings" @click="mobileMenuOpen = false" :class="[
                 'flex items-center gap-3 px-4 py-3 rounded-xl',

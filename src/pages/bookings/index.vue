@@ -71,7 +71,7 @@
                 {{ booking.booking_id.slice(0, 8).toUpperCase() }}
               </p>
               <p class="font-bold text-gray-900 text-lg">
-                {{ booking.dharamshala_id }}
+                {{ booking.dharamshala?.dharamshala_name || booking.dharamshala_id }}
               </p>
             </div>
             <span :class="statusClass(booking.status)">

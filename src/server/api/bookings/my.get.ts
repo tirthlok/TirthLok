@@ -33,7 +33,19 @@ export default defineEventHandler(async (event) => {
       special_requests,
       invoice_number,
       created_at,
-      updated_at
+      updated_at,
+      dharamshala:dharamshala_id (
+        dharamshala_name,
+        dharamshala_city,
+        dharamshala_state,
+        dharamshala_images
+      ),
+      room:room_type_id (
+        name,
+        room_category,
+        base_price,
+        bed_configuration
+      )
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
