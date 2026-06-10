@@ -1,10 +1,8 @@
-import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
+import { getSupabaseTirthlok } from '~/server/utils/supabase'
+import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  const userId = await getUserIdFromEvent(event)
-  if (!userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  requireAdmin(event)
 
   const bookingId = getRouterParam(event, 'id')
   const body = await readBody(event)
@@ -29,8 +27,8 @@ export default defineEventHandler(async (event) => {
     updateData.cancellation_reason = reason || 'Cancelled by admin'
   }
 
-  const { data, error } = await supabase
-    .from('bookings')
+  const { data, error } = await (supabase
+    .from('bookings') as any)
     .update(updateData)
     .eq('booking_id', bookingId)
     .select()

@@ -1,14 +1,12 @@
-import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
+import { getSupabaseTirthlok } from '~/server/utils/supabase'
+import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  const userId = await getUserIdFromEvent(event)
-  if (!userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  const ctx = requireAdmin(event)
 
   const supabase = getSupabaseTirthlok()
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('room_types')
     .select(`
       room_type_id, dharamshala_id, name, room_category,
@@ -22,6 +20,12 @@ export default defineEventHandler(async (event) => {
     `)
     .order('dharamshala_id')
     .order('base_price')
+
+  if (ctx.isManager && ctx.dharamshalaId) {
+    query = query.eq('dharamshala_id', ctx.dharamshalaId)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch rooms' })

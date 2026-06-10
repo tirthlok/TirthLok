@@ -1,12 +1,15 @@
-import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
+import { getSupabaseTirthlok } from '~/server/utils/supabase'
+import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  const userId = await getUserIdFromEvent(event)
-  if (!userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
-
+  const ctx      = requireAdmin(event)
   const supabase = getSupabaseTirthlok()
+  const dId      = ctx.isManager ? ctx.dharamshalaId : null
+
+  const applyFilter = (q: any) => {
+    if (dId) q = q.eq('dharamshala_id', dId)
+    return q
+  }
 
   const [
     { count: totalBookings },
@@ -16,32 +19,22 @@ export default defineEventHandler(async (event) => {
     { data: recentBookings },
     { data: roomStats },
   ] = await Promise.all([
-    supabase.from('bookings').select('*', { count: 'exact', head: true }),
-    supabase.from('bookings').select('*', { count: 'exact', head: true })
-      .eq('status', 'confirmed'),
-    supabase.from('bookings').select('*', { count: 'exact', head: true })
-      .eq('status', 'initiated'),
-    supabase.from('bookings').select('*', { count: 'exact', head: true })
-      .eq('status', 'cancelled'),
-    supabase.from('bookings')
-      .select(`
-        booking_id, guest_name, status, total_amount,
-        check_in_date, check_out_date, created_at,
-        dharamshala:dharamshala_id (dharamshala_name)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(5),
-    supabase.from('room_types')
-      .select('name, total_inventory, is_available_ui, base_price'),
+    applyFilter(supabase.from('bookings').select('*', { count: 'exact', head: true })),
+    applyFilter(supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'confirmed')),
+    applyFilter(supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'initiated')),
+    applyFilter(supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'cancelled')),
+    applyFilter(supabase.from('bookings').select(`
+      booking_id, guest_name, status, total_amount,
+      check_in_date, check_out_date, created_at,
+      dharamshala:dharamshala_id (dharamshala_name)
+    `)).order('created_at', { ascending: false }).limit(5),
+    applyFilter(supabase.from('room_types')
+      .select('name, total_inventory, is_available_ui, base_price')),
   ])
-
-  const totalRevenue = recentBookings
-    ?.filter(b => b.status === 'confirmed')
-    .reduce((sum, b) => sum + Number(b.total_amount), 0) || 0
 
   return {
     stats: {
-      totalBookings:     totalBookings    || 0,
+      totalBookings:     totalBookings     || 0,
       confirmedBookings: confirmedBookings || 0,
       pendingBookings:   pendingBookings   || 0,
       cancelledBookings: cancelledBookings || 0,

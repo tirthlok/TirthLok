@@ -15,6 +15,14 @@ export const useAdminModeStore = defineStore('adminMode', () => {
     return 'Manager'
   })
 
+  const propertyLabel = computed(() => {
+    if (isSuperAdmin.value) return 'Super Admin — All Properties'
+    if (managerDharamshalaId.value) return `Managing: ${managerDharamshalaId.value}`
+    return 'Manager'
+  })
+
+  const isSuperAdminVal = computed(() => isSuperAdmin.value)
+
   const toggleAdminMode = () => {
     if (!canAccessAdmin.value) return
     isAdminMode.value = !isAdminMode.value
@@ -33,6 +41,8 @@ export const useAdminModeStore = defineStore('adminMode', () => {
     isAdminMode,
     canAccessAdmin,
     adminLabel,
+    propertyLabel,
+    isSuperAdmin: isSuperAdminVal,
     userRole,
     toggleAdminMode,
     enterAdminMode,

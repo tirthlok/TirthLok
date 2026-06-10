@@ -19,7 +19,7 @@
             </div>
             <div class="h-3 w-px bg-gray-600" />
             <span class="text-xs text-gray-400 font-medium">
-              {{ adminStore.adminLabel }}
+              {{ adminStore.propertyLabel }}
             </span>
           </div>
 
@@ -35,7 +35,7 @@
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                 : 'text-gray-400 hover:text-white hover:bg-white/10'"
             >
-              <Icon :name="item.icon" :size="14" />
+              <Icon :name="(item.icon as any)" :size="14" />
               {{ item.label }}
             </NuxtLink>
           </nav>
@@ -58,19 +58,26 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAdminModeStore } from '~/stores/adminMode'
 import { useRoute, useRouter } from 'vue-router'
 import Icon from '~/components/ui/Icon.vue'
 
 const adminStore = useAdminModeStore()
-const route = useRoute()
-const router = useRouter()
+const route      = useRoute()
+const router     = useRouter()
 
-const adminNav = [
-  { to: '/admin',          label: 'Overview',  icon: 'Home'     },
-  { to: '/admin/bookings', label: 'Bookings',  icon: 'Calendar' },
-  { to: '/admin/rooms',    label: 'Rooms',     icon: 'Building' },
-] as const
+const adminNav = computed(() => {
+  const base = [
+    { to: '/admin',          label: 'Overview', icon: 'LayoutDashboard' },
+    { to: '/admin/bookings', label: 'Bookings', icon: 'CalendarCheck'   },
+    { to: '/admin/rooms',    label: 'Rooms',    icon: 'BedDouble'       },
+  ]
+  if (adminStore.isSuperAdmin) {
+    base.push({ to: '/admin/managers', label: 'Managers', icon: 'Users' })
+  }
+  return base
+})
 
 const isActive = (path: string) => route.path === path
 

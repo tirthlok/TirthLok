@@ -1,10 +1,8 @@
-import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
+import { getSupabaseTirthlok } from '~/server/utils/supabase'
+import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  const userId = await getUserIdFromEvent(event)
-  if (!userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  const ctx = requireAdmin(event)
 
   const supabase = getSupabaseTirthlok()
   const query = getQuery(event)
@@ -39,6 +37,10 @@ export default defineEventHandler(async (event) => {
     dbQuery = dbQuery.or(
       `guest_name.ilike.%${search}%,guest_email.ilike.%${search}%`
     )
+  }
+
+  if (ctx.isManager && ctx.dharamshalaId) {
+    dbQuery = dbQuery.eq('dharamshala_id', ctx.dharamshalaId)
   }
 
   const { data, error, count } = await dbQuery
