@@ -7,6 +7,7 @@
   ]">
     <!-- Header component -->
     <Header />
+    <AdminBanner />
 
     <!-- Main Content -->
     <main class="flex-1 mx-auto w-full">
@@ -157,6 +158,7 @@
 <script setup lang="ts">
 import { useThemeStore } from '~/stores/theme'
 import Header from '~/components/layout/header/Header.vue'
+import AdminBanner from '~/components/admin/AdminBanner.vue'
 import Icon from '~/components/ui/Icon.vue'
 
 const themeStore = useThemeStore()

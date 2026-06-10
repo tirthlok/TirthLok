@@ -209,6 +209,31 @@
                     <Icon name="CalendarCheck" :size="16" />
                     My Bookings
                   </NuxtLink>
+                  <button
+                    v-if="adminStore.canAccessAdmin"
+                    @click="toggleAdmin"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm
+                           font-medium transition-colors rounded-lg"
+                    :class="adminStore.isAdminMode
+                      ? 'text-amber-600 bg-amber-50 hover:bg-amber-100'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'"
+                  >
+                    <Icon
+                      name="ShieldCheck"
+                      :size="18"
+                      :class="adminStore.isAdminMode ? 'text-amber-500' : 'text-gray-400'"
+                    />
+                    <span>
+                      {{ adminStore.isAdminMode ? 'Exit Admin View' : 'Switch to Admin View' }}
+                    </span>
+                    <span
+                      v-if="!adminStore.isAdminMode"
+                      class="ml-auto text-xs bg-amber-100 text-amber-700 
+                             px-2 py-0.5 rounded-full font-bold"
+                    >
+                      Admin
+                    </span>
+                  </button>
                   <NuxtLink to="/settings" @click="profileOpen = false" :class="[
                     'flex items-center gap-3 px-4 py-2.5 text-sm hover:text-primary transition-colors',
                     themeStore?.isDarkMode 
@@ -330,6 +355,31 @@
                 <Icon name="CalendarCheck" :size="18" />
                 <span>My Bookings</span>
               </NuxtLink>
+              <button
+                v-if="adminStore.canAccessAdmin"
+                @click="toggleAdmin"
+                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm
+                       font-medium transition-colors rounded-lg"
+                :class="adminStore.isAdminMode
+                  ? 'text-amber-600 bg-amber-50 hover:bg-amber-100'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'"
+              >
+                <Icon
+                  name="ShieldCheck"
+                  :size="18"
+                  :class="adminStore.isAdminMode ? 'text-amber-500' : 'text-gray-400'"
+                />
+                <span>
+                  {{ adminStore.isAdminMode ? 'Exit Admin View' : 'Switch to Admin View' }}
+                </span>
+                <span
+                  v-if="!adminStore.isAdminMode"
+                  class="ml-auto text-xs bg-amber-100 text-amber-700 
+                         px-2 py-0.5 rounded-full font-bold"
+                >
+                  Admin
+                </span>
+              </button>
               <NuxtLink to="/settings" @click="mobileMenuOpen = false" :class="[
                 'flex items-center gap-3 px-4 py-3 rounded-xl',
                 themeStore?.isDarkMode 
@@ -385,7 +435,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Icon from '~/components/ui/Icon.vue'
 import SearchSuggestions from '~/components/layout/header/SearchSuggestions.vue'
 import TirthFilterPanel from '~/components/ui/filters/TirthFilterPanel.vue'
@@ -395,6 +445,7 @@ import { useDharamshalaStore } from '~/stores/dharamshala'
 import { useBhojanshalaStore } from '~/stores/bhojanshala'
 import { useThemeStore } from '~/stores/theme'
 import { useAuth } from '~/features/auth/composables/useAuth'
+import { useAdminModeStore } from '~/stores/adminMode'
 import tirthlokLogo from '~/assets/images/logo-tirthlok.png'
 
 const tirthStore = useTirthStore()
@@ -402,6 +453,8 @@ const dStore = useDharamshalaStore()
 const bStore = useBhojanshalaStore()
 const themeStore = useThemeStore()
 const route = useRoute()
+const router = useRouter()
+const adminStore = useAdminModeStore()
 const searchWrapper = ref<HTMLElement | null>(null)
 const profileDropdownRef = ref<HTMLElement | null>(null)
 
@@ -572,6 +625,17 @@ const signOut = async () => {
   await authSignOut()
   customerProfile.value = null
   navigateTo('/')
+}
+
+const toggleAdmin = () => {
+  adminStore.toggleAdminMode()
+  if (adminStore.isAdminMode) {
+    router.push('/admin')
+  } else {
+    router.push('/')
+  }
+  profileOpen.value = false
+  mobileMenuOpen.value = false
 }
 
 // Close profile dropdown when clicking outside

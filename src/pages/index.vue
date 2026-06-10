@@ -292,16 +292,5 @@ const filteredTirths = computed(() => {
     return tirthStore.filteredTirths.filter((tirth) => tirth.tirth_tags && tirth.tirth_tags.length > 0)
 })
 
-import { onMounted } from 'vue'
-
-onMounted(async () => {
-  const { supabase } = useSupabase()
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
-  if (token) {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    console.log('[JWT Role]:', payload.user_role)
-  }
-})
 // Data is fetched and stores hydrated on the server via useAsyncData
 </script>
