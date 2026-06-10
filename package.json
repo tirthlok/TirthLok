@@ -20,6 +20,7 @@
     "lucide-vue-next": "^0.292.0",
     "nuxt": "^3.8.0",
     "pinia": "^2.1.6",
+    "resend": "^6.12.4",
     "vue": "^3.3.0"
   },
   "devDependencies": {

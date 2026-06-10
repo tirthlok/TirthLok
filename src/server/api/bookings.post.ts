@@ -5,6 +5,10 @@
  */
 import type { Booking } from '~/types/models'
 import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
+import {
+  sendBookingConfirmation,
+  sendAdminNotification,
+} from '~/server/utils/email'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -172,7 +176,32 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Step 8: Return values
+    // Step 8: Fetch dharamshala and room names for email
+    const { data: dharamshalaData } = await supabase
+      .from('dharamshala_cards')
+      .select('dharamshala_name, dharamshala_city, dharamshala_state')
+      .eq('dharamshala_id', body.dharamshalaId)
+      .single()
+
+    const { data: roomData } = await supabase
+      .from('room_types')
+      .select('name')
+      .eq('room_type_id', body.roomId)
+      .single()
+
+    const emailPayload = {
+      ...bookingRecord,
+      dharamshala: dharamshalaData || undefined,
+      room: roomData || undefined,
+    }
+
+    // Fire both emails — errors are caught internally
+    await Promise.allSettled([
+      sendBookingConfirmation(emailPayload),
+      sendAdminNotification(emailPayload),
+    ])
+
+    // Step 9: Return values
     return {
       success: true,
       booking: {

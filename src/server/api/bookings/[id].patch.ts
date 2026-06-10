@@ -4,6 +4,7 @@
  * Managers and super admins can update any status via service role
  */
 import { getSupabaseTirthlok, getUserIdFromEvent } from '../../utils/supabase'
+import { sendCancellationEmail } from '~/server/utils/email'
 
 export default defineEventHandler(async (event) => {
   const userId = await getUserIdFromEvent(event)
@@ -66,6 +67,20 @@ export default defineEventHandler(async (event) => {
   if (error) {
     console.error('[bookings] status update failed:', error.message)
     throw createError({ statusCode: 500, statusMessage: 'Failed to update booking' })
+  }
+
+  if (status === 'cancelled') {
+    const { data: dharamshalaData } = await supabase
+      .from('dharamshala_cards')
+      .select('dharamshala_name')
+      .eq('dharamshala_id', data.dharamshala_id)
+      .single()
+
+    await sendCancellationEmail({
+      ...data,
+      dharamshala: dharamshalaData || undefined,
+      cancellation_reason: reason,
+    })
   }
 
   return data
