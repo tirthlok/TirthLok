@@ -71,7 +71,7 @@
                 variant="featured"
                 :image-height="'h-72'"
                 route-prefix="/tirth"
-                :tag-fields="[tirth.sect, tirth.type]"
+                :tag-fields="[tirth.sect]"
               />
             </div>
           </div>

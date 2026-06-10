@@ -77,7 +77,7 @@
       <div v-if="!isAuthenticated"
            class="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
         <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Icon name="Lock" :size="36" class="text-blue-400" />
+          <Icon name="Shield" :size="36" class="text-blue-400" />
         </div>
         <h2 class="text-xl font-bold text-gray-900 mb-2">Sign in to view bookings</h2>
         <p class="text-gray-500 mb-6 text-sm">Your bookings are linked to your account</p>
@@ -111,7 +111,7 @@
       <div v-else-if="filteredBookings.length === 0 && bookings.length === 0"
            class="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
         <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Icon name="CalendarX" :size="40" class="text-blue-400" />
+          <Icon name="Calendar" :size="40" class="text-blue-400" />
         </div>
         <h2 class="text-xl font-bold text-gray-900 mb-2">No bookings yet</h2>
         <p class="text-gray-500 mb-8 text-sm max-w-xs mx-auto">
@@ -195,7 +195,7 @@
               </div>
               <div class="bg-purple-50 rounded-2xl p-3 border border-purple-100">
                 <p class="text-xs text-purple-500 font-semibold mb-1 flex items-center gap-1">
-                  <Icon name="Users" :size="11" />
+                  <Icon name="User" :size="11" />
                   Guests
                 </p>
                 <p class="text-sm font-bold text-purple-900">
@@ -394,19 +394,6 @@ const statusLabel = (status: string) => {
   return map[status] || status
 }
 
-const statusClass = (status: string) => {
-  const base = 'px-3 py-1 rounded-full text-xs font-bold'
-  const map: Record<string, string> = {
-    confirmed:        `${base} bg-green-100 text-green-700`,
-    initiated:        `${base} bg-yellow-100 text-yellow-700`,
-    awaiting_payment: `${base} bg-orange-100 text-orange-700`,
-    cancelled:        `${base} bg-red-100 text-red-700`,
-    checked_in:       `${base} bg-blue-100 text-blue-700`,
-    checked_out:      `${base} bg-gray-100 text-gray-700`,
-    refunded:         `${base} bg-purple-100 text-purple-700`,
-  }
-  return map[status] || `${base} bg-gray-100 text-gray-600`
-}
 
 onMounted(fetchBookings)
 </script>

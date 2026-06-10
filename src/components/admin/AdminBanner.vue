@@ -67,10 +67,10 @@ const route = useRoute()
 const router = useRouter()
 
 const adminNav = [
-  { to: '/admin',          label: 'Overview',  icon: 'LayoutDashboard' },
-  { to: '/admin/bookings', label: 'Bookings',  icon: 'CalendarCheck'   },
-  { to: '/admin/rooms',    label: 'Rooms',     icon: 'BedDouble'       },
-]
+  { to: '/admin',          label: 'Overview',  icon: 'Home'     },
+  { to: '/admin/bookings', label: 'Bookings',  icon: 'Calendar' },
+  { to: '/admin/rooms',    label: 'Rooms',     icon: 'Building' },
+] as const
 
 const isActive = (path: string) => route.path === path
 

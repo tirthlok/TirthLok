@@ -1,10 +1,8 @@
 import { computed } from 'vue'
-import { useSupabase } from '~/features/auth/composables/useSupabase'
 import { useAuth } from '~/features/auth/composables/useAuth'
 
 export const useRole = () => {
-  const { supabase } = useSupabase()
-  const { session, isAuthenticated } = useAuth()
+  const { session } = useAuth()
 
   const jwtPayload = computed(() => {
     try {

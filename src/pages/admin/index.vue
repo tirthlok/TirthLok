@@ -26,7 +26,7 @@
         >
           <div class="flex items-center justify-between mb-3">
             <div :class="['p-2 rounded-xl', stat.iconBg]">
-              <Icon :name="stat.icon" :size="18" :class="stat.iconColor" />
+              <Icon :name="(stat.icon as any)" :size="18" :class="stat.iconColor" />
             </div>
             <span :class="['text-xs font-bold px-2 py-1 rounded-full',
                            stat.badgeBg, stat.badgeText]">
@@ -138,7 +138,32 @@ definePageMeta({ layout: 'default' })
 const adminStore = useAdminModeStore()
 const { session } = useAuth()
 
-const { data } = await useFetch('/api/admin/stats', {
+type AdminStatsResponse = {
+  stats: {
+    totalBookings: number
+    confirmedBookings: number
+    pendingBookings: number
+    cancelledBookings: number
+  }
+  recentBookings: Array<{
+    booking_id: string
+    guest_name: string
+    status: string
+    total_amount: number
+    check_in_date: string
+    check_out_date: string
+    created_at: string
+    dharamshala?: { dharamshala_name: string }
+  }>
+  roomStats: Array<{
+    name: string
+    total_inventory: number
+    is_available_ui: boolean
+    base_price: number
+  }>
+}
+
+const { data } = await useFetch<AdminStatsResponse>('/api/admin/stats', {
   headers: computed(() => ({
     Authorization: `Bearer ${session.value?.access_token || ''}`
   }))
@@ -148,7 +173,7 @@ const stats = computed(() => [
   {
     label: 'Total Bookings',
     value: data.value?.stats?.totalBookings || 0,
-    icon: 'CalendarCheck', iconBg: 'bg-blue-500/10',
+    icon: 'Calendar', iconBg: 'bg-blue-500/10',
     iconColor: 'text-blue-400',
     badge: 'All', badgeBg: 'bg-blue-500/10', badgeText: 'text-blue-400'
   },
@@ -169,7 +194,7 @@ const stats = computed(() => [
   {
     label: 'Cancelled',
     value: data.value?.stats?.cancelledBookings || 0,
-    icon: 'XCircle', iconBg: 'bg-red-500/10',
+    icon: 'AlertCircle', iconBg: 'bg-red-500/10',
     iconColor: 'text-red-400',
     badge: 'Closed', badgeBg: 'bg-red-500/10', badgeText: 'text-red-400'
   },
