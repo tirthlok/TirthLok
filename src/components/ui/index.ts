@@ -36,15 +36,11 @@ export type { SearchResult } from './filters/SearchBox.vue'
 // =============================================================================
 // Button Components
 // =============================================================================
-export { default as ActionButton } from './buttons/ActionButton.vue'
-export { default as TagButton } from './buttons/TagButton.vue'
-export type { ButtonVariant as ActionButtonVariant, ButtonSize as ActionButtonSize } from './buttons/ActionButton.vue'
+// (ActionButton and TagButton removed — orphaned, no consumers)
 
 // =============================================================================
 // Common UI Components (from merged common folder)
 // =============================================================================
 export { default as Icon } from './Icon.vue'
 export { default as BottomNav } from './BottomNav.vue'
-export { default as FacilityGrid } from './FacilityGrid.vue'
-export { default as InfoSection } from './InfoSection.vue'
 export { default as TirthCardSkeleton } from './TirthCardSkeleton.vue'

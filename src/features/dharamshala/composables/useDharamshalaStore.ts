@@ -3,7 +3,7 @@ import type { Dharamshala, RoomType } from '~/types/models'
 
 interface DharamshalaState {
   dharamshalas: Dharamshala[]
-  selectedDharmadhala: Dharamshala | null
+  selectedDharamshala: Dharamshala | null
   filteredDharamshalas: Dharamshala[]
   loading: boolean
   error: string | null
@@ -31,7 +31,7 @@ interface DharamshalaState {
 export const useDharamshalaStore = defineStore('dharamshala', {
   state: (): DharamshalaState => ({
     dharamshalas: [],
-    selectedDharmadhala: null,
+    selectedDharamshala: null,
     filteredDharamshalas: [],
     loading: false,
     error: null,
@@ -79,7 +79,7 @@ export const useDharamshalaStore = defineStore('dharamshala', {
       this.loading = true
       this.error = null
       try {
-        const { useDharamshalaApi } = await import('~/composables/api')
+        const { useDharamshalaApi } = await import('~/features/dharamshala/services/dharamshalaApi')
         const { fetchDharamshalas } = useDharamshalaApi()
         const response = await fetchDharamshalas()
         this.dharamshalas = response
@@ -95,16 +95,16 @@ export const useDharamshalaStore = defineStore('dharamshala', {
     async fetchDharamshalaById(id: string) {
       const local = this.dharamshalas.find((d) => d.id === id)
       if (local) {
-        this.selectedDharmadhala = local
+        this.selectedDharamshala = local
         return local
       }
 
       this.loading = true
       try {
-        const { useDharamshalaApi } = await import('~/composables/api')
+        const { useDharamshalaApi } = await import('~/features/dharamshala/services/dharamshalaApi')
         const { fetchDharamshalaById } = useDharamshalaApi()
         const response = await fetchDharamshalaById(id)
-        this.selectedDharmadhala = response
+        this.selectedDharamshala = response
         return response
       } catch (error) {
         this.error = `Failed to fetch dharamshala: ${id}`
@@ -164,8 +164,8 @@ export const useDharamshalaStore = defineStore('dharamshala', {
       this.filteredDharamshalas = results
     },
 
-    setSelectedDharmadhala(dharamshala: Dharamshala | null) {
-      this.selectedDharmadhala = dharamshala
+    setSelectedDharamshala(dharamshala: Dharamshala | null) {
+      this.selectedDharamshala = dharamshala
     },
 
     async fetchFilterOptions() {

@@ -205,7 +205,7 @@
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
 import { ref, computed } from 'vue'
-import { useTirthStore } from '~/stores/tirth'
+import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 import { BaseCard } from '~/components/ui'
 import TirthAbout from '~/features/tirth/components/TirthAbout.vue'
 import TirthFacilities from '~/features/tirth/components/TirthFacilities.vue'

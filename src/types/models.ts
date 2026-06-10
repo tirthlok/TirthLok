@@ -66,23 +66,6 @@ export interface EventItem {
   specialEvent?: string
 }
 
-export interface User {
-  id: string
-  email: string
-  name: string
-  favorites: string[] // Tirth IDs
-  profile?: {
-    bio?: string
-    avatar?: string
-    sect?: 'Shwetambar' | 'Digambar'
-  }
-}
-
-export interface AdminUser extends User {
-  role: 'admin' | 'editor'
-  permissions: string[]
-}
-
 export interface CustomerProfile {
   customer_id: string
   customer_email_id: string

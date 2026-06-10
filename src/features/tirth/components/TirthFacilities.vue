@@ -155,8 +155,8 @@
 import { computed } from 'vue'
 import type { Facility, Tirth } from '~/types/models'
 import { useFilter } from '~/composables/ui'
-import { useBhojanshalaStore } from '~/stores/bhojanshala'
-import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useBhojanshalaStore } from '~/features/bhojanshala/composables/useBhojanshalaStore'
+import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 
 const props = defineProps<{
   tirth: Tirth

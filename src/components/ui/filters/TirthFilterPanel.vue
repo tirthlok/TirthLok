@@ -217,7 +217,7 @@
 import { ref, computed } from 'vue'
 import Icon from '~/components/ui/Icon.vue'
 import { useThemeStore } from '~/stores/theme'
-import { useTirthStore } from '~/stores/tirth'
+import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 
 interface Props {
   isOpen: boolean

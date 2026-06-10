@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
-import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'

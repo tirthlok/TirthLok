@@ -1,4 +1,4 @@
-import { useTirthStore } from '~/stores/tirth'
+import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Get store instance

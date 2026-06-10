@@ -221,7 +221,7 @@
 import { ref, computed } from 'vue'
 import Icon from '~/components/ui/Icon.vue'
 import { useThemeStore } from '~/stores/theme'
-import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 
 interface Props {
   isOpen: boolean

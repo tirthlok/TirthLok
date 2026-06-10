@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
         .single()
 
       if (!detailData) {
-        return fallbackToSampleData(id, guests)
+        throw createError({ statusCode: 404, statusMessage: 'Dharamshala not found' })
       }
       dharamshalaId = detailData.dharamshala_id
     }
@@ -79,18 +79,14 @@ export default defineEventHandler(async (event) => {
 
     if (error) {
       console.error('[availability] fetch failed:', error.message)
-      return fallbackToSampleData(id, guests)
+      throw createError({ statusCode: 500, statusMessage: 'Failed to check room availability' })
     }
 
-    if (data && data.length > 0) {
-      return {
-        success: true,
-        data,
-        source: 'supabase',
-      }
+    return {
+      success: true,
+      data: data || [],
+      source: 'supabase',
     }
-
-    return fallbackToSampleData(id, guests)
   } catch (error: any) {
     if (error.statusCode) throw error
     console.error('[availability] fetch failed:', error.message)
@@ -101,34 +97,3 @@ export default defineEventHandler(async (event) => {
   }
 })
 
-/** Fallback to sample data for development */
-async function fallbackToSampleData(id: string, guests: number) {
-  const { sampleDharamshalas } = await import('~/server/utils/sampleData')
-  const dh = sampleDharamshalas.find((d: any) => d.id === id)
-
-  if (!dh) {
-    return { success: true, data: [], source: 'empty' }
-  }
-
-  const availableRooms = (dh.rooms || [])
-    .filter((room: any) => room.available && room.maxGuests >= guests)
-    .map((room: any) => ({
-      room_type_id: room.id,
-      dharamshala_id: id,
-      name: `Room ${room.roomNumber}`,
-      room_category: room.type || 'standard',
-      description: room.description || null,
-      bed_configuration: room.bedType || 'Single Bed',
-      capacity: room.capacity || 1,
-      max_guests: room.maxGuests || room.capacity || 1,
-      base_price: room.price || 0,
-      total_inventory: room.available ? 3 : 0,
-      amenities: room.amenities || [],
-      room_type_images: room.image ? [room.image] : [],
-      is_available_ui: room.available !== false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }))
-
-  return { success: true, data: availableRooms, source: 'sample' }
-}

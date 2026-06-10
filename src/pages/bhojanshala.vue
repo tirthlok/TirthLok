@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBhojanshalaStore } from '~/stores/bhojanshala'
+import { useBhojanshalaStore } from '~/features/bhojanshala/composables/useBhojanshalaStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useThemeStore } from '~/stores/theme'
 import type { Bhojanshala } from '~/types/models'

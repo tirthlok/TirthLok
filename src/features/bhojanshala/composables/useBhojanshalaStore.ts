@@ -54,7 +54,7 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
       this.loading = true
       this.error = null
       try {
-        const { useBhojanshalaApi } = await import('~/composables/api')
+        const { useBhojanshalaApi } = await import('~/features/bhojanshala/services/bhojanshalaApi')
         const { fetchBhojanshallas } = useBhojanshalaApi()
         const response = await fetchBhojanshallas()
         this.bhojanshalas = response
@@ -76,7 +76,7 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
 
       this.loading = true
       try {
-        const { useBhojanshalaApi } = await import('~/composables/api')
+        const { useBhojanshalaApi } = await import('~/features/bhojanshala/services/bhojanshalaApi')
         const { fetchBhojanshalaById } = useBhojanshalaApi()
         const response = await fetchBhojanshalaById(id)
         this.selectedBhojanshala = response

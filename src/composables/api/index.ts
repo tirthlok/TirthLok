@@ -1,5 +1,0 @@
-export * from './useTirthApi'
-export * from './useDharamshalaApi'
-export * from './useBhojanshalaApi'
-export * from './useEventsApi'
-export * from './useRoomBookingApi'

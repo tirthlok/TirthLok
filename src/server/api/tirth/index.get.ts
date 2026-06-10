@@ -97,11 +97,6 @@ export default defineEventHandler(async (event) => {
         }
       })
 
-      // Fallback to sample data for development if database returns empty
-      if (transformedData.length === 0) {
-        const { sampleTirths } = await import('~/server/utils/sampleData')
-        transformedData = sampleTirths.slice(offset, offset + limit) as any[]
-      }
       return {
         success: true,
         data: transformedData,

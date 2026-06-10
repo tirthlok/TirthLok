@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, ref } from 'vue'
 import { useThemeStore } from '~/stores/theme'
-import { useTirthStore } from '~/stores/tirth'
+import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import { useGrouping } from '~/composables/ui/useGrouping'

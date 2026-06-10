@@ -23,7 +23,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      mapboxToken: process.env.NUXT_PUBLIC_MAPBOX_TOKEN || '',
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api/v1',
@@ -51,7 +50,15 @@ export default defineNuxtConfig({
   imports: {
     autoImport: true,
     // directories are relative to `srcDir`
-    dirs: ['composables', 'stores'],
+    dirs: [
+      'composables',
+      'stores',
+      'features/auth/composables',
+      'features/tirth/composables',
+      'features/dharamshala/composables',
+      'features/bhojanshala/composables',
+      'features/wishlist/composables',
+    ],
   },
 
   devtools: { enabled: true },

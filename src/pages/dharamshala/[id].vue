@@ -463,7 +463,7 @@
 import type { Dharamshala, RoomType, Booking } from '~/types/models'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
-import { useDharamshalaStore } from '~/stores/dharamshala'
+import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 import Icon from '~/components/ui/Icon.vue'
 import RoomCard from '~/features/dharamshala/components/RoomCard.vue'
 import RoomBookingModal from '~/features/dharamshala/components/RoomBookingModal.vue'
@@ -555,7 +555,7 @@ const handleBookingConfirmed = (booking: Booking) => {
 
 const setupRealtime = async (dharamshalaId: string) => {
   try {
-    const { useSupabase } = await import('~/composables/useSupabase')
+    const { useSupabase } = await import('~/features/auth/composables/useSupabase')
     const { supabase } = useSupabase()
 
     // Cleanup previous channel
@@ -598,7 +598,7 @@ const setupRealtime = async (dharamshalaId: string) => {
 const cleanupRealtime = async () => {
   if (realtimeChannel) {
     try {
-      const { useSupabase } = await import('~/composables/useSupabase')
+      const { useSupabase } = await import('~/features/auth/composables/useSupabase')
       const { supabase } = useSupabase()
       supabase.removeChannel(realtimeChannel)
     } catch {
