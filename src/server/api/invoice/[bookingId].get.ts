@@ -3,15 +3,15 @@ import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase
 export default defineEventHandler(async (event) => {
   const userId    = await getUserIdFromEvent(event)
   const bookingId = getRouterParam(event, 'bookingId')
-  if (!bookingId) {
-    throw createError({ statusCode: 400, statusMessage: 'Booking ID required' })
-  }
 
   if (!userId) {
     throw createError({ statusCode: 401, statusMessage: 'Authentication required' })
   }
+  if (!bookingId) {
+    throw createError({ statusCode: 400, statusMessage: 'Booking ID required' })
+  }
 
-  const supabase = getSupabaseTirthlok()
+  const supabase = getSupabaseTirthlok() as any
 
   const { data: bookingRaw, error } = await supabase
     .from('bookings')
@@ -43,32 +43,33 @@ export default defineEventHandler(async (event) => {
         bed_configuration
       )
     `)
-    .eq('booking_id', bookingId as string)
-    .eq('user_id', userId as string)
+    .eq('booking_id', bookingId)
+    .eq('user_id', userId)
     .single()
-  const booking = bookingRaw as any
 
-  if (error || !booking) {
+  if (error || !bookingRaw) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
   }
 
-  // Fetch invoice record
+  const booking = bookingRaw as any
+
   const { data: invoiceRaw } = await supabase
     .from('invoices')
     .select('invoice_number, amount, tax_amount, total_amount, issued_at')
-    .eq('booking_id', bookingId as string)
+    .eq('booking_id', bookingId)
     .maybeSingle()
+
   const invoice = invoiceRaw as any
 
-  // Calculate nights
   const checkIn  = new Date(booking.check_in_date)
   const checkOut = new Date(booking.check_out_date)
   const nights   = Math.max(
-    Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)),
-    1
+    Math.ceil(
+      (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+    ), 1
   )
 
-  const basePrice     = Number((booking.room as any)?.base_price || 0)
+  const basePrice     = Number(booking.room?.base_price || 0)
   const subtotal      = basePrice * nights
   const tax           = Math.round(subtotal * 0.05 * 100) / 100
   const serviceCharge = 50

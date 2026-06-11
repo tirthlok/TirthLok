@@ -2,9 +2,27 @@ import { getSupabaseTirthlok } from '~/server/utils/supabase'
 import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  requireAdmin(event)
+  const ctx = await requireAdmin(event)
 
   const roomId = getRouterParam(event, 'id')
+
+  // Verify manager owns this room's dharamshala
+  if (ctx.isManager && ctx.dharamshalaId) {
+    const supabase = getSupabaseTirthlok() as any
+    const { data: room } = await supabase
+      .from('room_types')
+      .select('dharamshala_id')
+      .eq('room_type_id', roomId)
+      .single()
+
+    if (!room || room.dharamshala_id !== ctx.dharamshalaId) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'You do not have access to this room'
+      })
+    }
+  }
+
   const body   = await readBody(event)
 
   const allowedFields = [

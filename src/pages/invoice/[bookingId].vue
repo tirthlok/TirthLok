@@ -79,10 +79,10 @@
                   Invoice
                 </p>
                 <p class="text-white font-black text-xl font-mono">
-                  {{ data.booking.invoice_number || data.invoice?.invoice_number || 'TL-PENDING' }}
+                  {{ (data as any)?.booking?.invoice_number || (data as any)?.invoice?.invoice_number || 'TL-PENDING' }}
                 </p>
                 <p class="text-blue-200 text-xs mt-1">
-                  {{ formatDate(data.invoice?.issued_at || data.booking.created_at) }}
+                  {{ formatDate((data as any)?.invoice?.issued_at || (data as any)?.booking?.created_at) }}
                 </p>
               </div>
             </div>
@@ -97,13 +97,13 @@
                 Billed To
               </p>
               <p class="font-bold text-gray-900 text-base">
-                {{ data.booking.guest_name }}
+                {{ (data as any)?.booking?.guest_name }}
               </p>
               <p class="text-gray-600 text-sm mt-1">
-                {{ data.booking.guest_email }}
+                {{ (data as any)?.booking?.guest_email }}
               </p>
               <p class="text-gray-600 text-sm">
-                {{ data.booking.guest_phone }}
+                {{ (data as any)?.booking?.guest_phone }}
               </p>
             </div>
             <div>
@@ -118,7 +118,7 @@
                 {{ statusLabel }}
               </div>
               <p class="text-gray-500 text-xs mt-2">
-                Booked on {{ formatDate(data.booking.created_at) }}
+                Booked on {{ formatDate((data as any)?.booking?.created_at) }}
               </p>
             </div>
           </div>
@@ -134,20 +134,20 @@
                 <div>
                   <p class="text-xs text-gray-400 font-medium">Property</p>
                   <p class="font-bold text-gray-900">
-                    {{ (data.booking.dharamshala as any)?.dharamshala_name }}
+                    {{ (data as any)?.booking?.dharamshala?.dharamshala_name }}
                   </p>
                   <p class="text-gray-500 text-sm">
-                    {{ (data.booking.dharamshala as any)?.dharamshala_city }},
-                    {{ (data.booking.dharamshala as any)?.dharamshala_state }}
+                    {{ (data as any)?.booking?.dharamshala?.dharamshala_city }},
+                    {{ (data as any)?.booking?.dharamshala?.dharamshala_state }}
                   </p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-400 font-medium">Room Type</p>
                   <p class="font-semibold text-gray-900">
-                    {{ (data.booking.room as any)?.name }}
+                    {{ (data as any)?.booking?.room?.name }}
                   </p>
                   <p class="text-gray-500 text-sm capitalize">
-                    {{ (data.booking.room as any)?.bed_configuration }}
+                    {{ (data as any)?.booking?.room?.bed_configuration }}
                   </p>
                 </div>
               </div>
@@ -158,7 +158,7 @@
                       Check-in
                     </p>
                     <p class="font-bold text-blue-900 text-sm">
-                      {{ formatDate(data.booking.check_in_date) }}
+                      {{ formatDate((data as any)?.booking?.check_in_date) }}
                     </p>
                   </div>
                   <div class="bg-orange-50 rounded-xl p-3">
@@ -166,7 +166,7 @@
                       Check-out
                     </p>
                     <p class="font-bold text-orange-900 text-sm">
-                      {{ formatDate(data.booking.check_out_date) }}
+                      {{ formatDate((data as any)?.booking?.check_out_date) }}
                     </p>
                   </div>
                 </div>
@@ -176,7 +176,7 @@
                       Duration
                     </p>
                     <p class="font-bold text-gray-900 text-sm">
-                      {{ data.calculated.nights }} Night{{ data.calculated.nights > 1 ? 's' : '' }}
+                      {{ (data as any)?.calculated?.nights }} Night{{ (data as any)?.calculated?.nights > 1 ? 's' : '' }}
                     </p>
                   </div>
                   <div class="bg-gray-50 rounded-xl p-3">
@@ -184,7 +184,7 @@
                       Guests
                     </p>
                     <p class="font-bold text-gray-900 text-sm">
-                      {{ data.booking.adults_count || 1 }} Adults
+                      {{ (data as any)?.booking?.adults_count || 1 }} Adults
                     </p>
                   </div>
                 </div>
@@ -219,17 +219,17 @@
                 <tr class="py-3">
                   <td class="py-3">
                     <p class="font-semibold text-gray-900 text-sm">
-                      {{ (data.booking.room as any)?.name }}
+                      {{ (data as any)?.booking?.room?.name }}
                     </p>
                     <p class="text-gray-500 text-xs">
-                      ₹{{ data.calculated.basePrice.toLocaleString('en-IN') }} per night
+                      ₹{{ (data as any)?.calculated?.basePrice?.toLocaleString('en-IN') }} per night
                     </p>
                   </td>
                   <td class="py-3 text-center text-gray-600 text-sm">
-                    {{ data.calculated.nights }}
+                    {{ (data as any)?.calculated?.nights }}
                   </td>
                   <td class="py-3 text-right font-semibold text-gray-900 text-sm">
-                    ₹{{ data.calculated.subtotal.toLocaleString('en-IN') }}
+                    ₹{{ (data as any)?.calculated?.subtotal?.toLocaleString('en-IN') }}
                   </td>
                 </tr>
                 <tr>
@@ -238,7 +238,7 @@
                   </td>
                   <td class="py-3 text-center text-gray-600 text-sm">—</td>
                   <td class="py-3 text-right text-gray-600 text-sm">
-                    ₹{{ data.calculated.tax.toLocaleString('en-IN') }}
+                    ₹{{ (data as any)?.calculated?.tax?.toLocaleString('en-IN') }}
                   </td>
                 </tr>
                 <tr>
@@ -247,7 +247,7 @@
                   </td>
                   <td class="py-3 text-center text-gray-600 text-sm">—</td>
                   <td class="py-3 text-right text-gray-600 text-sm">
-                    ₹{{ data.calculated.serviceCharge.toLocaleString('en-IN') }}
+                    ₹{{ (data as any)?.calculated?.serviceCharge?.toLocaleString('en-IN') }}
                   </td>
                 </tr>
               </tbody>
@@ -265,7 +265,7 @@
               </div>
               <div class="text-right">
                 <p class="text-3xl font-black text-gray-900">
-                  ₹{{ data.calculated.grandTotal.toLocaleString('en-IN') }}
+                  ₹{{ (data as any)?.calculated?.grandTotal?.toLocaleString('en-IN') }}
                 </p>
                 <p class="text-xs text-gray-400 mt-0.5">
                   Inclusive of all taxes
@@ -297,7 +297,7 @@
               </p>
             </div>
             <p class="text-xs text-gray-300 font-mono">
-              {{ data.booking.invoice_number || data.invoice?.invoice_number }}
+              {{ (data as any)?.booking?.invoice_number || (data as any)?.invoice?.invoice_number }}
             </p>
           </div>
 
@@ -309,41 +309,39 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useAuth } from '~/features/auth/composables/useAuth'
 import Icon from '~/components/ui/Icon.vue'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: false, ssr: false })
 
 const route   = useRoute()
-const { session } = useAuth()
 const data    = ref<any>(null)
 const loading = ref(true)
 const error   = ref<string | null>(null)
 
 const fetchInvoice = async () => {
   try {
-    const token = session.value?.access_token
-    if (!token) {
-      error.value = 'Please sign in to view this invoice'
+    const { supabase } = useSupabase()
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (!session?.access_token) {
+      error.value = 'Not authenticated'
       return
     }
+
     data.value = await $fetch(
       `/api/invoice/${route.params.bookingId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${session.access_token}`
         }
       }
     )
   } catch (err: any) {
     const status = err?.response?.status || err?.statusCode
-    if (status === 401) {
-      error.value = 'Session expired. Please sign in again.'
-    } else if (status === 404) {
+    if (status === 404) {
       error.value = 'Invoice not found for this booking.'
     } else {
-      error.value = 'Failed to load invoice. Please try again.'
+      error.value = 'Failed to load invoice.'
     }
   } finally {
     loading.value = false
@@ -361,41 +359,31 @@ const formatDate = (dateStr: string) => {
 
 const statusLabel = computed(() => {
   const map: Record<string, string> = {
-    confirmed:  'Confirmed',
-    initiated:  'Pending',
-    checked_in: 'Checked In',
-    checked_out:'Completed',
-    cancelled:  'Cancelled',
+    confirmed:   'Confirmed',
+    initiated:   'Pending',
+    checked_in:  'Checked In',
+    checked_out: 'Completed',
+    cancelled:   'Cancelled',
   }
   return map[data.value?.booking?.status] || data.value?.booking?.status
 })
 
 const statusStyle = computed(() => {
   const map: Record<string, string> = {
-    confirmed:  'background:#f0fdf4;color:#15803d',
-    initiated:  'background:#fffbeb;color:#b45309',
-    checked_in: 'background:#eff6ff;color:#1d4ed8',
-    checked_out:'background:#f8fafc;color:#475569',
-    cancelled:  'background:#fef2f2;color:#b91c1c',
+    confirmed:   'background:#f0fdf4;color:#15803d',
+    initiated:   'background:#fffbeb;color:#b45309',
+    checked_in:  'background:#eff6ff;color:#1d4ed8',
+    checked_out: 'background:#f8fafc;color:#475569',
+    cancelled:   'background:#fef2f2;color:#b91c1c',
   }
-  return map[data.value?.booking?.status] || 'background:#f8fafc;color:#475569'
+  return map[data.value?.booking?.status]
+    || 'background:#f8fafc;color:#475569'
 })
 
 onMounted(async () => {
-  // Wait for auth to initialize before fetching
-  const { initialize, session: authSession } = useAuth()
-  await initialize()
-
-  // Wait for session token to be available
-  let attempts = 0
-  while (!authSession.value?.access_token && attempts < 10) {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    attempts++
-  }
-
   await fetchInvoice()
   if (data.value) {
-    setTimeout(() => window.print(), 800)
+    setTimeout(() => window.print(), 600)
   }
 })
 </script>

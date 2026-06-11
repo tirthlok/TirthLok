@@ -3,7 +3,7 @@ import { getSupabaseTirthlok } from '~/server/utils/supabase'
 import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
-  requireSuperAdmin(event)
+  await requireSuperAdmin(event)
 
   const body = await readBody(event)
   const {
@@ -41,13 +41,25 @@ export default defineEventHandler(async (event) => {
         statusMessage: inviteError.message,
       })
     }
-    // Find existing user
-    const { data: users } = await adminClient.auth.admin.listUsers()
-    const existing = users?.users?.find(u => u.email === email)
+    // Use direct REST endpoint to find user by email
+    // avoids loading ALL users into memory
+    const lookupRes = await fetch(
+      `${process.env.NUXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?` +
+      new URLSearchParams({ email }),
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+          'apikey': `${process.env.SUPABASE_SERVICE_KEY}`,
+        }
+      }
+    )
+    const lookupData = await lookupRes.json()
+    const existing = lookupData?.users?.[0]
+
     if (!existing) {
       throw createError({
-        statusCode: 400,
-        statusMessage: 'User not found and could not be invited',
+        statusCode: 404,
+        statusMessage: 'No account found with this email. User must sign up first.'
       })
     }
     inviteData.user = existing as any

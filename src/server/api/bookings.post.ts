@@ -60,6 +60,21 @@ export default defineEventHandler(async (event) => {
 
   const supabase = getSupabaseTirthlok()
 
+  // Allow max 5 bookings per user in the last 10 minutes
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+  const { count } = await (supabase as any)
+    .from('bookings')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .gte('created_at', tenMinutesAgo)
+
+  if ((count || 0) >= 5) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: 'Too many bookings. Please wait before trying again.'
+    })
+  }
+
   try {
     // Step 1: Verify room exists and has inventory
     const { data: room, error: roomError } = await supabase
@@ -73,6 +88,14 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 404,
         statusMessage: 'Room not found',
+      })
+    }
+
+    // Verify room belongs to the claimed dharamshala
+    if (room.dharamshala_id !== body.dharamshalaId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Room does not belong to this dharamshala'
       })
     }
 
