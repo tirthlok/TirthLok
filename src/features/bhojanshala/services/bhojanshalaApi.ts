@@ -26,13 +26,13 @@ export const useBhojanshalaApi = () => {
   /**
    * Fetch all bhojanshala locations
    */
-  const fetchBhojanshallas = async (): Promise<Bhojanshala[]> => {
+  const fetchBhojanshallas = async (): Promise<any> => {
     try {
       const promise = $fetch('/api/bhojanshala', {
         baseURL: config.public.apiBaseUrl,
-      }) as Promise<Bhojanshala[]>
+      })
 
-      return await fetchWithTimeout<Bhojanshala[]>(promise, 500, [])
+      return await fetchWithTimeout<any>(promise, 500, [])
     } catch (error) {
       console.error('Error fetching bhojanshalas:', error)
       return []
@@ -60,8 +60,8 @@ export const useBhojanshalaApi = () => {
    */
   const createBhojanshala = async (data: Partial<Bhojanshala>): Promise<Bhojanshala> => {
     try {
-      return await $fetch('/api/bhojanshala', {
-        method: 'POST',
+      return await $fetch<any>('/api/bhojanshala', {
+        method: 'POST' as any,
         baseURL: config.public.apiBaseUrl,
         body: data,
       })
@@ -76,8 +76,8 @@ export const useBhojanshalaApi = () => {
    */
   const updateBhojanshala = async (id: string, data: Partial<Bhojanshala>): Promise<Bhojanshala> => {
     try {
-      return await $fetch(`/api/bhojanshala/${id}`, {
-        method: 'PUT',
+      return await $fetch<any>(`/api/bhojanshala/${id}`, {
+        method: 'PUT' as any,
         baseURL: config.public.apiBaseUrl,
         body: data,
       })
@@ -92,8 +92,8 @@ export const useBhojanshalaApi = () => {
    */
   const deleteBhojanshala = async (id: string): Promise<void> => {
     try {
-      await $fetch(`/api/bhojanshala/${id}`, {
-        method: 'DELETE',
+      await $fetch<any>(`/api/bhojanshala/${id}`, {
+        method: 'DELETE' as any,
         baseURL: config.public.apiBaseUrl,
       })
     } catch (error) {

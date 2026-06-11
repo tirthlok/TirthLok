@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Bhojanshala } from '~/types/models'
+import { useBhojanshalaApi } from '~/features/bhojanshala/services/bhojanshalaApi'
 
 interface BhojanshalState {
   bhojanshalas: Bhojanshala[]
@@ -54,11 +55,39 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
       this.loading = true
       this.error = null
       try {
-        const { useBhojanshalaApi } = await import('~/features/bhojanshala/services/bhojanshalaApi')
         const { fetchBhojanshallas } = useBhojanshalaApi()
-        const response = await fetchBhojanshallas()
-        this.bhojanshalas = response
-        this.filteredBhojanshalas = response
+        const response: any = await fetchBhojanshallas()
+        const rawList = Array.isArray(response)
+          ? response
+          : (response?.bhojanshalas || [])
+        const list = rawList.map((b: any) => ({
+          id: b.bhojanshala_id,
+          name: b.bhojanshala_name || '',
+          description: b.bhojanshala_description || '',
+          type: b.bhojanshala_type || 'General',
+          rating: Number(b.bhojanshala_rating) || 4.5,
+          reviews: 0,
+          operatingHours: b.operatingHours || '',
+          priceRange: '',
+          cuisineTypes: b.cuisineTypes || b.tags || [],
+          dietaryOptions: b.dietaryOptions || [],
+          location: {
+            latitude: Number(b.latitude) || 0,
+            longitude: Number(b.longitude) || 0,
+            address: b.bhojanshala_address || `${b.bhojanshala_city}, ${b.bhojanshala_state}`,
+            city: b.bhojanshala_city || '',
+            state: b.bhojanshala_state || '',
+          },
+          contact: {
+            phone: b.bhojanshala_phone || '',
+            email: b.bhojanshala_email || '',
+          },
+          images: Array.isArray(b.bhojanshala_images)
+            ? b.bhojanshala_images
+            : (b.bhojanshala_images ? [b.bhojanshala_images] : []),
+        }))
+        this.bhojanshalas = list as Bhojanshala[]
+        this.filteredBhojanshalas = [...list] as Bhojanshala[]
       } catch (error) {
         this.error = 'Failed to fetch bhojanshala locations'
         console.error(error)
@@ -76,7 +105,6 @@ export const useBhojanshalaStore = defineStore('bhojanshala', {
 
       this.loading = true
       try {
-        const { useBhojanshalaApi } = await import('~/features/bhojanshala/services/bhojanshalaApi')
         const { fetchBhojanshalaById } = useBhojanshalaApi()
         const response = await fetchBhojanshalaById(id)
         this.selectedBhojanshala = response

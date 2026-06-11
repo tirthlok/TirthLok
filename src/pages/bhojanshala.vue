@@ -133,9 +133,39 @@ const { data: serverBhojans } = await useFetch(
   { cache: 'no-store' }
 )
 if (serverBhojans?.value) {
+  const data = serverBhojans.value as any
+  const rawList = Array.isArray(data)
+    ? data
+    : (data?.bhojanshalas || [])
+  const list = rawList.map((b: any) => ({
+    id: b.bhojanshala_id,
+    name: b.bhojanshala_name || '',
+    description: b.bhojanshala_description || '',
+    type: b.bhojanshala_type || 'General',
+    rating: Number(b.bhojanshala_rating) || 4.5,
+    reviews: 0,
+    operatingHours: b.operatingHours || '',
+    priceRange: '',
+    cuisineTypes: b.cuisineTypes || b.tags || [],
+    dietaryOptions: b.dietaryOptions || [],
+    location: {
+      latitude: Number(b.latitude) || 0,
+      longitude: Number(b.longitude) || 0,
+      address: b.bhojanshala_address || `${b.bhojanshala_city}, ${b.bhojanshala_state}`,
+      city: b.bhojanshala_city || '',
+      state: b.bhojanshala_state || '',
+    },
+    contact: {
+      phone: b.bhojanshala_phone || '',
+      email: b.bhojanshala_email || '',
+    },
+    images: Array.isArray(b.bhojanshala_images)
+      ? b.bhojanshala_images
+      : (b.bhojanshala_images ? [b.bhojanshala_images] : []),
+  }))
   bhojanshalaStore.$patch((state) => {
-    state.bhojanshalas = (serverBhojans.value as any) as Bhojanshala[]
-    state.filteredBhojanshalas = (serverBhojans.value as any) as Bhojanshala[]
+    state.bhojanshalas = list as Bhojanshala[]
+    state.filteredBhojanshalas = list as Bhojanshala[]
   })
 }
 

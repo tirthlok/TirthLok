@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Dharamshala, RoomType } from '~/types/models'
+import { useDharamshalaApi } from '~/features/dharamshala/services/dharamshalaApi'
+import { useRoomBookingApi } from '~/features/dharamshala/services/roomBookingApi'
 
 interface DharamshalaState {
   dharamshalas: Dharamshala[]
@@ -79,7 +81,6 @@ export const useDharamshalaStore = defineStore('dharamshala', {
       this.loading = true
       this.error = null
       try {
-        const { useDharamshalaApi } = await import('~/features/dharamshala/services/dharamshalaApi')
         const { fetchDharamshalas } = useDharamshalaApi()
         const response = await fetchDharamshalas()
         this.dharamshalas = response
@@ -101,7 +102,6 @@ export const useDharamshalaStore = defineStore('dharamshala', {
 
       this.loading = true
       try {
-        const { useDharamshalaApi } = await import('~/features/dharamshala/services/dharamshalaApi')
         const { fetchDharamshalaById } = useDharamshalaApi()
         const response = await fetchDharamshalaById(id)
         this.selectedDharamshala = response
@@ -202,7 +202,6 @@ export const useDharamshalaStore = defineStore('dharamshala', {
       this.roomsLoading = true
       this.roomsError = null
       try {
-        const { useRoomBookingApi } = await import('~/features/dharamshala/services/roomBookingApi')
         const { getAvailableRooms } = useRoomBookingApi()
         this.roomTypes = await getAvailableRooms(dharamshalaId)
       } catch (error) {

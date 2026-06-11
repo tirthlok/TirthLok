@@ -10,7 +10,7 @@ export type WishlistResult = { tirth: string[]; dharamshala: string[]; bhojansha
 export const useWishlistApi = () => {
   const { session } = useAuth()
 
-  const getHeaders = () => {
+  const getHeaders = (): Record<string, string> => {
     if (!session.value?.access_token) return {}
     return {
       Authorization: `Bearer ${session.value.access_token}`
@@ -56,8 +56,8 @@ export const useWishlistApi = () => {
     }
 
     try {
-      const data = await $fetch<WishlistResult>('/api/wishlist', {
-        method: 'POST',
+      const data = await $fetch<any>('/api/wishlist', {
+        method: 'POST' as any,
         headers: getHeaders(),
         body: { itemId, entityType }
       })
@@ -88,8 +88,8 @@ export const useWishlistApi = () => {
 
     try {
       const encodedId = encodeURIComponent(itemId)
-      const data = await $fetch<WishlistResult>(`/api/wishlist/${encodedId}`, {
-        method: 'DELETE',
+      const data = await $fetch<any>(`/api/wishlist/${encodedId}`, {
+        method: 'DELETE' as any,
         headers: getHeaders(),
         query: { entityType }
       })
@@ -130,8 +130,8 @@ export const useWishlistApi = () => {
     }
 
     try {
-      await $fetch('/api/wishlist/clear', {
-        method: 'POST',
+      await $fetch<any>('/api/wishlist/clear', {
+        method: 'POST' as any,
         headers: getHeaders()
       })
     } catch (error) {

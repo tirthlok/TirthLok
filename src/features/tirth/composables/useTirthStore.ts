@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Tirth } from '~/types/models'
+import { useTirthApi } from '../services/tirthApi'
 
 interface TirthState {
   tirths: Tirth[]
@@ -179,7 +180,6 @@ export const useTirthStore = defineStore('tirth', {
 
     async fetchTirthById(id: string) {
       try {
-        const { useTirthApi } = await import('../services/tirthApi')
         const api = useTirthApi()
         const tirth = await api.fetchTirthById(id)
         this.selectedTirth = tirth
