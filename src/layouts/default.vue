@@ -8,6 +8,11 @@
     <!-- Header component -->
     <Header />
     <AdminBanner />
+    <AdminAuthModal
+      :show="adminStore.showAuthModal"
+      @verified="onAdminVerified"
+      @cancelled="adminStore.cancelAdminEntry()"
+    />
 
     <!-- Main Content -->
     <main class="flex-1 mx-auto w-full">
@@ -157,9 +162,19 @@
 
 <script setup lang="ts">
 import { useThemeStore } from '~/stores/theme'
+import { useAdminModeStore } from '~/stores/adminMode'
+import { useRouter } from 'vue-router'
 import Header from '~/components/layout/header/Header.vue'
 import AdminBanner from '~/components/admin/AdminBanner.vue'
+import AdminAuthModal from '~/components/admin/AdminAuthModal.vue'
 import Icon from '~/components/ui/Icon.vue'
 
 const themeStore = useThemeStore()
+const adminStore = useAdminModeStore()
+const router = useRouter()
+
+const onAdminVerified = () => {
+  adminStore.confirmAdminEntry()
+  router.push('/admin')
+}
 </script>

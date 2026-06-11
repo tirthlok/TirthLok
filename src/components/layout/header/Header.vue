@@ -628,12 +628,16 @@ const signOut = async () => {
 }
 
 const toggleAdmin = () => {
-  adminStore.toggleAdminMode()
   if (adminStore.isAdminMode) {
-    router.push('/admin')
-  } else {
+    adminStore.exitAdminMode()
     router.push('/')
+  } else {
+    adminStore.requestAdminMode()
   }
+  closeDropdown()
+}
+
+const closeDropdown = () => {
   profileOpen.value = false
   mobileMenuOpen.value = false
 }
