@@ -248,8 +248,14 @@ const fetchBhojanshalas = async () => {
       ...(filters.value.state  && { state:  filters.value.state  }),
     })
     const data = await $fetch<any>(`/api/bhojanshala?${params}`)
-    bhojanshalas.value = data.bhojanshalas || []
-    total.value        = data.total        || 0
+    bhojanshalas.value = Array.isArray(data)
+      ? data
+      : (data?.bhojanshalas || [])
+    total.value = data?.total || bhojanshalas.value.length
+  } catch (err) {
+    console.error('[bhojanshala] fetch error:', err)
+    bhojanshalas.value = []
+    total.value = 0
   } finally {
     loading.value = false
   }
