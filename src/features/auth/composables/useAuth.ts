@@ -55,22 +55,34 @@ export const useAuth = () => {
 
             // Listen for auth state changes
             supabase.auth.onAuthStateChange((event, session) => {
-                console.log('[Auth] State change:', event)
-                currentSession.value = session
-                currentUser.value = session?.user ?? null
+              currentSession.value = session
+              currentUser.value    = session?.user ?? null
 
-                if (event === 'PASSWORD_RECOVERY') {
-                    isRecoveryMode.value = true
-                    if (typeof window !== 'undefined') {
-                        sessionStorage.setItem('isRecoveryMode', 'true')
-                    }
-                } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-                    // USER_UPDATED happens after password update
-                    isRecoveryMode.value = false
-                    if (typeof window !== 'undefined') {
-                        sessionStorage.removeItem('isRecoveryMode')
-                    }
+              if (event === 'PASSWORD_RECOVERY') {
+                isRecoveryMode.value = true
+                if (typeof window !== 'undefined') {
+                  sessionStorage.setItem('isRecoveryMode', 'true')
                 }
+                return
+              }
+
+              if (event === 'SIGNED_OUT') {
+                currentSession.value = null
+                currentUser.value    = null
+                isRecoveryMode.value = false
+                if (typeof window !== 'undefined') {
+                  sessionStorage.removeItem('isRecoveryMode')
+                }
+                return
+              }
+
+              if (event === 'USER_UPDATED') {
+                isRecoveryMode.value = false
+                if (typeof window !== 'undefined') {
+                  sessionStorage.removeItem('isRecoveryMode')
+                }
+                return
+              }
             })
 
             initialized.value = true
@@ -165,28 +177,36 @@ export const useAuth = () => {
      * Sign out the current user
      */
     const signOut = async () => {
-        loading.value = true
-        error.value = null
+      loading.value = true
+      error.value = null
 
-        try {
-            const { error: signOutError } = await supabase.auth.signOut()
+      // Clear local state immediately — UI updates before network call
+      currentUser.value    = null
+      currentSession.value = null
+      isRecoveryMode.value = false
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('isRecoveryMode')
+      }
 
-            if (signOutError) {
-                error.value = signOutError.message
-                return { success: false, error: signOutError.message }
-            }
-
-            currentUser.value = null
-            currentSession.value = null
-            isRecoveryMode.value = false
-
-            return { success: true }
-        } catch (err: any) {
-            error.value = err.message || 'Sign out failed'
-            return { success: false, error: error.value }
-        } finally {
-            loading.value = false
+      try {
+        await supabase.auth.signOut()
+      } catch (err) {
+        // supabase.auth.signOut() failed — manually clear localStorage
+        // so a page refresh does not restore the session
+        if (typeof window !== 'undefined') {
+          const projectRef = (supabase as any).supabaseUrl
+            ?.split('//')[1]?.split('.')[0] || ''
+          if (projectRef) {
+            localStorage.removeItem(`sb-${projectRef}-auth-token`)
+            localStorage.removeItem(`sb-${projectRef}-auth-token.0`)
+            localStorage.removeItem(`sb-${projectRef}-auth-token.1`)
+          }
         }
+      } finally {
+        loading.value = false
+      }
+
+      return { success: true }
     }
 
     /**
