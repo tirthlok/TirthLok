@@ -1,56 +1,55 @@
-/**
- * GET /api/bhojanshala - Fetch all bhojanshala locations
- * Queries tirthlok.bhojanshala_cards directly
- */
-import { getSupabaseTirthlok } from '../../utils/supabase'
+import { getSupabaseTirthlok } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
-  try {
-    const supabase = getSupabaseTirthlok()
-    const query = getQuery(event)
-    const search = String(query.search || '')
+  const query   = getQuery(event)
+  const page    = Math.max(1, Number(query.page  || 1))
+  const limit   = Math.min(50, Math.max(1, Number(query.limit || 12)))
+  const offset  = (page - 1) * limit
+  const state   = query.state as string | undefined
+  const type    = query.type  as string | undefined
+  const tirth   = query.tirth as string | undefined
+  const search  = query.search as string | undefined
 
-    let supabaseQuery = supabase.from('bhojanshala_cards').select('*')
+  // Validate type if provided
+  const validTypes = ['free', 'paid', 'donation']
+  if (type && !validTypes.includes(type)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid bhojanshala type' })
+  }
 
-    if (search) {
-      supabaseQuery = supabaseQuery.ilike('bhojanshala_name', `%${search}%`)
-    }
+  const supabase = getSupabaseTirthlok() as any
 
-    const { data, error } = await supabaseQuery
+  let dbQuery = supabase
+    .from('bhojanshala_cards')
+    .select(`
+      bhojanshala_id,
+      tirth_id,
+      bhojanshala_name,
+      bhojanshala_city,
+      bhojanshala_state,
+      bhojanshala_images,
+      bhojanshala_type,
+      tags,
+      tirth:tirth_id (tirth_name)
+    `, { count: 'exact' })
+    .eq('is_active', true)
+    .order('bhojanshala_name')
+    .range(offset, offset + limit - 1)
 
-    if (error) {
-      console.error('[bhojanshala] list fetch failed:', error.message)
-      throw createError({ statusCode: 500, statusMessage: 'Failed to fetch bhojanshala locations' })
-    }
+  if (state)  dbQuery = dbQuery.eq('bhojanshala_state', state)
+  if (type)   dbQuery = dbQuery.eq('bhojanshala_type', type)
+  if (tirth)  dbQuery = dbQuery.eq('tirth_id', tirth)
+  if (search) dbQuery = dbQuery.ilike('bhojanshala_name', `%${search}%`)
 
-    return (data || []).map((row: any) => ({
-      id: row.bhojanshala_id,
-      name: row.bhojanshala_name || '',
-      description: row.bhojanshala_description || '',
-      type: row.bhojanshala_type || 'bhojanshala',
-      rating: Number(row.bhojanshala_rating) || 0,
-      reviews: 0,
-      operatingHours: row.bhojanshala_operating_hours || '',
-      priceRange: row.bhojanshala_price_range || '',
-      cuisineTypes: Array.isArray(row.bhojanshala_cuisine_types) ? row.bhojanshala_cuisine_types : [],
-      dietaryOptions: Array.isArray(row.bhojanshala_dietary_options) ? row.bhojanshala_dietary_options : [],
-      location: {
-        latitude: 0,
-        longitude: 0,
-        address: row.bhojanshala_address || `${row.bhojanshala_city}, ${row.bhojanshala_state}`,
-        city: row.bhojanshala_city || '',
-        state: row.bhojanshala_state || '',
-      },
-      contact: {
-        phone: row.bhojanshala_phone || '',
-        email: row.bhojanshala_email || '',
-        website: row.bhojanshala_website || '',
-      },
-      images: Array.isArray(row.bhojanshala_images) ? row.bhojanshala_images : [],
-    }))
-  } catch (error: any) {
-    if (error.statusCode) throw error
-    console.error('[bhojanshala] list fetch failed:', error.message)
-    throw createError({ statusCode: 500, statusMessage: 'Internal server error' })
+  const { data, error, count } = await dbQuery
+
+  if (error) {
+    throw createError({ statusCode: 500, statusMessage: 'Failed to fetch bhojanshalas' })
+  }
+
+  return {
+    bhojanshalas: data || [],
+    total:        count  || 0,
+    page,
+    limit,
   }
 })
