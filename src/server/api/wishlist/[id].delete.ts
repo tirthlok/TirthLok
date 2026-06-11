@@ -41,21 +41,34 @@ export default defineEventHandler(async (event) => {
 
     try {
         // Delete the matching row based on entity type
-        const deleteQuery = supabase
-            .from('customer_wishlist')
-            .delete()
-            .eq('customer_id', userId)
-            .eq('entity_type', entityType)
+        // Note: each .eq() call returns a NEW builder — must be fully chained
+        let deleteError: any = null
 
         if (entityType === 'dharamshala') {
-            deleteQuery.eq('dharamshala_id', decodedId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .delete()
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('dharamshala_id', decodedId)
+            deleteError = res.error
         } else if (entityType === 'bhojanshala') {
-            deleteQuery.eq('bhojanshala_id', decodedId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .delete()
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('bhojanshala_id', decodedId)
+            deleteError = res.error
         } else {
-            deleteQuery.eq('tirth_id', decodedId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .delete()
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('tirth_id', decodedId)
+            deleteError = res.error
         }
-
-        const { error: deleteError } = await deleteQuery
 
         if (deleteError) {
             console.error('[wishlist] remove failed:', deleteError.message)

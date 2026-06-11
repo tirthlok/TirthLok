@@ -38,21 +38,39 @@ export default defineEventHandler(async (event) => {
 
     try {
         // Check if item already exists in wishlist to avoid duplicates
-        const selectQuery = supabase
-            .from('customer_wishlist')
-            .select('wishlist_id')
-            .eq('customer_id', userId)
-            .eq('entity_type', entityType)
+        // Note: each .eq() call returns a NEW builder — must be fully chained
+        let existingRows: any[] | null = null
+        let checkError: any = null
 
         if (entityType === 'dharamshala') {
-            selectQuery.eq('dharamshala_id', itemId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .select('wishlist_id')
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('dharamshala_id', itemId)
+            existingRows = res.data
+            checkError = res.error
         } else if (entityType === 'bhojanshala') {
-            selectQuery.eq('bhojanshala_id', itemId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .select('wishlist_id')
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('bhojanshala_id', itemId)
+            existingRows = res.data
+            checkError = res.error
         } else {
-            selectQuery.eq('tirth_id', itemId)
+            const res = await supabase
+                .from('customer_wishlist')
+                .select('wishlist_id')
+                .eq('customer_id', userId)
+                .eq('entity_type', entityType)
+                .eq('tirth_id', itemId)
+            existingRows = res.data
+            checkError = res.error
         }
 
-        const { data: existingRows, error: checkError } = await selectQuery
         if (checkError) {
             console.error('[wishlist] check failed:', checkError.message)
         }
