@@ -240,20 +240,124 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex gap-2 flex-shrink-0">
-              <button
-                @click="toggleActive(manager)"
+            <div class="flex flex-col gap-2 flex-shrink-0">
+              <button @click="startEditManager(manager)"
+                class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
+                       bg-blue-500/10 text-blue-400 border-blue-500/20
+                       hover:bg-blue-500/20">
+                Edit
+              </button>
+              <button @click="toggleActive(manager)"
                 :class="[
                   'px-3 py-1.5 rounded-lg text-xs font-bold transition border',
                   manager.is_active
                     ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
                     : 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20'
-                ]"
-              >
+                ]">
                 {{ manager.is_active ? 'Deactivate' : 'Activate' }}
+              </button>
+              <button @click="deleteManager(manager)"
+                :disabled="deletingManager === manager.manager_id"
+                class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
+                       bg-red-900/30 text-red-500 border-red-800/50
+                       hover:bg-red-900/50 disabled:opacity-50">
+                {{ deletingManager === manager.manager_id ? '...' : 'Delete' }}
               </button>
             </div>
           </div>
+
+          <Transition name="slide-down">
+            <div v-if="editingManager === manager.manager_id"
+                 class="px-5 pb-5 border-t border-amber-500/20 bg-gray-800/50">
+              <p class="text-xs font-bold text-amber-400 uppercase tracking-wide
+                        pt-4 mb-4">
+                Edit Manager
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label class="text-xs text-gray-400 block mb-1.5">Full Name</label>
+                  <input v-model="editManagerForm.full_name"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl
+                           px-4 py-2.5 text-sm text-white
+                           focus:outline-none focus:border-amber-500 transition"/>
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400 block mb-1.5">Phone</label>
+                  <input v-model="editManagerForm.phone"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl
+                           px-4 py-2.5 text-sm text-white placeholder-gray-500
+                           focus:outline-none focus:border-amber-500 transition"
+                    placeholder="+91 98765 43210"/>
+                </div>
+                <div>
+                  <label class="text-xs text-gray-400 block mb-1.5">Manager Type</label>
+                  <select v-model="editManagerForm.manager_type"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl
+                           px-4 py-2.5 text-sm text-white
+                           focus:outline-none focus:border-amber-500 transition">
+                    <option value="tirth">Tirth Only</option>
+                    <option value="dharamshala">Dharamshala Only</option>
+                    <option value="both">Both</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div v-if="editManagerForm.manager_type !== 'dharamshala'">
+                  <label class="text-xs text-gray-400 block mb-1.5">
+                    Assigned Tirth
+                  </label>
+                  <select v-model="editManagerForm.assigned_tirth_id"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl
+                           px-4 py-2.5 text-sm text-white
+                           focus:outline-none focus:border-amber-500 transition">
+                    <option value="">None</option>
+                    <option v-for="t in tirths" :key="t.tirth_id"
+                            :value="t.tirth_id">
+                      {{ t.tirth_name }}
+                    </option>
+                  </select>
+                </div>
+                <div v-if="editManagerForm.manager_type !== 'tirth'">
+                  <label class="text-xs text-gray-400 block mb-1.5">
+                    Assigned Dharamshala
+                  </label>
+                  <select v-model="editManagerForm.assigned_dharamshala_id"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-xl
+                           px-4 py-2.5 text-sm text-white
+                           focus:outline-none focus:border-amber-500 transition">
+                    <option value="">None</option>
+                    <option v-for="d in dharamshalas" :key="d.dharamshala_id"
+                            :value="d.dharamshala_id">
+                      {{ d.dharamshala_name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div v-if="editManagerError"
+                   class="mb-3 p-3 bg-red-500/10 border border-red-500/30
+                          rounded-xl text-sm text-red-400">
+                {{ editManagerError }}
+              </div>
+
+              <div class="flex gap-2">
+                <button @click="saveEditManager(manager)"
+                  :disabled="savingEdit"
+                  class="px-5 py-2 bg-amber-500 text-gray-900 rounded-xl
+                         font-bold text-sm hover:bg-amber-400 transition
+                         disabled:opacity-50">
+                  {{ savingEdit ? 'Saving...' : 'Save Changes' }}
+                </button>
+                <button @click="cancelEditManager"
+                  class="px-5 py-2 bg-gray-800 text-gray-400 rounded-xl
+                         font-bold text-sm hover:bg-gray-700 transition">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
     </div>
@@ -278,6 +382,12 @@ const loading      = ref(false)
 const showForm     = ref(false)
 const creating     = ref(false)
 const formError    = ref('')
+
+const editingManager   = ref<string | null>(null)
+const editManagerForm  = ref<any>({})
+const editManagerError = ref('')
+const savingEdit       = ref(false)
+const deletingManager  = ref<string | null>(null)
 
 const form = ref({
   full_name:               '',
@@ -365,6 +475,69 @@ const toggleActive = async (manager: any) => {
     body: { is_active: !manager.is_active },
   })
   await fetchManagers()
+}
+
+const startEditManager = (manager: any) => {
+  editingManager.value  = manager.manager_id
+  editManagerError.value = ''
+  editManagerForm.value = {
+    full_name:               manager.full_name,
+    phone:                   manager.phone || '',
+    manager_type:            manager.manager_type,
+    assigned_tirth_id:       manager.tirth?.tirth_id       || '',
+    assigned_dharamshala_id: manager.dharamshala?.dharamshala_id || '',
+  }
+}
+
+const cancelEditManager = () => {
+  editingManager.value   = null
+  editManagerForm.value  = {}
+  editManagerError.value = ''
+}
+
+const saveEditManager = async (manager: any) => {
+  editManagerError.value = ''
+  savingEdit.value = true
+  try {
+    await $fetch(`/api/admin/managers/${manager.manager_id}`, {
+      method: 'PATCH' as const,
+      headers: authHeaders(),
+      body: {
+        full_name:               editManagerForm.value.full_name,
+        phone:                   editManagerForm.value.phone || null,
+        manager_type:            editManagerForm.value.manager_type,
+        assigned_tirth_id:       editManagerForm.value.assigned_tirth_id || null,
+        assigned_dharamshala_id: editManagerForm.value.assigned_dharamshala_id || null,
+      },
+    })
+    cancelEditManager()
+    await fetchManagers()
+  } catch (err: any) {
+    editManagerError.value = err?.data?.statusMessage || 'Update failed.'
+  } finally {
+    savingEdit.value = false
+  }
+}
+
+const deleteManager = async (manager: any) => {
+  const confirmed = prompt(
+    `Permanently delete "${manager.full_name}"?\n\n` +
+    `Type DELETE to confirm. This cannot be undone.`
+  )
+  if (confirmed !== 'DELETE') return
+
+  deletingManager.value = manager.manager_id
+  try {
+    await $fetch(`/api/admin/managers/${manager.manager_id}`, {
+      method: 'DELETE' as const,
+      headers: authHeaders(),
+    })
+    await fetchManagers()
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || 'Delete failed.')
+  } finally {
+    deletingManager.value = null
+  }
 }
 
 const resetForm = () => {

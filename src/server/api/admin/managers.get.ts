@@ -2,7 +2,7 @@ import { requireSuperAdmin } from '~/server/utils/adminContext'
 import { getSupabaseTirthlok } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
-  requireSuperAdmin(event)
+  await requireSuperAdmin(event)
   const supabase = getSupabaseTirthlok()
 
   const { data, error } = await supabase

@@ -2,7 +2,7 @@ import { getSupabaseTirthlok } from '~/server/utils/supabase'
 import { requireAdmin } from '~/server/utils/adminContext'
 
 export default defineEventHandler(async (event) => {
-  const ctx      = requireAdmin(event)
+  const ctx      = await requireAdmin(event)
   const supabase = getSupabaseTirthlok()
   const dId      = ctx.isManager ? ctx.dharamshalaId : null
 

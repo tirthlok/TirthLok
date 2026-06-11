@@ -2,7 +2,7 @@ import { requireSuperAdmin } from '~/server/utils/adminContext'
 import { getSupabaseTirthlok } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
-  requireSuperAdmin(event)
+  await requireSuperAdmin(event)
   const managerId = getRouterParam(event, 'id')
   const body      = await readBody(event)
   const supabase  = getSupabaseTirthlok()

@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
   const roomId = getRouterParam(event, 'id')
 
   // Verify manager owns this room's dharamshala
-  if (ctx.isManager && ctx.dharamshalaId) {
+  if (ctx.isManager) {
+    if (!ctx.dharamshalaId) {
+      throw createError({ statusCode: 403, statusMessage: 'No dharamshala assigned' })
+    }
     const supabase = getSupabaseTirthlok() as any
     const { data: room } = await supabase
       .from('room_types')
