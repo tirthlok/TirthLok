@@ -323,16 +323,28 @@ const error   = ref<string | null>(null)
 
 const fetchInvoice = async () => {
   try {
+    const token = session.value?.access_token
+    if (!token) {
+      error.value = 'Please sign in to view this invoice'
+      return
+    }
     data.value = await $fetch(
       `/api/invoice/${route.params.bookingId}`,
       {
         headers: {
-          Authorization: `Bearer ${session.value?.access_token || ''}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
-  } catch {
-    error.value = 'Invoice not found'
+  } catch (err: any) {
+    const status = err?.response?.status || err?.statusCode
+    if (status === 401) {
+      error.value = 'Session expired. Please sign in again.'
+    } else if (status === 404) {
+      error.value = 'Invoice not found for this booking.'
+    } else {
+      error.value = 'Failed to load invoice. Please try again.'
+    }
   } finally {
     loading.value = false
   }
@@ -370,6 +382,17 @@ const statusStyle = computed(() => {
 })
 
 onMounted(async () => {
+  // Wait for auth to initialize before fetching
+  const { initialize, session: authSession } = useAuth()
+  await initialize()
+
+  // Wait for session token to be available
+  let attempts = 0
+  while (!authSession.value?.access_token && attempts < 10) {
+    await new Promise(resolve => setTimeout(resolve, 200))
+    attempts++
+  }
+
   await fetchInvoice()
   if (data.value) {
     setTimeout(() => window.print(), 800)

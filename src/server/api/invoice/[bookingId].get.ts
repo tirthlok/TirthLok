@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
     .from('invoices')
     .select('invoice_number, amount, tax_amount, total_amount, issued_at')
     .eq('booking_id', bookingId as string)
-    .single()
+    .maybeSingle()
   const invoice = invoiceRaw as any
 
   // Calculate nights
