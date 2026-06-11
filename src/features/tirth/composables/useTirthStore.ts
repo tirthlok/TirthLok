@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { Tirth } from '~/types/models'
+import type { TirthCard } from '~/types/tirthlok'
 import { useTirthApi } from '../services/tirthApi'
 
 interface TirthState {
@@ -257,7 +258,7 @@ export const useTirthStore = defineStore('tirth', {
 
       // Filter by type
       if (filters.type) {
-        results = results.filter((t) => t.type === filters.type)
+        results = results.filter((t) => (t as unknown as TirthCard).tirth_type === filters.type)
         console.log(`📍 After type filter (${filters.type}): ${results.length} results`)
       }
 
