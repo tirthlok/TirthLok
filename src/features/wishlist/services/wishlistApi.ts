@@ -1,11 +1,11 @@
 /**
  * useWishlistApi Composable
- * Wishlist API - uses Nuxt backend APIs (ID-based, supports tirth + dharamshala)
+ * Wishlist API - uses Nuxt backend APIs (ID-based, supports tirth + dharamshala + bhojanshala)
  */
 
 import { useAuth } from '~/features/auth/composables/useAuth'
 
-export type WishlistResult = { tirth: string[]; dharamshala: string[] }
+export type WishlistResult = { tirth: string[]; dharamshala: string[]; bhojanshala: string[] }
 
 export const useWishlistApi = () => {
   const { session } = useAuth()
@@ -18,19 +18,19 @@ export const useWishlistApi = () => {
   }
 
   /**
-   * Fetch user's wishlist (tirth IDs + dharamshala IDs)
+   * Fetch user's wishlist (tirth IDs + dharamshala IDs + bhojanshala IDs)
    */
   const getWishlist = async (): Promise<WishlistResult> => {
     if (!session.value?.access_token) {
       console.log('[Wishlist] No user session, returning empty wishlist')
-      return { tirth: [], dharamshala: [] }
+      return { tirth: [], dharamshala: [], bhojanshala: [] }
     }
 
     try {
       const data = await $fetch<WishlistResult>('/api/wishlist', {
         headers: getHeaders()
       })
-      return data ?? { tirth: [], dharamshala: [] }
+      return data ?? { tirth: [], dharamshala: [], bhojanshala: [] }
     } catch (error) {
       console.error('[Wishlist] Error fetching wishlist:', error)
       throw error
@@ -40,11 +40,11 @@ export const useWishlistApi = () => {
   /**
    * Add item to wishlist
    * @param itemId - The item ID
-   * @param entityType - 'tirth' or 'dharamshala'
+   * @param entityType - 'tirth', 'dharamshala' or 'bhojanshala'
    */
   const addToWishlist = async (
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ): Promise<WishlistResult> => {
     if (!session.value?.access_token) {
       throw new Error('Not authenticated')
@@ -61,7 +61,7 @@ export const useWishlistApi = () => {
         headers: getHeaders(),
         body: { itemId, entityType }
       })
-      return data ?? { tirth: [], dharamshala: [] }
+      return data ?? { tirth: [], dharamshala: [], bhojanshala: [] }
     } catch (error) {
       console.error(`[Wishlist] Error adding to wishlist ${itemId} (${entityType}):`, error)
       throw error
@@ -71,11 +71,11 @@ export const useWishlistApi = () => {
   /**
    * Remove item from wishlist
    * @param itemId - The item ID
-   * @param entityType - 'tirth' or 'dharamshala'
+   * @param entityType - 'tirth', 'dharamshala' or 'bhojanshala'
    */
   const removeFromWishlist = async (
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ): Promise<WishlistResult> => {
     if (!session.value?.access_token) {
       throw new Error('Not authenticated')
@@ -93,7 +93,7 @@ export const useWishlistApi = () => {
         headers: getHeaders(),
         query: { entityType }
       })
-      return data ?? { tirth: [], dharamshala: [] }
+      return data ?? { tirth: [], dharamshala: [], bhojanshala: [] }
     } catch (error) {
       console.error(`[Wishlist] Error removing from wishlist ${itemId} (${entityType}):`, error)
       throw error
@@ -105,13 +105,16 @@ export const useWishlistApi = () => {
    */
   const isInWishlist = async (
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ): Promise<boolean> => {
     try {
       const wishlist = await getWishlist()
-      return entityType === 'dharamshala'
-        ? wishlist.dharamshala.includes(itemId)
-        : wishlist.tirth.includes(itemId)
+      if (entityType === 'dharamshala') {
+        return wishlist.dharamshala.includes(itemId)
+      } else if (entityType === 'bhojanshala') {
+        return wishlist.bhojanshala.includes(itemId)
+      }
+      return wishlist.tirth.includes(itemId)
     } catch (error) {
       console.error(`[Wishlist] Error checking wishlist status for ${itemId}:`, error)
       return false

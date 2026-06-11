@@ -1,8 +1,8 @@
 /**
  * DELETE /api/wishlist/[id]
- * Remove tirth or dharamshala from user's wishlist
- * The :id param is the item ID (e.g. TL-GJ-0001 or DH-GJ-0001)
- * Query param: entityType = 'tirth' | 'dharamshala' (default: 'tirth')
+ * Remove tirth, dharamshala, or bhojanshala from user's wishlist
+ * The :id param is the item ID (e.g. TL-GJ-0001, DH-GJ-0001, or BL-GJ-0001)
+ * Query param: entityType = 'tirth' | 'dharamshala' | 'bhojanshala' (default: 'tirth')
  * Queries tirthlok.customer_wishlist directly
  */
 import { getSupabaseTirthlok, getUserIdFromEvent } from '../../utils/supabase'
@@ -27,12 +27,12 @@ export default defineEventHandler(async (event) => {
     }
 
     const query = getQuery(event)
-    const entityType: 'tirth' | 'dharamshala' = (query.entityType as 'tirth' | 'dharamshala') ?? 'tirth'
+    const entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = (query.entityType as 'tirth' | 'dharamshala' | 'bhojanshala') ?? 'tirth'
 
-    if (!['tirth', 'dharamshala'].includes(entityType)) {
+    if (!['tirth', 'dharamshala', 'bhojanshala'].includes(entityType)) {
         throw createError({
             statusCode: 400,
-            statusMessage: 'entityType must be tirth or dharamshala'
+            statusMessage: 'entityType must be tirth, dharamshala, or bhojanshala'
         })
     }
 
@@ -49,6 +49,8 @@ export default defineEventHandler(async (event) => {
 
         if (entityType === 'dharamshala') {
             deleteQuery.eq('dharamshala_id', decodedId)
+        } else if (entityType === 'bhojanshala') {
+            deleteQuery.eq('bhojanshala_id', decodedId)
         } else {
             deleteQuery.eq('tirth_id', decodedId)
         }
@@ -66,7 +68,7 @@ export default defineEventHandler(async (event) => {
         // Return updated wishlist (same shape as GET)
         const { data, error: fetchError } = await supabase
             .from('customer_wishlist')
-            .select('entity_type, tirth_id, dharamshala_id')
+            .select('entity_type, tirth_id, dharamshala_id, bhojanshala_id')
             .eq('customer_id', userId)
 
         if (fetchError) {
@@ -76,7 +78,7 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const rows = data as { entity_type: string; tirth_id: string | null; dharamshala_id: string | null }[]
+        const rows = data as { entity_type: string; tirth_id: string | null; dharamshala_id: string | null; bhojanshala_id: string | null }[]
 
         return {
             tirth: rows
@@ -84,7 +86,10 @@ export default defineEventHandler(async (event) => {
                 .map(i => i.tirth_id as string),
             dharamshala: rows
                 .filter(i => i.entity_type === 'dharamshala')
-                .map(i => i.dharamshala_id as string)
+                .map(i => i.dharamshala_id as string),
+            bhojanshala: rows
+                .filter(i => i.entity_type === 'bhojanshala')
+                .map(i => i.bhojanshala_id as string)
         }
     } catch (err: any) {
         if (err.statusCode) throw err

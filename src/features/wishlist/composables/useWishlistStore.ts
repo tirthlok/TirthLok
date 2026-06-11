@@ -5,6 +5,7 @@ import { useWishlistApi } from '../services/wishlistApi'
 export const useWishlistStore = defineStore('wishlist', () => {
   const tirthWishlist = ref<string[]>([])
   const dharamshalaWishlist = ref<string[]>([])
+  const bhojanshalaWishlist = ref<string[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
   const initialized = ref(false)
@@ -15,16 +16,32 @@ export const useWishlistStore = defineStore('wishlist', () => {
   // ─── Computed ────────────────────────────────────────────────────────────────
 
   const getWishlistCount = computed(
-    () => tirthWishlist.value.length + dharamshalaWishlist.value.length
+    () => tirthWishlist.value.length + dharamshalaWishlist.value.length + bhojanshalaWishlist.value.length
   )
   const hasItems = computed(() => getWishlistCount.value > 0)
 
   const isInWishlist = computed(
-    () => (id: string, entityType: 'tirth' | 'dharamshala' = 'tirth') => {
+    () => (id: string, entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth') => {
       if (entityType === 'dharamshala') return dharamshalaWishlist.value.includes(id)
+      if (entityType === 'bhojanshala') return bhojanshalaWishlist.value.includes(id)
       return tirthWishlist.value.includes(id)
     }
   )
+
+  // Computed helper returning the old array-of-objects structure for pages expecting w.entity_type
+  const wishlistItems = computed(() => {
+    const items: any[] = []
+    tirthWishlist.value.forEach(id => {
+      items.push({ entity_type: 'tirth', tirth_id: id })
+    })
+    dharamshalaWishlist.value.forEach(id => {
+      items.push({ entity_type: 'dharamshala', dharamshala_id: id })
+    })
+    bhojanshalaWishlist.value.forEach(id => {
+      items.push({ entity_type: 'bhojanshala', bhojanshala_id: id })
+    })
+    return items
+  })
 
   // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -33,8 +50,9 @@ export const useWishlistStore = defineStore('wishlist', () => {
     error.value = null
     try {
       const result = await api.getWishlist()
-      tirthWishlist.value = result.tirth
-      dharamshalaWishlist.value = result.dharamshala
+      tirthWishlist.value = result.tirth || []
+      dharamshalaWishlist.value = result.dharamshala || []
+      bhojanshalaWishlist.value = result.bhojanshala || []
       initialized.value = true
     } catch (err: any) {
       error.value = 'Failed to fetch wishlist'
@@ -46,13 +64,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
 
   async function addToWishlist(
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ) {
     if (isInWishlist.value(itemId, entityType)) return
 
     // 1. Optimistic update — instant UI response
     if (entityType === 'dharamshala') {
       dharamshalaWishlist.value = [...dharamshalaWishlist.value, itemId]
+    } else if (entityType === 'bhojanshala') {
+      bhojanshalaWishlist.value = [...bhojanshalaWishlist.value, itemId]
     } else {
       tirthWishlist.value = [...tirthWishlist.value, itemId]
     }
@@ -60,12 +80,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
     try {
       // 2. Persist to server
       const result = await api.addToWishlist(itemId, entityType)
-      tirthWishlist.value = result.tirth
-      dharamshalaWishlist.value = result.dharamshala
+      tirthWishlist.value = result.tirth || []
+      dharamshalaWishlist.value = result.dharamshala || []
+      bhojanshalaWishlist.value = result.bhojanshala || []
     } catch (err: any) {
       // 3. Revert on failure
       if (entityType === 'dharamshala') {
         dharamshalaWishlist.value = dharamshalaWishlist.value.filter(i => i !== itemId)
+      } else if (entityType === 'bhojanshala') {
+        bhojanshalaWishlist.value = bhojanshalaWishlist.value.filter(i => i !== itemId)
       } else {
         tirthWishlist.value = tirthWishlist.value.filter(i => i !== itemId)
       }
@@ -77,13 +100,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
 
   async function removeFromWishlist(
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ) {
     if (!isInWishlist.value(itemId, entityType)) return
 
     // 1. Optimistic update — instant UI response
     if (entityType === 'dharamshala') {
       dharamshalaWishlist.value = dharamshalaWishlist.value.filter(i => i !== itemId)
+    } else if (entityType === 'bhojanshala') {
+      bhojanshalaWishlist.value = bhojanshalaWishlist.value.filter(i => i !== itemId)
     } else {
       tirthWishlist.value = tirthWishlist.value.filter(i => i !== itemId)
     }
@@ -91,12 +116,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
     try {
       // 2. Persist to server
       const result = await api.removeFromWishlist(itemId, entityType)
-      tirthWishlist.value = result.tirth
-      dharamshalaWishlist.value = result.dharamshala
+      tirthWishlist.value = result.tirth || []
+      dharamshalaWishlist.value = result.dharamshala || []
+      bhojanshalaWishlist.value = result.bhojanshala || []
     } catch (err: any) {
       // 3. Revert on failure — restore the item
       if (entityType === 'dharamshala') {
         dharamshalaWishlist.value = [...dharamshalaWishlist.value, itemId]
+      } else if (entityType === 'bhojanshala') {
+        bhojanshalaWishlist.value = [...bhojanshalaWishlist.value, itemId]
       } else {
         tirthWishlist.value = [...tirthWishlist.value, itemId]
       }
@@ -108,7 +136,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
 
   async function toggleWishlist(
     itemId: string,
-    entityType: 'tirth' | 'dharamshala' = 'tirth'
+    entityType: 'tirth' | 'dharamshala' | 'bhojanshala' = 'tirth'
   ) {
     if (isInWishlist.value(itemId, entityType)) {
       await removeFromWishlist(itemId, entityType)
@@ -122,6 +150,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
       await api.clearWishlist()
       tirthWishlist.value = []
       dharamshalaWishlist.value = []
+      bhojanshalaWishlist.value = []
     } catch (err: any) {
       error.value = 'Failed to clear wishlist'
       console.error(err)
@@ -129,23 +158,27 @@ export const useWishlistStore = defineStore('wishlist', () => {
     }
   }
 
-  function setWishlist(tirth: string[], dharamshala: string[]) {
+  function setWishlist(tirth: string[], dharamshala: string[], bhojanshala: string[] = []) {
     tirthWishlist.value = tirth
     dharamshalaWishlist.value = dharamshala
+    bhojanshalaWishlist.value = bhojanshala
   }
 
-  function syncWishlist(tirth: string[], dharamshala: string[]) {
+  function syncWishlist(tirth: string[], dharamshala: string[], bhojanshala: string[] = []) {
     tirthWishlist.value = [...new Set([...tirthWishlist.value, ...tirth])]
     dharamshalaWishlist.value = [...new Set([...dharamshalaWishlist.value, ...dharamshala])]
+    bhojanshalaWishlist.value = [...new Set([...bhojanshalaWishlist.value, ...bhojanshala])]
   }
 
   return {
     tirthWishlist,
     dharamshalaWishlist,
+    bhojanshalaWishlist,
     loading,
     error,
     initialized,
     isInWishlist,
+    wishlistItems,
     getWishlistCount,
     hasItems,
     fetchWishlist,
