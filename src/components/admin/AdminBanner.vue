@@ -2,7 +2,7 @@
   <Transition name="banner">
     <div
       v-if="adminStore.isAdminMode"
-      class="sticky top-0 z-50 bg-gradient-to-r from-gray-900 
+      class="sticky top-0 z-40 bg-gradient-to-r from-gray-900 
              via-gray-800 to-gray-900 border-b border-amber-500/40"
     >
       <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">

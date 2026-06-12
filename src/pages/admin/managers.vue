@@ -186,87 +186,89 @@
           <div
             v-for="manager in managers"
             :key="manager.manager_id"
-            class="p-5 flex items-start justify-between gap-4"
+            class="overflow-hidden"
           >
-            <div class="flex items-start gap-4">
-              <!-- Avatar -->
-              <div class="w-10 h-10 rounded-full bg-gradient-to-br 
-                          from-amber-400 to-orange-500 flex items-center 
-                          justify-center flex-shrink-0">
-                <span class="text-sm font-bold text-white">
-                  {{ manager.full_name?.charAt(0)?.toUpperCase() }}
-                </span>
+            <!-- Summary row -->
+            <div class="p-5 flex items-start justify-between gap-4">
+              <div class="flex items-start gap-4">
+                <!-- Avatar -->
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br 
+                            from-amber-400 to-orange-500 flex items-center 
+                            justify-center flex-shrink-0">
+                  <span class="text-sm font-bold text-white">
+                    {{ manager.full_name?.charAt(0)?.toUpperCase() }}
+                  </span>
+                </div>
+
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <p class="font-semibold text-white">
+                      {{ manager.full_name }}
+                    </p>
+                    <span :class="[
+                      'px-2 py-0.5 rounded-full text-xs font-bold',
+                      manager.is_active
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-gray-700 text-gray-500'
+                    ]">
+                      {{ manager.is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold 
+                                 bg-amber-500/20 text-amber-400">
+                      {{ managerTypeLabel(manager.manager_type) }}
+                    </span>
+                  </div>
+
+                  <!-- Assignments -->
+                  <div class="space-y-1">
+                    <div v-if="manager.tirth"
+                         class="flex items-center gap-1.5 text-xs text-gray-400">
+                      <Icon name="MapPin" :size="11" class="text-blue-400"/>
+                      {{ manager.tirth.tirth_name }}
+                      <span class="text-gray-600">
+                        ({{ manager.tirth.tirth_id }})
+                      </span>
+                    </div>
+                    <div v-if="manager.dharamshala"
+                         class="flex items-center gap-1.5 text-xs text-gray-400">
+                      <Icon name="Building2" :size="11" class="text-green-400"/>
+                      {{ manager.dharamshala.dharamshala_name }}
+                      <span class="text-gray-600">
+                        ({{ manager.dharamshala.dharamshala_id }})
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <p class="font-semibold text-white">
-                    {{ manager.full_name }}
-                  </p>
-                  <span :class="[
-                    'px-2 py-0.5 rounded-full text-xs font-bold',
+              <!-- Actions -->
+              <div class="flex flex-col gap-2 flex-shrink-0">
+                <button @click="startEditManager(manager)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
+                         bg-blue-500/10 text-blue-400 border-blue-500/20
+                         hover:bg-blue-500/20">
+                  Edit
+                </button>
+                <button @click="toggleActive(manager)"
+                  :class="[
+                    'px-3 py-1.5 rounded-lg text-xs font-bold transition border',
                     manager.is_active
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-gray-700 text-gray-500'
+                      ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
+                      : 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20'
                   ]">
-                    {{ manager.is_active ? 'Active' : 'Inactive' }}
-                  </span>
-                  <span class="px-2 py-0.5 rounded-full text-xs font-bold 
-                               bg-amber-500/20 text-amber-400">
-                    {{ managerTypeLabel(manager.manager_type) }}
-                  </span>
-                </div>
-
-                <!-- Assignments -->
-                <div class="space-y-1">
-                  <div v-if="manager.tirth"
-                       class="flex items-center gap-1.5 text-xs text-gray-400">
-                    <Icon name="MapPin" :size="11" class="text-blue-400"/>
-                    {{ manager.tirth.tirth_name }}
-                    <span class="text-gray-600">
-                      ({{ manager.tirth.tirth_id }})
-                    </span>
-                  </div>
-                  <div v-if="manager.dharamshala"
-                       class="flex items-center gap-1.5 text-xs text-gray-400">
-                    <Icon name="Building2" :size="11" class="text-green-400"/>
-                    {{ manager.dharamshala.dharamshala_name }}
-                    <span class="text-gray-600">
-                      ({{ manager.dharamshala.dharamshala_id }})
-                    </span>
-                  </div>
-                </div>
+                  {{ manager.is_active ? 'Deactivate' : 'Activate' }}
+                </button>
+                <button @click="deleteManager(manager)"
+                  :disabled="deletingManager === manager.manager_id"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
+                         bg-red-900/30 text-red-500 border-red-800/50
+                         hover:bg-red-900/50 disabled:opacity-50">
+                  {{ deletingManager === manager.manager_id ? '...' : 'Delete' }}
+                </button>
               </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex flex-col gap-2 flex-shrink-0">
-              <button @click="startEditManager(manager)"
-                class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
-                       bg-blue-500/10 text-blue-400 border-blue-500/20
-                       hover:bg-blue-500/20">
-                Edit
-              </button>
-              <button @click="toggleActive(manager)"
-                :class="[
-                  'px-3 py-1.5 rounded-lg text-xs font-bold transition border',
-                  manager.is_active
-                    ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'
-                    : 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20'
-                ]">
-                {{ manager.is_active ? 'Deactivate' : 'Activate' }}
-              </button>
-              <button @click="deleteManager(manager)"
-                :disabled="deletingManager === manager.manager_id"
-                class="px-3 py-1.5 rounded-lg text-xs font-bold transition border
-                       bg-red-900/30 text-red-500 border-red-800/50
-                       hover:bg-red-900/50 disabled:opacity-50">
-                {{ deletingManager === manager.manager_id ? '...' : 'Delete' }}
-              </button>
-            </div>
-          </div>
-
-          <Transition name="slide-down">
+            <!-- Edit form — inside the v-for item, after the summary row -->
             <div v-if="editingManager === manager.manager_id"
                  class="px-5 pb-5 border-t border-amber-500/20 bg-gray-800/50">
               <p class="text-xs font-bold text-amber-400 uppercase tracking-wide
@@ -357,7 +359,7 @@
                 </button>
               </div>
             </div>
-          </Transition>
+          </div>
         </div>
       </div>
     </div>

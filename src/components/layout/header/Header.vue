@@ -172,7 +172,7 @@
                 leave-to-class="transform scale-95 opacity-0"
               >
                 <div :class="[
-                  'absolute right-0 mt-2 w-56 rounded-xl shadow-xl py-2 origin-top-right z-50',
+                  'absolute right-0 mt-2 w-56 rounded-xl shadow-xl py-2 origin-top-right z-[60]',
                   themeStore?.isDarkMode 
                     ? 'bg-gray-800 border border-gray-700' 
                     : 'bg-white border border-gray-100'
