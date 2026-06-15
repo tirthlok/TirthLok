@@ -1,3 +1,4 @@
+
 <template>
   <div class="relative group" @click="handleCardClick($event, routePrefix)">
     <div
