@@ -37,8 +37,20 @@ export const useAdminModeStore = defineStore('adminMode', () => {
 
   const startActivityTracking = () => {
     if (typeof window === 'undefined') return
-    const events   = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart']
-    const handler  = () => resetIdleTimer()
+
+    // Throttle: reset idle timer at most once every 30 seconds
+    // mousemove fires 60+ times/sec — throttle prevents performance drain
+    let lastReset = 0
+    const THROTTLE_MS = 30_000
+
+    const handler = () => {
+      const now = Date.now()
+      if (now - lastReset < THROTTLE_MS) return
+      lastReset = now
+      resetIdleTimer()
+    }
+
+    const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart']
     events.forEach(e =>
       document.addEventListener(e, handler, { passive: true })
     )

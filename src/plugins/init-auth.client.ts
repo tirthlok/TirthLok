@@ -12,6 +12,10 @@ export default defineNuxtPlugin(async () => {
   // Restore session from localStorage before any component mounts
   await initialize()
 
+  // Safety: always reset admin mode on fresh page load
+  // Admin mode must be explicitly re-entered with password every session
+  useAdminModeStore().exitAdminMode()
+
   // Sync wishlist on startup if already authenticated
   if (isAuthenticated.value) {
     await wishlistStore.fetchWishlist()
@@ -28,7 +32,7 @@ export default defineNuxtPlugin(async () => {
 
     if (!isNowAuthenticated && wasPreviouslyAuthenticated) {
       // Signed out — clear all dependent state
-      wishlistStore.setWishlist([])
+      wishlistStore.setWishlist([], [], [])
       useAdminModeStore().exitAdminMode()
     }
   })

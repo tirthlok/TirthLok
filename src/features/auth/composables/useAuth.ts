@@ -46,7 +46,6 @@ export const useAuth = () => {
             if (typeof window !== 'undefined') {
                 if (window.location.hash.includes('type=recovery') || sessionStorage.getItem('isRecoveryMode') === 'true') {
                     isRecoveryMode.value = true
-                    console.log('[Auth] Recovery mode activated')
                     if (window.location.hash.includes('type=recovery')) {
                         sessionStorage.setItem('isRecoveryMode', 'true')
                     }
@@ -129,9 +128,6 @@ export const useAuth = () => {
                 // We call ensureProfileExists just to verify and wait for the trigger 
                 // to finish so the UI sees the new profile immediately.
                 await ensureProfileExists()
-
-                currentUser.value = data.user
-                currentSession.value = data.session
             }
 
             return { success: true, user: data.user, session: data.session }
@@ -161,9 +157,7 @@ export const useAuth = () => {
                 return { success: false, error: signInError.message }
             }
 
-            currentUser.value = data.user
-            currentSession.value = data.session
-
+            // onAuthStateChange handles state update — no manual set needed
             return { success: true, user: data.user, session: data.session }
         } catch (err: any) {
             error.value = err.message || 'Sign in failed'
