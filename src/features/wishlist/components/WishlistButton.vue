@@ -11,7 +11,7 @@
     :class="[
       isLoading ? 'opacity-50 cursor-wait' : '',
       isInWishlist
-        ? `${heartColor} scale-110`
+        ? `${activeColor} scale-110`
         : `text-white hover:scale-110`
     ]"
   >
@@ -22,7 +22,9 @@
       v-else
       name="Heart"
       :size="32"
-      :class="(isInWishlist || isHovered) ? 'fill-current' : 'stroke-current'"
+      :class="(isInWishlist || isHovered)
+        ? `fill-current ${activeColor}`
+        : 'stroke-current text-white'"
       stroke-width="2"
       :fill="(isInWishlist || isHovered) ? 'currentColor' : 'none'"
       aria-hidden
@@ -75,6 +77,12 @@ let isHovered = ref(false)
 
 // Loading state for API operations
 const isLoading = ref(false)
+
+const activeColor = computed(() => {
+  if (props.entityType === 'dharamshala') return 'text-blue-500'
+  if (props.entityType === 'bhojanshala') return 'text-green-500'
+  return 'text-red-500'
+})
 
 // Handle click with auth gating
 const handleClick = async () => {
