@@ -1,41 +1,32 @@
-/**
- * useSupabase Composable
- * Initialize and provide Supabase client
- */
-
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 let supabaseInstance: SupabaseClient | null = null
 
 export const useSupabase = () => {
-    // Return existing instance if available
-    if (supabaseInstance) {
-        return { supabase: supabaseInstance }
-    }
+  if (import.meta.server) {
+    throw new Error(
+      '[useSupabase] Client-side only. ' +
+      'Server routes must use getSupabaseAdmin() or getSupabaseTirthlok().'
+    )
+  }
 
-    // Get config from Nuxt runtime config
-    const config = useRuntimeConfig()
+  if (supabaseInstance) return { supabase: supabaseInstance }
 
-    const supabaseUrl = config.public.supabaseUrl as string
-    const supabaseKey = config.public.supabaseAnonKey as string
+  const config = useRuntimeConfig()
+  const supabaseUrl = config.public.supabaseUrl  as string
+  const supabaseKey = config.public.supabaseAnonKey as string
 
-    if (!supabaseUrl || !supabaseKey) {
-        console.error('Supabase credentials missing:', {
-            hasUrl: !!supabaseUrl,
-            hasKey: !!supabaseKey
-        })
-        throw new Error('Supabase URL and Anon Key are required. Please configure NUXT_PUBLIC_SUPABASE_URL and NUXT_PUBLIC_SUPABASE_ANON_KEY in .env.local file.')
-    }
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      '[useSupabase] Missing credentials. ' +
+      'Set NUXT_PUBLIC_SUPABASE_URL and NUXT_PUBLIC_SUPABASE_ANON_KEY in .env'
+    )
+  }
 
-    // Create singleton instance
-    supabaseInstance = createClient(supabaseUrl, supabaseKey, {
-        auth: {
-            storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-            persistSession: true,
-            autoRefreshToken: true,
-            detectSessionInUrl: true,
-        }
-    })
+  // createBrowserClient stores session in HttpOnly cookies — not localStorage.
+  // Tokens are invisible to JavaScript. XSS cannot steal them.
+  supabaseInstance = createBrowserClient(supabaseUrl, supabaseKey)
 
-    return { supabase: supabaseInstance }
+  return { supabase: supabaseInstance }
 }

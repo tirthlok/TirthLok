@@ -338,6 +338,25 @@ src/server/
 │   ├── bookings.post.ts            # POST /api/bookings — Create a new booking; handles:
 │   │                               #   room availability check, price calculation, ledger update,
 │   │                               #   invoice creation, confirmation email dispatch
+│
+├── middleware/
+│   └── session.ts                  # Runs on every server request.
+│                                   #   Reads the HttpOnly Supabase cookie,
+│                                   #   refreshes the token if expired,
+│                                   #   attaches event.context.accessToken
+│                                   #   and event.context.session for API routes.
+│                                   #   Uses getSession() for extraction only —
+│                                   #   getUserIdFromEvent() calls getUser() for
+│                                   #   actual server-side verification.
+│
+└── utils/
+    ├── supabase.ts                 # Dual Supabase client factory:
+    │                               #   getSupabaseAdmin()    → public schema (auth operations)
+    │                               #   getSupabaseTirthlok() → tirthlok schema (business data)
+    ├── adminContext.ts             # Reads and validates admin context from request headers;
+    │                               #   exports requireAdmin() and requireSuperAdmin()
+    ├── email.ts                    # Email dispatch helper using Resend SDK
+    └── emailTemplates.ts           # HTML email templates: booking confirmation, invoice, etc.
 │   │
 │   ├── wishlist.get.ts             # GET /api/wishlist — Fetch user's wishlist items
 │   ├── wishlist.post.ts            # POST /api/wishlist — Add item to wishlist
@@ -443,6 +462,11 @@ src/types/
 │                               #   - Bhojanshala, Event, Festival
 │                               #   - User, CustomerProfile, Manager
 │                               #   - WishlistItem, FilterOptions, PaginationMeta
+├── h3.d.ts                     # TypeScript module augmentation for H3EventContext.
+│                               #   Declares accessToken (string | null) and
+│                               #   session (Session | null) set by
+│                               #   server/middleware/session.ts on every
+│                               #   authenticated request.
 └── tirthlok.ts                 # [NEW] Comprehensive Supabase-aligned type definitions:
                                 #   - TirthCard, TirthDetails, TirthImage, MulNayak, TirthEvent
                                 #   - DharamshalaCard, DharamshalaDetails, DharamshalaImage

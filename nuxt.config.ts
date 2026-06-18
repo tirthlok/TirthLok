@@ -25,11 +25,21 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api/v1',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
     },
   },
 
   routeRules: {
+    // Security headers on every route
+    '/**': {
+      headers: {
+        'X-Frame-Options':        'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy':        'strict-origin-when-cross-origin',
+        'X-XSS-Protection':       '1; mode=block',
+        'Permissions-Policy':     'camera=(), microphone=(), geolocation=()',
+      },
+    },
     // Cache homepage for 60 seconds
     '/': { cache: { maxAge: 60 } },
     // Cache tirth details for 1 hour
@@ -62,6 +72,10 @@ export default defineNuxtConfig({
   },
 
   devtools: { enabled: true },
+
+  build: {
+    transpile: ['@supabase/ssr'],
+  },
 
   vite: {}
 })
