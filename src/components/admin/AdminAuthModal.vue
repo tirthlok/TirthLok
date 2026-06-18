@@ -97,7 +97,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watch } from 'vue'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import { useSupabase } from '~/features/auth/composables/useSupabase'
 import Icon from '~/components/ui/Icon.vue'
 
 const props = defineProps<{ show: boolean }>()
@@ -108,7 +107,12 @@ const emit = defineEmits<{
 }>()
 
 const { session } = useAuth()
-const { supabase } = useSupabase()
+
+// Lazily resolve the Supabase client — never at script setup root (runs during SSR)
+const getSupabase = () => {
+  if (import.meta.server) return null
+  return useSupabase().supabase
+}
 
 const password      = ref('')
 const verifying     = ref(false)
@@ -136,6 +140,8 @@ const verify = async () => {
   try {
     // Re-authenticate with current credentials
     // This verifies identity even with an active session
+    const supabase = getSupabase()
+    if (!supabase) return
     const { error } = await supabase.auth.signInWithPassword({
       email:    userEmail.value,
       password: password.value,
