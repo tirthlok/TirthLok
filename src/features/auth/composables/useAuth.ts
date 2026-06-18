@@ -17,7 +17,14 @@ const initialized = ref(false)
 const isRecoveryMode = ref(false)
 
 export const useAuth = () => {
-    const { supabase } = useSupabase()
+    // Lazily resolve the Supabase client only when a method actually
+    // uses it — not at composable creation time. useAuth() is invoked
+    // during SSR (Header, layouts, pages) where no auth action runs,
+    // so the client must not be created at that point.
+    const getSupabase = () => {
+        if (import.meta.server) return null
+        return useSupabase().supabase
+    }
     const {
         getProfile,
         updateProfile,
@@ -35,6 +42,8 @@ export const useAuth = () => {
      */
     const initialize = async () => {
         if (initialized.value) return
+        const supabase = getSupabase()
+        if (!supabase) return
 
         try {
             // Get initial session
@@ -101,6 +110,11 @@ export const useAuth = () => {
         sect?: string,
         mobile?: string
     ) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering' }
+        }
+
         loading.value = true
         error.value = null
 
@@ -143,6 +157,11 @@ export const useAuth = () => {
      * Sign in with email and password
      */
     const signIn = async (email: string, password: string) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering' }
+        }
+
         loading.value = true
         error.value = null
 
@@ -171,6 +190,8 @@ export const useAuth = () => {
      * Sign out the current user
      */
     const signOut = async () => {
+      const supabase = getSupabase()
+
       loading.value = true
       error.value = null
 
@@ -180,6 +201,11 @@ export const useAuth = () => {
       isRecoveryMode.value = false
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('isRecoveryMode')
+      }
+
+      if (!supabase) {
+        loading.value = false
+        return { success: true }
       }
 
       try {
@@ -207,6 +233,11 @@ export const useAuth = () => {
      * Verify password reset token
      */
     const verifyResetToken = async (email: string, token: string) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering' }
+        }
+
         loading.value = true
         error.value = null
 
@@ -238,6 +269,11 @@ export const useAuth = () => {
      * Send password reset email
      */
     const resetPassword = async (email: string) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering' }
+        }
+
         loading.value = true
         error.value = null
 
@@ -264,6 +300,11 @@ export const useAuth = () => {
      * Update user password
      */
     const updatePassword = async (newPassword: string) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering' }
+        }
+
         loading.value = true
         error.value = null
 
@@ -290,6 +331,9 @@ export const useAuth = () => {
      * Check if a user already exists with the given email
      */
     const checkUserExists = async (email: string) => {
+        const supabase = getSupabase()
+        if (!supabase) return false
+
         try {
             const { data, error: rpcError } = await supabase.rpc('check_email_exists', {
                 p_email: email
