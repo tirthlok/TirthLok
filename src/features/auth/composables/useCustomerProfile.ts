@@ -37,7 +37,15 @@ export interface UpdateProfileParams {
 }
 
 export const useCustomerProfile = () => {
-    const { supabase } = useSupabase()
+    // Lazily resolve the Supabase client only when a method actually
+    // uses it — not at composable creation time. useCustomerProfile()
+    // is invoked unconditionally inside useAuth(), which itself is
+    // called during SSR by components like Header.vue. The client
+    // must not be created at that point.
+    const getSupabase = () => {
+        if (import.meta.server) return null
+        return useSupabase().supabase
+    }
     const loading = ref(false)
     const error = ref<string | null>(null)
 
@@ -46,6 +54,11 @@ export const useCustomerProfile = () => {
      * View automatically filters to show only authenticated user's profile
      */
     const getProfile = async () => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering', data: null }
+        }
+
         loading.value = true
         error.value = null
 
@@ -83,6 +96,11 @@ export const useCustomerProfile = () => {
      * Only updates provided fields (COALESCE in SQL)
      */
     const updateProfile = async (params: UpdateProfileParams) => {
+        const supabase = getSupabase()
+        if (!supabase) {
+            return { success: false, error: 'Not available during server rendering', data: null }
+        }
+
         loading.value = true
         error.value = null
 
