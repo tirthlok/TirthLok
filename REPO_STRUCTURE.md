@@ -108,30 +108,18 @@ Globally auto-imported Vue components (Nuxt auto-import). Organized by role/conc
 ```
 src/components/
 ├── admin/
-│   ├── AdminAuthModal.vue     # [NEW] Re-authentication modal for admin mode entry;
+│   ├── AdminAuthModal.vue     # Re-authentication modal for admin mode entry;
 │   │                          #   validates password against Supabase, emits verified/cancelled
 │   ├── AdminBanner.vue        # Banner shown in admin context; role indicator strip
-│   └── TagInput.vue           # [NEW] Reusable tag/chip input with add/remove;
+│   └── TagInput.vue           # Reusable tag/chip input with add/remove;
 │                              #   v-model string[] for lists (facilities, rules, tags)
-│
-├── common/                     # (Empty) Shared generic components (reserved)
-│
-├── header/                     # (Empty) Standalone header pieces (reserved)
 │
 ├── layout/
 │   ├── index.ts                # Barrel export for layout components
 │   └── header/
-│       ├── Header.vue          # Main site header: nav, search bar, user menu, mobile toggle
+│       ├── Header.vue          # Main site header: nav, search bar, user menu, mobile toggle;
+│       │                       #   supports scroll-collapse behavior and dark/light theme
 │       └── SearchSuggestions.vue  # Typeahead dropdown for the header search input
-│
-├── shared/
-│   ├── buttons/                # (Empty) Shared button components (reserved)
-│   ├── cards/
-│   │   └── composables/        # Card-level composables (e.g. card state)
-│   ├── carousel/
-│   │   └── composables/        # Carousel state/logic composables
-│   ├── filters/                # (Empty) Shared filter components (reserved)
-│   └── headers/                # (Empty) Shared header-section components (reserved)
 │
 ├── tirth/                      # (Empty) Tirth-specific components (reserved for future)
 │
@@ -140,7 +128,6 @@ src/components/
     ├── BottomNav.vue           # Mobile bottom navigation bar (4 tabs: Home, Explore, Wishlist, Profile)
     ├── Icon.vue                # SVG icon wrapper component — renders named icons
     ├── TirthCardSkeleton.vue   # Loading skeleton for tirth listing cards
-    ├── buttons/                # (Empty) UI button primitives (reserved)
     ├── cards/
     │   ├── BaseCard.vue        # Reusable card shell (image, title, meta slots)
     │   ├── types.ts            # TypeScript types for card props/slots
@@ -167,7 +154,6 @@ Global, cross-feature Vue composables (auto-imported by Nuxt).
 src/composables/
 ├── useRole.ts                  # Resolves current user role (admin / manager / customer)
 │                               #   — reads from auth store, exposes isAdmin, isManager, etc.
-├── api/                        # (Empty) Global API composables (reserved)
 └── ui/
     ├── index.ts                # Barrel export
     ├── useFilter.ts            # Generic list filtering logic (query param ↔ reactive state)
@@ -186,10 +172,17 @@ src/features/
 ├── auth/
 │   ├── index.ts                # Barrel export
 │   └── composables/
-│       ├── index.ts            # Barrel for auth composables
 │       ├── useAuth.ts          # Core auth: login, logout, register, session management
 │       ├── useCustomerProfile.ts  # Fetch & update customer profile data
 │       └── useSupabase.ts      # Client-side Supabase instance accessor
+│
+├── bhojanshala/
+│   ├── index.ts                # Barrel export
+│   ├── components/             # (Empty) Reserved for future bhojanshala-specific components
+│   ├── composables/
+│   │   └── useBhojanshalaStore.ts  # Reactive bhojanshala data: fetch, filter state
+│   └── services/
+│       └── bhojanshalaApi.ts   # API calls: GET /api/bhojanshala, GET /api/bhojanshala/[id]
 │
 ├── dharamshala/
 │   ├── index.ts                # Barrel export
@@ -202,13 +195,6 @@ src/features/
 │   └── services/
 │       ├── dharamshalaApi.ts   # API calls: GET /api/dharamshala, GET /api/dharamshala/[id]
 │       └── roomBookingApi.ts   # API calls: POST /api/bookings, GET /api/bookings/my
-│
-├── bhojanshala/
-│   ├── index.ts                # Barrel export
-│   ├── composables/
-│   │   └── useBhojanshalaStore.ts  # Reactive bhojanshala data: fetch, filter state
-│   └── services/
-│       └── bhojanshalaApi.ts   # API calls: GET /api/bhojanshala, GET /api/bhojanshala/[id]
 │
 ├── tirth/
 │   ├── index.ts                # Barrel export
@@ -270,7 +256,7 @@ src/pages/
 ├── index.vue                   # / — Homepage: hero, featured tirths, categories, CTA sections
 ├── tirth.vue                   # /tirth — Tirth listing with filters and search
 ├── dharamshala.vue             # /dharamshala — Dharamshala listing with filters and search
-├── bhojanshala.vue             # /bhojanshala — Bhojanshala listing page
+├── bhojanshala.vue             # /bhojanshala — Bhojanshala listing page (top-level route)
 ├── profile.vue                 # /profile — User profile: details, avatar, preferences
 ├── settings.vue                # /settings — Account settings: password, notifications, etc.
 │
@@ -281,7 +267,7 @@ src/pages/
 │   └── [id].vue                # /dharamshala/:id — Dharamshala detail + room booking
 │
 ├── bhojanshala/
-│   ├── index.vue               # [NEW] /bhojanshala — Bhojanshala listing with search, type/state
+│   ├── index.vue               # /bhojanshala — Bhojanshala listing with search, type/state
 │   │                           #   filters, wishlist integration, and pagination
 │   └── [id].vue                # /bhojanshala/:id — Bhojanshala detail page
 │
@@ -300,7 +286,7 @@ src/pages/
 └── admin/
     ├── index.vue               # /admin — Admin dashboard: stats overview
     ├── bookings.vue            # /admin/bookings — All bookings management table
-    ├── bhojanshala.vue         # [NEW] /admin/bhojanshala — Full CRUD management for
+    ├── bhojanshala.vue         # /admin/bhojanshala — Full CRUD management for
     │                           #   bhojanshala entries (add, edit, delete, meal timings,
     │                           #   facilities, tags); scoped by manager tirth assignment
     ├── managers.vue            # /admin/managers — Manager user management
@@ -334,30 +320,9 @@ Nuxt server routes (H3 event handlers). All API endpoints live here. Runs in Nod
 ```
 src/server/
 ├── api/
-│   │
 │   ├── bookings.post.ts            # POST /api/bookings — Create a new booking; handles:
 │   │                               #   room availability check, price calculation, ledger update,
 │   │                               #   invoice creation, confirmation email dispatch
-│
-├── middleware/
-│   └── session.ts                  # Runs on every server request.
-│                                   #   Reads the HttpOnly Supabase cookie,
-│                                   #   refreshes the token if expired,
-│                                   #   attaches event.context.accessToken
-│                                   #   and event.context.session for API routes.
-│                                   #   Uses getSession() for extraction only —
-│                                   #   getUserIdFromEvent() calls getUser() for
-│                                   #   actual server-side verification.
-│
-└── utils/
-    ├── supabase.ts                 # Dual Supabase client factory:
-    │                               #   getSupabaseAdmin()    → public schema (auth operations)
-    │                               #   getSupabaseTirthlok() → tirthlok schema (business data)
-    ├── adminContext.ts             # Reads and validates admin context from request headers;
-    │                               #   exports requireAdmin() and requireSuperAdmin()
-    ├── email.ts                    # Email dispatch helper using Resend SDK
-    └── emailTemplates.ts           # HTML email templates: booking confirmation, invoice, etc.
-│   │
 │   ├── wishlist.get.ts             # GET /api/wishlist — Fetch user's wishlist items
 │   ├── wishlist.post.ts            # POST /api/wishlist — Add item to wishlist
 │   │
@@ -373,7 +338,7 @@ src/server/
 │   │       ├── rooms.get.ts        # GET /api/dharamshala/:id/rooms — Rooms for a dharamshala
 │   │       ├── bookings.get.ts     # GET /api/dharamshala/:id/bookings — Bookings for a property
 │   │       └── rooms/
-│   │           └── availability.get.ts  # [NEW] GET /api/dharamshala/:id/rooms/availability
+│   │           └── availability.get.ts  # GET /api/dharamshala/:id/rooms/availability
 │   │                                    #   — Check room availability for date range and guest count;
 │   │                                    #   validates dates, resolves dharamshala ID, filters by capacity
 │   │
@@ -392,38 +357,44 @@ src/server/
 │   ├── wishlist/
 │   │   └── [id].delete.ts          # DELETE /api/wishlist/:id — Remove from wishlist
 │   │
-│   ├── admin/
-│   │   ├── stats.get.ts            # GET /api/admin/stats — Dashboard KPIs (counts, revenue)
-│   │   ├── bookings.get.ts         # GET /api/admin/bookings — All bookings (admin view)
-│   │   ├── managers.get.ts         # GET /api/admin/managers — List all manager accounts
-│   │   ├── managers.post.ts        # POST /api/admin/managers — Create new manager account
-│   │   ├── rooms.get.ts            # GET /api/admin/rooms — All rooms across properties
-│   │   ├── rooms.post.ts           # [NEW] POST /api/admin/rooms — Create new room type;
-│   │   │                           #   validates required fields, price bounds, manager scoping
-│   │   ├── bhojanshala.get.ts      # [NEW] GET /api/admin/bhojanshala — List all bhojanshalas
-│   │   │                           #   (admin view with tirth association + details join)
-│   │   ├── bhojanshala.post.ts     # [NEW] POST /api/admin/bhojanshala — Create new bhojanshala;
-│   │   │                           #   validates BL-XX-0000 ID format, inserts card + details,
-│   │   │                           #   rolls back card on detail failure
-│   │   ├── bookings/
-│   │   │   └── [id].patch.ts       # PATCH /api/admin/bookings/:id — Admin update booking
-│   │   ├── managers/
-│   │   │   ├── [id].patch.ts       # PATCH /api/admin/managers/:id — Update manager details
-│   │   │   └── [id].delete.ts      # [NEW] DELETE /api/admin/managers/:id — Hard-delete manager
-│   │   │                           #   (super admin only)
-│   │   ├── rooms/
-│   │   │   ├── [id].patch.ts       # PATCH /api/admin/rooms/:id — Update room details
-│   │   │   └── [id].delete.ts      # [NEW] DELETE /api/admin/rooms/:id — Soft-delete room
-│   │   │                           #   (sets is_active + is_available_ui = false); manager-scoped
-│   │   └── bhojanshala/
-│   │       ├── [id].patch.ts       # [NEW] PATCH /api/admin/bhojanshala/:id — Update bhojanshala
-│   │       │                       #   card + details fields; manager ownership check via tirth
-│   │       └── [id].delete.ts      # [NEW] DELETE /api/admin/bhojanshala/:id — Soft-delete
-│   │                               #   bhojanshala (sets is_active = false); manager-scoped
-│   │
-│   ├── events/                     # (Empty) Reserved for event-specific API endpoints
-│   ├── festivals/                  # (Empty) Reserved for festival-specific API endpoints
-│   └── favorites/                  # (Empty) Reserved for favorites API endpoints
+│   └── admin/
+│       ├── stats.get.ts            # GET /api/admin/stats — Dashboard KPIs (counts, revenue)
+│       ├── bookings.get.ts         # GET /api/admin/bookings — All bookings (admin view)
+│       ├── bhojanshala.get.ts      # GET /api/admin/bhojanshala — List all bhojanshalas
+│       │                           #   (admin view with tirth association + details join)
+│       ├── bhojanshala.post.ts     # POST /api/admin/bhojanshala — Create new bhojanshala;
+│       │                           #   validates BL-XX-0000 ID format, inserts card + details,
+│       │                           #   rolls back card on detail failure
+│       ├── managers.get.ts         # GET /api/admin/managers — List all manager accounts
+│       ├── managers.post.ts        # POST /api/admin/managers — Create new manager account
+│       ├── rooms.get.ts            # GET /api/admin/rooms — All rooms across properties
+│       ├── rooms.post.ts           # POST /api/admin/rooms — Create new room type;
+│       │                           #   validates required fields, price bounds, manager scoping
+│       ├── bookings/
+│       │   └── [id].patch.ts       # PATCH /api/admin/bookings/:id — Admin update booking
+│       ├── managers/
+│       │   ├── [id].patch.ts       # PATCH /api/admin/managers/:id — Update manager details
+│       │   └── [id].delete.ts      # DELETE /api/admin/managers/:id — Hard-delete manager
+│       │                           #   (super admin only)
+│       ├── rooms/
+│       │   ├── [id].patch.ts       # PATCH /api/admin/rooms/:id — Update room details
+│       │   └── [id].delete.ts      # DELETE /api/admin/rooms/:id — Soft-delete room
+│       │                           #   (sets is_active + is_available_ui = false); manager-scoped
+│       └── bhojanshala/
+│           ├── [id].patch.ts       # PATCH /api/admin/bhojanshala/:id — Update bhojanshala
+│           │                       #   card + details fields; manager ownership check via tirth
+│           └── [id].delete.ts      # DELETE /api/admin/bhojanshala/:id — Soft-delete
+│                                   #   bhojanshala (sets is_active = false); manager-scoped
+│
+├── middleware/
+│   └── session.ts                  # Runs on every server request.
+│                                   #   Reads the HttpOnly Supabase cookie,
+│                                   #   refreshes the token if expired,
+│                                   #   attaches event.context.accessToken
+│                                   #   and event.context.session for API routes.
+│                                   #   Uses getSession() for extraction only —
+│                                   #   getUserIdFromEvent() calls getUser() for
+│                                   #   actual server-side verification.
 │
 └── utils/
     ├── supabase.ts                 # Dual Supabase client factory:
@@ -467,7 +438,7 @@ src/types/
 │                               #   session (Session | null) set by
 │                               #   server/middleware/session.ts on every
 │                               #   authenticated request.
-└── tirthlok.ts                 # [NEW] Comprehensive Supabase-aligned type definitions:
+└── tirthlok.ts                 # Comprehensive Supabase-aligned type definitions:
                                 #   - TirthCard, TirthDetails, TirthImage, MulNayak, TirthEvent
                                 #   - DharamshalaCard, DharamshalaDetails, DharamshalaImage
                                 #   - RoomType, RoomImage
