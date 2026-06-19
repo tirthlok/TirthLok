@@ -89,7 +89,7 @@
 
       <!-- Loading Skeleton Grid -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
-        <TirthCardSkeleton v-for="n in 8" :key="n" />
+        <CardSkeleton v-for="n in 8" :key="n" />
       </div>
 
       <!-- Dharamshala Cards Grid -->
@@ -154,9 +154,8 @@ import { useThemeStore } from '~/stores/theme'
 import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import { useGrouping } from '~/composables/ui/useGrouping'
-import { BaseCard, Icon, TirthCardSkeleton } from '~/components/ui'
-import DharamshalaFilterPanel from '~/components/ui/filters/DharamshalaFilterPanel.vue'
+import { BaseCard, Icon, CardSkeleton } from '~/components/ui'
+import DharamshalaFilterPanel from '~/features/dharamshala/components/DharamshalaFilterPanel.vue'
 import type { Dharamshala } from '~/types/models'
 
 definePageMeta({

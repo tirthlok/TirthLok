@@ -510,7 +510,7 @@ import { ref, onMounted } from 'vue'
 import { useAdminModeStore } from '~/stores/adminMode'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import Icon from '~/components/ui/Icon.vue'
-import TagInput from '~/components/admin/TagInput.vue'
+import TagInput from '~/features/admin/components/TagInput.vue'
 
 definePageMeta({ layout: 'default' })
 

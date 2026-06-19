@@ -31,7 +31,7 @@
       "#build": [".nuxt"]
     },
     "types": ["nuxt/schema", "node"],
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "6.0"
   },
   "include": ["**/*.ts", "**/*.d.ts", "**/*.tsx", "**/*.vue", ".nuxt/nuxt.d.ts"],
   "exclude": ["node_modules", "dist"],

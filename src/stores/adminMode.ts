@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRole } from '~/composables/useRole'
+import { useRole } from '~/features/auth/composables/useRole'
 
 // 30 minutes in milliseconds
 const ADMIN_IDLE_TIMEOUT = 30 * 60 * 1000

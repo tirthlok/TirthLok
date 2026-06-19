@@ -89,7 +89,7 @@
 
       <!-- Loading Skeleton Grid -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
-        <TirthCardSkeleton v-for="n in 8" :key="n" />
+        <CardSkeleton v-for="n in 8" :key="n" />
       </div>
 
       <!-- Tirth Cards Grid -->
@@ -154,8 +154,8 @@ import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import { useGrouping } from '~/composables/ui/useGrouping'
-import { BaseCard, Icon, TirthFilterPanel, TirthCardSkeleton } from '~/components/ui'
+import { BaseCard, Icon, CardSkeleton } from '~/components/ui'
+import TirthFilterPanel from '~/features/tirth/components/TirthFilterPanel.vue'
 import type { Tirth } from '~/types/models'
 
 definePageMeta({

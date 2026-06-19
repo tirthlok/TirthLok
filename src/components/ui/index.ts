@@ -27,9 +27,10 @@ export type {
 } from './cards/types.ts'
 
 // =============================================================================
-// Filter Components
+// Filter Components — Shared Only
 // =============================================================================
-export { default as TirthFilterPanel } from './filters/TirthFilterPanel.vue'
+// NOTE: TirthFilterPanel → features/tirth/components/TirthFilterPanel.vue
+// NOTE: DharamshalaFilterPanel → features/dharamshala/components/DharamshalaFilterPanel.vue
 export { default as SearchBox } from './filters/SearchBox.vue'
 export type { SearchResult } from './filters/SearchBox.vue'
 
@@ -39,8 +40,9 @@ export type { SearchResult } from './filters/SearchBox.vue'
 // (ActionButton and TagButton removed — orphaned, no consumers)
 
 // =============================================================================
-// Common UI Components (from merged common folder)
+// Common UI Components
 // =============================================================================
 export { default as Icon } from './Icon.vue'
 export { default as BottomNav } from './BottomNav.vue'
-export { default as TirthCardSkeleton } from './TirthCardSkeleton.vue'
+// CardSkeleton — used by tirth and dharamshala list pages
+export { default as CardSkeleton } from './CardSkeleton.vue'

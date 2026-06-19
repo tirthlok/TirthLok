@@ -6,6 +6,7 @@
 // Components
 export { default as RoomCard } from './components/RoomCard.vue'
 export { default as RoomBookingModal } from './components/RoomBookingModal.vue'
+export { default as DharamshalaFilterPanel } from './components/DharamshalaFilterPanel.vue'
 
 // Composables (State)
 export { useDharamshalaStore } from './composables/useDharamshalaStore'

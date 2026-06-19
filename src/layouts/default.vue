@@ -165,8 +165,8 @@ import { useThemeStore } from '~/stores/theme'
 import { useAdminModeStore } from '~/stores/adminMode'
 import { useRouter } from 'vue-router'
 import Header from '~/components/layout/header/Header.vue'
-import AdminBanner from '~/components/admin/AdminBanner.vue'
-import AdminAuthModal from '~/components/admin/AdminAuthModal.vue'
+import AdminBanner from '~/features/admin/components/AdminBanner.vue'
+import AdminAuthModal from '~/features/admin/components/AdminAuthModal.vue'
 import Icon from '~/components/ui/Icon.vue'
 
 const themeStore = useThemeStore()
