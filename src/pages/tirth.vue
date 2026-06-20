@@ -10,7 +10,7 @@
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
-       </div>
+       </div>
       <div class="my-2">
           <h2 :class="[
             'text-2xl md:text-3xl font-bold',
@@ -43,7 +43,7 @@
                 :class="[
                   'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border flex-shrink-0',
                   selectedGrouping === filter.id
-                    ? 'bg-red-500 text-white border-red-500 shadow-md'
+                    ? 'bg-[#E8562A] text-white border-[#E8562A] shadow-md'
                     : (themeStore?.isDarkMode 
                       ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
                       : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
@@ -59,7 +59,7 @@
               :class="[
                 'hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border flex-shrink-0',
                 hasActiveFilters
-                  ? 'text-red-500 border-red-500 shadow-md'
+                  ? 'text-[#E8562A] border-[#E8562A] shadow-md'
                   : (themeStore?.isDarkMode 
                     ? 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-500 hover:bg-gray-600' 
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50')
@@ -67,7 +67,7 @@
             >
               <Icon name="Sliders" :size="16" />
               <span>Advanced</span>
-              <span v-if="hasActiveFilters" class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-red-500 rounded-full">{{ activeFilterCount }}</span>
+              <span v-if="hasActiveFilters" class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-[#E8562A] rounded-full">{{ activeFilterCount }}</span>
             </button>
           </div>
         </div>
@@ -87,33 +87,18 @@
         ]">{{ error }}</p>
       </div>
 
-      <!-- Loading Skeleton Grid -->
-      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
-        <CardSkeleton v-for="n in 8" :key="n" />
+      <!-- Loading Skeleton Grid — matches new Airbnb card proportions -->
+      <div v-if="loading" class="tirth-grid pb-4">
+        <TirthCardSkeleton v-for="n in 12" :key="n" />
       </div>
 
-      <!-- Tirth Cards Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
-        <div
-            v-for="tirth in tirthStore.filteredTirths"
-            :key="tirth.id"
-            class="transition-transform hover:-translate-y-2 duration-300 group relative"
-          >
-            <!-- New badge with animation -->
-            <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
-              <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ tirth.tirth_tags[0] }}</span>
-            </div>
-            <BaseCard
-              :item="tirth"
-              card-type="tirth"
-              :show-wishlist="true"
-              :show-details="false"
-              variant="featured"
-              :image-height="'h-72'"
-              route-prefix="/tirth"
-              :tag-fields="[tirth.sect, tirth.type]"
-            />
-        </div>
+      <!-- Tirth Cards Grid — Airbnb style -->
+      <div v-else class="tirth-grid pb-4">
+        <TirthCard
+          v-for="tirth in tirthStore.filteredTirths"
+          :key="tirth.id"
+          :tirth="tirth"
+        />
       </div>
 
       <!-- Empty State -->
@@ -154,9 +139,12 @@ import { useThemeStore } from '~/stores/theme'
 import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import { BaseCard, Icon, CardSkeleton } from '~/components/ui'
+import { Icon } from '~/components/ui'
+import TirthCard from '~/features/tirth/components/TirthCard.vue'
+import TirthCardSkeleton from '~/components/ui/TirthCardSkeleton.vue'
 import TirthFilterPanel from '~/features/tirth/components/TirthFilterPanel.vue'
 import type { Tirth } from '~/types/models'
+
 
 definePageMeta({
   layout: 'default'
@@ -338,3 +326,27 @@ onMounted(async () => {
   await tirthStore.fetchFilterOptions()
 })
 </script>
+
+<style scoped>
+/* ── Airbnb-style card grid ──────────────────────────────── */
+.tirth-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+/* Responsive breakpoint tweaks */
+@media (max-width: 479px) {
+  .tirth-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 359px) {
+  .tirth-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+</style>

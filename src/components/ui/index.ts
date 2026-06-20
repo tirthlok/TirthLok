@@ -44,5 +44,7 @@ export type { SearchResult } from './filters/SearchBox.vue'
 // =============================================================================
 export { default as Icon } from './Icon.vue'
 export { default as BottomNav } from './BottomNav.vue'
-// CardSkeleton — used by tirth and dharamshala list pages
+// CardSkeleton — generic skeleton used by various list pages
 export { default as CardSkeleton } from './CardSkeleton.vue'
+// TirthCardSkeleton — Airbnb square skeleton matching TirthCard proportions
+export { default as TirthCardSkeleton } from './TirthCardSkeleton.vue'

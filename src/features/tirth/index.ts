@@ -8,6 +8,7 @@ export { default as TirthAbout } from './components/TirthAbout.vue'
 export { default as TirthFacilities } from './components/TirthFacilities.vue'
 export { default as TirthEvents } from './components/TirthEvents.vue'
 export { default as TirthFilterPanel } from './components/TirthFilterPanel.vue'
+export { default as TirthCard } from './components/TirthCard.vue'
 
 // Composables (State)
 export { useTirthStore } from './composables/useTirthStore'
