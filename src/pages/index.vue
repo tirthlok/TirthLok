@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-background min-h-screen font-sans md:mx-auto md:px-4 lg:px-8 md:py-6 max-w-[1920px]">
+  <div class="bg-background min-h-screen font-sans page-container py-6">
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
     <div class="flex flex-1 justify-center mx-auto">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->

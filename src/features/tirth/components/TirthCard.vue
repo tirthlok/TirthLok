@@ -63,7 +63,9 @@
       <!-- Line 2: City, State -->
       <p class="tirth-card__location">{{ tirth.location?.city }}, {{ tirth.location?.state }}</p>
       <!-- Line 3: Kshetra type -->
-      <p v-if="tirth.type" class="tirth-card__kshetra">{{ tirth.type }}</p>
+      <p v-if="tirth.tirth_type || tirth.category || tirth.type" class="tirth-card__kshetra">
+        {{ (tirth.tirth_type || tirth.category || tirth.type || '').replace(/-/g, ' ') }}
+      </p>
     </div>
 
   </div>

@@ -23,16 +23,16 @@
     --color-accent-hover: #D4A955;
 
     /* Background & Surface Colors */
-    --color-background: #FDFBF7;
+    --color-background: #F7F7F7;
     /* Warm Cream - Softer than pure white */
     --color-surface: #FFFFFF;
-    --color-surface-muted: #F2F0E9;
+    --color-surface-muted: #F0F0F0;
     /* Slightly darker warm grey/beige */
 
     /* Text Colors */
-    --color-text-main: #2D2A26;
+    --color-text-main: #222222;
     /* Warm Charcoal - Softer than black */
-    --color-text-muted: #787570;
+    --color-text-muted: #717171;
     /* Warm Grey */
     --color-text-inverted: #FFFFFF;
 

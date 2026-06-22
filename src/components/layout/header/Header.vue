@@ -3,11 +3,11 @@
     class="sticky top-0 z-50 font-sans transition-all duration-300"
     :class="[
       isScrolled 
-        ? (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 shadow-none' : 'bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-none')
-        : (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm shadow-sm' : 'bg-white/95 backdrop-blur-sm shadow-sm')
+        ? (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm border-b border-gray-800 shadow-none' : 'bg-white border-b border-[#EBEBEB]')
+        : (themeStore?.isDarkMode ? 'bg-gray-950/95 backdrop-blur-sm shadow-sm' : 'bg-white border-b border-[#EBEBEB]')
     ]"
   >
-    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6">
+    <div class="page-container">
       <div 
         class="flex py-4 sm:items-center sm:justify-around md:justify-between gap-4 md:items-start transition-all duration-300"
       >

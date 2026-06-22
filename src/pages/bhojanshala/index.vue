@@ -4,7 +4,7 @@
     <!-- Page Header -->
     <div class="bg-gradient-to-br from-green-950 via-green-900 to-emerald-900
                 border-b border-green-800/30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="page-container py-10">
         <div class="flex items-center gap-3 mb-3">
           <span class="text-3xl">🍽️</span>
           <h1 class="text-3xl font-black text-white">Bhojanshala</h1>
@@ -19,7 +19,7 @@
     <!-- Filters -->
     <div class="sticky top-0 z-20 bg-background/95 backdrop-blur
                 border-b border-border">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="page-container py-3">
         <div class="flex flex-wrap items-center gap-3">
 
           <!-- Search -->
@@ -72,7 +72,7 @@
     </div>
 
     <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="page-container py-6">
 
       <!-- Loading -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

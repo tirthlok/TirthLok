@@ -4,25 +4,13 @@
       'min-h-screen py-4 sm:py-8 md:py-12',
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
-      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="page-container py-6">
       <!-- Header -->
-       <div class="flex items-center gap-2 text-sm text-gray-600">
+       <div class="flex items-center gap-2 text-sm text-gray-600 mb-6">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/tirth" class="hover:text-gray-900 transition-colors">Tirth</NuxtLink>
        </div>
-      <div class="my-2">
-          <h2 :class="[
-            'text-2xl md:text-3xl font-bold',
-            themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-          ]">Tirth</h2>
-          <p :class="[
-            'text-base',
-            themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          ]">
-            Browse all {{ loading ? '...' : allTirths.length }} tirths.
-          </p>
-        </div>
 
       <!-- Sticky Filter Bar - Always visible -->
       <div :class="[
@@ -214,7 +202,7 @@ const uniqueGroupings = computed(() => getUniqueGroupings(allTirths.value))
 
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Wishlist (${wishlistStore.getWishlistCount})` },
+  { id: 'wishlist', label: `Wishlist${wishlistStore.getWishlistCount > 0 ? ` (${wishlistStore.getWishlistCount})` : ''}` },
   ...uniqueGroupings.value.map(grouping => ({
     id: grouping,
     label: formatGroupingTitle(grouping)
@@ -225,7 +213,7 @@ const getFilterIcon = (id: string) => {
   switch (id) {
     case 'all': return 'Grid3X3'
     case 'wishlist': return 'Heart'
-    default: return 'MapPin'
+    default: return 'Tag'
   }
 }
 
