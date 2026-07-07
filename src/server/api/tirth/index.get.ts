@@ -53,6 +53,13 @@ export default defineEventHandler(async (event) => {
             images = [images]
           }
         }
+        // Normalize: if elements are objects with a .url property (TirthImage shape), extract URL strings
+        if (Array.isArray(images) && images.length > 0 && typeof images[0] === 'object' && images[0] !== null) {
+          images = [...images]
+            .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+            .map((img: any) => img.url || img.image_url || '')
+            .filter(Boolean)
+        }
 
         return {
           id: row.tirth_id || 'unknown',

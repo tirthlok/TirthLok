@@ -75,8 +75,14 @@ export default defineEventHandler(async (event) => {
       // Details may not exist for every tirth — not an error
     }
 
-    // Merge card and detail data, with details taking precedence
-    data = { ...cardData, ...detailedData }
+    // Merge card and detail data — but don't let a null/undefined tirth_images in detailedData clobber the card's images
+    console.log('[tirth-detail] cardData.tirth_images:', JSON.stringify(cardData.tirth_images))
+    console.log('[tirth-detail] detailedData?.tirth_images:', JSON.stringify(detailedData?.tirth_images))
+    const mergedImages = (detailedData?.tirth_images && detailedData.tirth_images.length > 0)
+      ? detailedData.tirth_images
+      : cardData.tirth_images
+    console.log('[tirth-detail] mergedImages chosen:', JSON.stringify(mergedImages))
+    data = { ...cardData, ...detailedData, tirth_images: mergedImages }
 
     // Fetch events from tirth_events
     let events: any[] = []
@@ -110,6 +116,14 @@ export default defineEventHandler(async (event) => {
         images = [images]
       }
     }
+    // Normalize: if elements are objects with a .url property (TirthImage shape), extract URL strings
+    if (Array.isArray(images) && images.length > 0 && typeof images[0] === 'object' && images[0] !== null) {
+      images = [...images]
+        .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+        .map((img: any) => img.url || img.image_url || '')
+        .filter(Boolean)
+    }
+    console.log('[tirth-detail] final images array length:', images.length, '→', images)
 
     const transformedTirth = {
       id: data.tirth_id || 'unknown',

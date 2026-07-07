@@ -3,7 +3,8 @@
  * Handles image carousel logic for reusable components
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch, isRef } from 'vue'
+import type { Ref } from 'vue'
 
 export interface UseImageCarouselOptions {
   autoPlay?: boolean
@@ -11,66 +12,61 @@ export interface UseImageCarouselOptions {
   allowClick?: boolean
 }
 
+/** Normalize any input format to a plain string array */
+function toStringArray(images: string[] | string | undefined): string[] {
+  if (!images) return []
+  if (Array.isArray(images)) {
+    return images
+      .map((img: any) => {
+        if (typeof img === 'string') return img
+        if (img && typeof img === 'object') return img.url || img.image_url || ''
+        return ''
+      })
+      .filter(Boolean)
+  }
+  if (typeof images === 'string' && images) return [images]
+  return []
+}
+
 export function useImageCarousel(
-  images: string[] | string | undefined,
+  images: string[] | string | undefined | Ref<string[] | string | undefined> | (() => string[] | string | undefined),
   _options: UseImageCarouselOptions = {}
 ) {
   const currentImageIndex = ref(0)
 
-  // Normalize images to array (and filter broken images on client)
-  const _initialImages = Array.isArray(images) ? images.slice() : images ? [images] : []
-  const imagesArr = ref<string[]>(_initialImages)
-
-  // Preload images on client and filter out truly broken ones
-  // Increased timeout to 5 seconds for production network reliability
-  const preloadImage = (url: string, timeout = 5000) => {
-    return new Promise<boolean>((resolve) => {
-      if (typeof window === 'undefined') return resolve(true) // SSR: assume valid
-      const img = new Image()
-      let done = false
-      const t = setTimeout(() => {
-        if (done) return
-        done = true
-        // On timeout, don't abort - assume image is still loading and keep it
-        resolve(true)
-      }, timeout)
-      img.onload = () => {
-        if (done) return
-        done = true
-        clearTimeout(t)
-        resolve(true)
-      }
-      img.onerror = () => {
-        if (done) return
-        done = true
-        clearTimeout(t)
-        resolve(false) // Only reject truly broken images (404, etc.)
-      }
-      img.src = url
-    })
+  // Resolve raw value whether images is a plain value, Ref, or getter function
+  const getRaw = (): string[] | string | undefined => {
+    if (typeof images === 'function') return (images as () => string[] | string | undefined)()
+    if (isRef(images)) return images.value
+    return images as string[] | string | undefined
   }
 
-  // Validate and filter images when called (lazy validation)
-  // Only removes images that fail to load (404 errors), not slow-loading ones
-  const validateImages = async () => {
-    if (_initialImages.length === 0) {
-      imagesArr.value = []
-      return
-    }
-    const validated: string[] = []
-    await Promise.all(
-      _initialImages.map(async (u) => {
-        try {
-          const ok = await preloadImage(u)
-          if (ok) validated.push(u)
-        } catch (e) {
-          // ignore
+  const imagesArr = ref<string[]>(toStringArray(getRaw()))
+
+  // Keep imagesArr reactive when images is a Ref or getter
+  if (typeof images === 'function' || isRef(images)) {
+    watch(
+      () => getRaw(),
+      (newVal) => {
+        const arr = toStringArray(newVal)
+        if (arr.length > 0) {
+          imagesArr.value = arr
+          // Reset index if it's now out of range
+          if (currentImageIndex.value >= arr.length) {
+            currentImageIndex.value = 0
+          }
         }
-      })
+      },
+      { deep: true }
     )
-    // Only update if we have results, otherwise keep original
-    if (validated.length > 0) {
-      imagesArr.value = validated
+  }
+
+  // Kept for backward-compat with ImageCarousel.vue — now just re-syncs from source
+  // (removed the image-preload filter which was silently dropping valid images)
+  const validateImages = async () => {
+    const arr = toStringArray(getRaw())
+    if (arr.length > 0) {
+      imagesArr.value = arr
     }
   }
 

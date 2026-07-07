@@ -3,18 +3,63 @@
   <div class="tirth-card" @click="handleCardClick($event)">
 
     <!-- ── Image Container ── -->
-    <div class="tirth-card__image-wrap">
-      <!-- Image with hover scale -->
-      <img
-        :src="displayImage || placeholder"
-        :alt="tirth.name"
-        loading="lazy"
-        class="tirth-card__image"
-        :class="{ 'tirth-card__image--hovered': isHovered }"
-        @error="onImageError"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false"
-      />
+    <div
+      class="tirth-card__image-wrap"
+      @mouseenter="isHovered = true"
+      @mouseleave="isHovered = false"
+    >
+      <!-- Image with crossfade transition -->
+      <transition name="tc-fade" mode="out-in">
+        <img
+          :key="currentIndex"
+          :src="cardImages[currentIndex] || placeholder"
+          :alt="tirth.name"
+          loading="lazy"
+          class="tirth-card__image"
+          :class="{ 'tirth-card__image--hovered': isHovered }"
+          @error="onImageError"
+        />
+      </transition>
+
+      <!-- Prev / Next arrows — only when multiple images and hovered -->
+      <template v-if="cardImages.length > 1 && isHovered">
+        <button
+          class="tirth-card__nav tirth-card__nav--prev"
+          data-no-nav="true"
+          type="button"
+          aria-label="Previous image"
+          @click.stop="prevCardImage"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="tirth-card__nav-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          class="tirth-card__nav tirth-card__nav--next"
+          data-no-nav="true"
+          type="button"
+          aria-label="Next image"
+          @click.stop="nextCardImage"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="tirth-card__nav-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </template>
+
+      <!-- Dot indicators -->
+      <div v-if="cardImages.length > 1" class="tirth-card__dots">
+        <button
+          v-for="(_, i) in cardImages"
+          :key="i"
+          class="tirth-card__dot"
+          :class="{ 'tirth-card__dot--active': i === currentIndex }"
+          data-no-nav="true"
+          type="button"
+          :aria-label="`Image ${i + 1}`"
+          @click.stop="currentIndex = i"
+        />
+      </div>
 
       <!-- Tag Badge — top-left (uses existing tirth_tags logic) -->
       <div
@@ -93,19 +138,47 @@ const { isAuthenticated } = useAuth()
 
 // ── Image handling ─────────────────────────────────────────────────────────
 const imageError = ref(false)
+const currentIndex = ref(0)
 
-const displayImage = computed(() => {
-  if (imageError.value) return null
+// Normalize images to an array of URL strings
+const cardImages = computed(() => {
+  if (imageError.value) return []
   const imgs = props.tirth.images
-  if (Array.isArray(imgs) && imgs.length > 0) return imgs[0]
-  if (typeof imgs === 'string' && imgs) return imgs
-  return null
+  if (Array.isArray(imgs) && imgs.length > 0) {
+    // Each element might be a plain string or a {url,…} object
+    return imgs.map((img: any) => {
+      if (typeof img === 'string') return img
+      if (img && typeof img === 'object') return img.url || img.image_url || ''
+      return ''
+    }).filter(Boolean)
+  }
+  if (typeof imgs === 'string' && imgs) return [imgs]
+  return []
 })
 
 const placeholder = placeholderImg
 
 const onImageError = () => {
-  imageError.value = true
+  // Remove broken image from rotation rather than hiding all images
+  const imgs = cardImages.value
+  if (imgs.length > 1) {
+    // skip to next valid image
+    currentIndex.value = (currentIndex.value + 1) % imgs.length
+  } else {
+    imageError.value = true
+  }
+}
+
+const nextCardImage = () => {
+  const len = cardImages.value.length
+  if (len < 2) return
+  currentIndex.value = (currentIndex.value + 1) % len
+}
+
+const prevCardImage = () => {
+  const len = cardImages.value.length
+  if (len < 2) return
+  currentIndex.value = (currentIndex.value - 1 + len) % len
 }
 
 // ── Hover state ────────────────────────────────────────────────────────────
@@ -187,10 +260,78 @@ const handleCardClick = (event: MouseEvent) => {
   object-fit: cover;
   transition: transform 0.3s ease;
   display: block;
+  position: absolute;
+  inset: 0;
 }
 
 .tirth-card__image--hovered {
   transform: scale(1.04);
+}
+
+/* ── Carousel nav arrows ────────────────────────────────── */
+.tirth-card__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.88);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: background 0.15s ease, transform 0.15s ease;
+  animation: tcFadeIn 0.15s ease;
+}
+
+.tirth-card__nav:hover {
+  background: rgba(255,255,255,1);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.tirth-card__nav--prev { left: 8px; }
+.tirth-card__nav--next { right: 8px; }
+
+.tirth-card__nav-icon {
+  width: 14px;
+  height: 14px;
+  color: #1A1A18;
+}
+
+/* ── Dot indicators ─────────────────────────────────────── */
+.tirth-card__dots {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.tirth-card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255,255,255,0.55);
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.tirth-card__dot--active {
+  background: #ffffff;
+  width: 18px;
+  border-radius: 3px;
 }
 
 /* ── Badge — top-left, uses existing tags ──────────────── */
@@ -311,5 +452,24 @@ const handleCardClick = (event: MouseEvent) => {
 
 :global(.dark) .tirth-card__image-wrap {
   background: #2A2825;
+}
+
+/* ── Crossfade transition for image swap ────────────────── */
+.tc-fade-enter-active,
+.tc-fade-leave-active {
+  transition: opacity 0.25s ease;
+  position: absolute;
+  inset: 0;
+}
+
+.tc-fade-enter-from,
+.tc-fade-leave-to {
+  opacity: 0;
+}
+
+/* ── Arrow fade-in keyframe ─────────────────────────────── */
+@keyframes tcFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 </style>

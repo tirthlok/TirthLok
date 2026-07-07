@@ -109,7 +109,7 @@ const {
   prevImage,
   goToImage,
   validateImages,
-} = useImageCarousel(props.images)
+} = useImageCarousel(() => props.images)
 
 // local hover state to control arrow visibility and image scale
 const isHovered = ref(false)
