@@ -174,7 +174,7 @@ const handleCardClick = (event: MouseEvent) => {
 /* ── Image Wrapper ─────────────────────────────────────── */
 .tirth-card__image-wrap {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   border-radius: 12px;
   overflow: hidden;
   background: #F0EDE8;
