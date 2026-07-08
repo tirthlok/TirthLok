@@ -1,28 +1,16 @@
 <template>
     <router-view v-if="hasId" />
     <div v-else :class="[
-      'min-h-screen py-4 sm:py-8 md:py-12',
+      'min-h-screen py-2 sm:py-4',
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="page-container py-6">
       <!-- Header -->
-       <div class="flex items-center gap-2 text-sm text-gray-600">
+       <div class="flex items-center gap-2 text-sm text-gray-600 mb-6">
           <NuxtLink to="/" class="hover:text-gray-900 transition-colors">Home</NuxtLink>
           <Icon name="ChevronRight" :size="14" />
           <NuxtLink to="/dharamshala" class="hover:text-gray-900 transition-colors">Dharamshala</NuxtLink>
        </div>
-      <div class="my-2">
-          <h2 :class="[
-            'text-2xl md:text-3xl font-bold',
-            themeStore?.isDarkMode ? 'text-white' : 'text-gray-900'
-          ]">Dharamshala</h2>
-          <p :class="[
-            'text-base',
-            themeStore?.isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          ]">
-            Browse all {{ loading ? '...' : allDharamshalas.length }} dharamshala locations.
-          </p>
-        </div>
 
       <!-- Sticky Filter Bar - Always visible -->
       <div :class="[
@@ -244,7 +232,7 @@ const uniqueGroupings = computed(() => {
 
 const filterOptions = computed(() => [
   { id: 'all', label: 'All' },
-  { id: 'wishlist', label: `Wishlist (${wishlistStore.getWishlistCount})` },
+  { id: 'wishlist', label: `Wishlist${wishlistStore.getWishlistCount > 0 ? ` (${wishlistStore.getWishlistCount})` : ''}` },
   ...uniqueGroupings.value.map(grouping => ({
     id: grouping,
     label: formatGroupingTitle(grouping)

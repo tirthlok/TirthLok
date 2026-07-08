@@ -1,7 +1,7 @@
 <template>
     <router-view v-if="hasId" />
     <div v-else :class="[
-      'min-h-screen py-4 sm:py-8 md:py-12',
+      'min-h-screen py-2 sm:py-4',
       themeStore?.isDarkMode ? 'dark bg-gray-950' : 'bg-white'
     ]">
       <div class="page-container py-6">
