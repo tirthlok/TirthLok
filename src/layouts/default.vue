@@ -5,8 +5,8 @@
       ? 'bg-gradient-to-b from-gray-900 to-gray-800' 
       : 'bg-gradient-to-b from-white to-gray-50'
   ]">
-    <!-- Header component -->
-    <Header />
+    <!-- Header component (hidden on auth pages) -->
+    <Header v-if="!isAuthPage" />
     <AdminBanner />
     <AdminAuthModal
       :show="adminStore.showAuthModal"
@@ -161,9 +161,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useThemeStore } from '~/stores/theme'
 import { useAdminModeStore } from '~/stores/adminMode'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import Header from '~/components/layout/header/Header.vue'
 import AdminBanner from '~/features/admin/components/AdminBanner.vue'
 import AdminAuthModal from '~/features/admin/components/AdminAuthModal.vue'
@@ -172,6 +173,9 @@ import Icon from '~/components/ui/Icon.vue'
 const themeStore = useThemeStore()
 const adminStore = useAdminModeStore()
 const router = useRouter()
+const route = useRoute()
+
+const isAuthPage = computed(() => route.path.startsWith('/auth'))
 
 const onAdminVerified = () => {
   adminStore.confirmAdminEntry()

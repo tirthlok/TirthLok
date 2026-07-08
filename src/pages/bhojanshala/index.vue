@@ -88,89 +88,12 @@
       </div>
 
       <!-- Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <NuxtLink
-          v-for="b in bhojanshalas"
-          :key="b.bhojanshala_id"
-          :to="`/bhojanshala/${b.bhojanshala_id}`"
-          class="group bg-card rounded-2xl border border-border
-                 overflow-hidden hover:border-green-500/50
-                 hover:shadow-lg hover:shadow-green-500/10
-                 transition-all duration-300 cursor-pointer"
-        >
-          <!-- Image / Placeholder -->
-          <div class="relative h-44 bg-gradient-to-br
-                      from-green-900/30 to-emerald-900/30
-                      overflow-hidden">
-            <img
-              v-if="b.bhojanshala_images?.[0]?.url"
-              :src="b.bhojanshala_images[0].url"
-              :alt="b.bhojanshala_name"
-              class="w-full h-full object-cover
-                     group-hover:scale-105 transition-transform duration-500"
-            />
-            <div v-else
-                 class="w-full h-full flex items-center justify-center">
-              <span class="text-5xl opacity-30">🍽️</span>
-            </div>
-
-            <!-- Type Badge -->
-            <div class="absolute top-3 left-3">
-              <span :class="[
-                'px-3 py-1 rounded-full text-xs font-bold capitalize',
-                b.bhojanshala_type === 'free'
-                  ? 'bg-green-500 text-white'
-                  : b.bhojanshala_type === 'donation'
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-blue-500 text-white'
-              ]">
-                {{ b.bhojanshala_type === 'free' ? '🙏 Free' :
-                   b.bhojanshala_type === 'donation' ? '💛 Donation' : '💰 Paid' }}
-              </span>
-            </div>
-
-            <!-- Wishlist -->
-            <button
-              v-if="isAuthenticated"
-              @click.prevent="toggleWishlist(b)"
-              class="absolute top-3 right-3 w-8 h-8 rounded-full
-                     bg-black/40 backdrop-blur flex items-center
-                     justify-center hover:bg-black/60 transition"
-            >
-              <span :class="isWishlisted(b.bhojanshala_id)
-                ? 'text-red-400' : 'text-white'">
-                {{ isWishlisted(b.bhojanshala_id) ? '♥' : '♡' }}
-              </span>
-            </button>
-          </div>
-
-          <!-- Info -->
-          <div class="p-4">
-            <h3 class="font-bold text-foreground text-base leading-tight mb-1
-                       group-hover:text-green-400 transition">
-              {{ b.bhojanshala_name }}
-            </h3>
-            <p class="text-muted-foreground text-xs mb-3">
-              📍 {{ b.bhojanshala_city }}, {{ b.bhojanshala_state }}
-            </p>
-            <div v-if="b.tirth?.tirth_name"
-                 class="flex items-center gap-1.5 text-xs text-green-500">
-              <span>🛕</span>
-              <span>{{ b.tirth.tirth_name }}</span>
-            </div>
-            <!-- Tags -->
-            <div v-if="b.tags?.length" class="flex flex-wrap gap-1.5 mt-3">
-              <span
-                v-for="tag in b.tags.slice(0, 3)"
-                :key="tag"
-                class="px-2 py-0.5 bg-green-500/10 text-green-400
-                       rounded-full text-xs border border-green-500/20"
-              >
-                {{ tag }}
-              </span>
-            </div>
-          </div>
-        </NuxtLink>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+        <BhojanshalaCard
+          v-for="b in normalizedBhojanshalas"
+          :key="b.id"
+          :bhojanshala="b"
+        />
       </div>
 
       <!-- Pagination -->
@@ -203,10 +126,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import { useWishlistStore } from '~/features/wishlist'
 import Icon from '~/components/ui/Icon.vue'
+import BhojanshalaCard from '~/features/bhojanshala/components/BhojanshalaCard.vue'
+import type { Bhojanshala } from '~/types/models'
 
 useHead({ title: 'Bhojanshala — TirthLok' })
 
@@ -218,6 +143,38 @@ const total        = ref(0)
 const loading      = ref(false)
 const page         = ref(1)
 const limit        = 12
+
+// Normalize raw API data to Bhojanshala model shape for BhojanshalaCard
+const normalizedBhojanshalas = computed<Bhojanshala[]>(() =>
+  bhojanshalas.value.map((b: any) => ({
+    id: b.bhojanshala_id,
+    name: b.bhojanshala_name || '',
+    description: b.bhojanshala_description || '',
+    type: b.bhojanshala_type || '',
+    rating: Number(b.bhojanshala_rating) || 0,
+    reviews: 0,
+    operatingHours: b.operatingHours || '',
+    priceRange: '',
+    cuisineTypes: b.cuisineTypes || b.tags || [],
+    dietaryOptions: b.dietaryOptions || [],
+    speciality: b.tirth?.tirth_name || '',
+    vegetarianOnly: false,
+    location: {
+      latitude: 0,
+      longitude: 0,
+      address: b.bhojanshala_address || '',
+      city: b.bhojanshala_city || '',
+      state: b.bhojanshala_state || '',
+    },
+    contact: {
+      phone: b.bhojanshala_phone || '',
+      email: b.bhojanshala_email || '',
+    },
+    images: Array.isArray(b.bhojanshala_images)
+      ? b.bhojanshala_images
+      : (b.bhojanshala_images ? [b.bhojanshala_images] : []),
+  }))
+)
 
 const filters = ref({
   search: '',

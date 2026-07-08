@@ -81,27 +81,12 @@
       </div>
 
       <!-- Dharamshala Cards Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
-        <div
-            v-for="dharamshala in filteredDharamshalas"
-            :key="dharamshala.id"
-            class="transition-transform hover:-translate-y-2 duration-300 group relative"
-          >
-            <!-- New badge with animation -->
-            <div v-if="dharamshala.dharamshala_tags && dharamshala.dharamshala_tags.length > 0" class="absolute -top-3 -right-3 z-10">
-              <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ dharamshala.dharamshala_tags[0] }}</span>
-            </div>
-            <BaseCard
-              :item="dharamshala"
-              card-type="dharamshala"
-              :show-wishlist="true"
-              :show-details="false"
-              variant="featured"
-              :image-height="'h-72'"
-              route-prefix="/dharamshala"
-              :tag-fields="[dharamshala.type]"
-            />
-        </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 pb-4">
+        <DharamshalaCard
+          v-for="dharamshala in filteredDharamshalas"
+          :key="dharamshala.id"
+          :dharamshala="dharamshala"
+        />
       </div>
 
       <!-- Empty State -->
@@ -142,7 +127,8 @@ import { useThemeStore } from '~/stores/theme'
 import { useDharamshalaStore } from '~/features/dharamshala/composables/useDharamshalaStore'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
-import { BaseCard, Icon, CardSkeleton } from '~/components/ui'
+import { Icon, CardSkeleton } from '~/components/ui'
+import DharamshalaCard from '~/features/dharamshala/components/DharamshalaCard.vue'
 import DharamshalaFilterPanel from '~/features/dharamshala/components/DharamshalaFilterPanel.vue'
 import type { Dharamshala } from '~/types/models'
 
