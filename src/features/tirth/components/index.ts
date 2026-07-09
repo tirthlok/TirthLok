@@ -1,7 +1,12 @@
-/**
- * @deprecated Import from '~/components/features' instead
- * This folder has been moved to ~/components/features/tirth
- */
+export { default as TirthDetailsPage } from './TirthDetailsPage.vue'
 export { default as TirthAbout } from './TirthAbout.vue'
 export { default as TirthFacilities } from './TirthFacilities.vue'
 export { default as TirthEvents } from './TirthEvents.vue'
+export { default as TirthHero } from './TirthHero.vue'
+export { default as TirthQuickInfo } from './TirthQuickInfo.vue'
+export { default as TirthSectionNav } from './TirthSectionNav.vue'
+export { default as TirthGallery } from './TirthGallery.vue'
+export { default as TirthTimings } from './TirthTimings.vue'
+export { default as TirthLocation } from './TirthLocation.vue'
+export { default as TirthContact } from './TirthContact.vue'
+export { default as TirthStickyBar } from './TirthStickyBar.vue'

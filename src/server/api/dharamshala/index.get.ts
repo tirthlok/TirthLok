@@ -1,6 +1,10 @@
 /**
  * GET /api/dharamshala - Fetch all dharamshala locations
  * Queries tirthlok.dharamshala_cards directly
+ *
+ * Query params:
+ *   search    - filter by name (partial match)
+ *   tirth_id  - filter by FK relationship: dharamshala_cards.tirth_id = tirth.id
  */
 import { getSupabaseTirthlok } from '../../utils/supabase'
 
@@ -9,12 +13,18 @@ export default defineEventHandler(async (event) => {
     const supabase = getSupabaseTirthlok()
 
     const query = getQuery(event)
-    const search = String(query.search || '')
+    const search  = String(query.search   || '')
+    const tirthId = String(query.tirth_id || '')
 
     try {
       let supabaseQuery = supabase
         .from('dharamshala_cards')
         .select('*')
+
+      // Filter by tirth FK — always use the tirth_id column, never compare raw IDs
+      if (tirthId) {
+        supabaseQuery = supabaseQuery.eq('tirth_id', tirthId)
+      }
 
       // Apply search filter if provided
       if (search) {
@@ -33,6 +43,7 @@ export default defineEventHandler(async (event) => {
         return {
           id: row.dharamshala_id,
           dharamshalaUuid: row.dharamshala_id,
+          tirth_id: row.tirth_id || null,
           name: row.dharamshala_name || '',
           description: row.dharamshala_description || '',
           type: row.dharamshala_type || 'General',

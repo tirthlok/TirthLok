@@ -1,4 +1,5 @@
 <template>
+  <section v-if="tirth.facilities && tirth.facilities.length > 0" id="section-facilities" class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
   <div class="space-y-6">
     <!-- Header with Icon -->
     <div class="flex items-center gap-3 mb-8">
@@ -149,6 +150,7 @@
       </div>
     </div>
   </div>
+  </section>
 </template>
 
 <script setup lang="ts">

@@ -1,4 +1,9 @@
 <template>
+  <section
+    v-if="tirth.events && tirth.events.length > 0"
+    id="section-events"
+    class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+  >
   <div class="space-y-12 bg-[#FFFBEE] p-6 sm:p-12 rounded-[3.5rem] border border-orange-100/50 shadow-sm">
     <!-- Header with Icon -->
     <div class="flex items-center gap-4 mb-10">
@@ -6,14 +11,8 @@
       <h2 class="text-3xl font-black text-red-900 tracking-tight">Events</h2>
     </div>
 
-    <div v-if="tirth.events.length === 0" class="text-center py-24 bg-orange-50/30 backdrop-blur-xl rounded-[3rem] border border-orange-100 border-dashed">
-      <Icon name="Calendar" :size="64" class="text-orange-200 mx-auto mb-4" />
-      <p class="text-gray-600 font-bold text-xl">Quiet moments of devotion...</p>
-      <p class="text-gray-400 mt-2">Event dates for the upcoming year are being updated.</p>
-    </div>
-
     <!-- Events Timeline -->
-    <div v-else class="relative space-y-12">
+    <div class="relative space-y-12">
       <!-- Continuous Timeline Line -->
       <div class="absolute left-10 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-200 via-orange-100 to-transparent hidden md:block"></div>
 
@@ -68,7 +67,7 @@
       </div>
     </div>
 
-    <div v-if="tirth.events.length > 0" class="bg-gradient-to-br from-orange-100/50 to-orange-50/20 border border-orange-200/50 p-10 rounded-[3rem] relative overflow-hidden group">
+    <div class="bg-gradient-to-br from-orange-100/50 to-orange-50/20 border border-orange-200/50 p-10 rounded-[3rem] relative overflow-hidden group">
       <div class="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity">
         <Icon name="Sparkles" :size="200" class="text-orange-500" />
       </div>
@@ -81,12 +80,15 @@
       </div>
     </div>
   </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import type { Tirth } from '~/types/models'
+import Icon from '~/components/ui/Icon.vue'
 
 defineProps<{
   tirth: Tirth
 }>()
 </script>
+
