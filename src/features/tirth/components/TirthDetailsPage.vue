@@ -13,29 +13,29 @@
     <TirthSectionNav :sections="navSections" />
 
     <!-- 4. Page body -->
-    <div class="max-w-[1920px] mx-auto">
+    <div class="page-container">
 
       <!-- About -->
       <TirthAbout :tirth="tirth" />
 
       <!-- Events — hides itself when tirth.events is empty -->
-      <div v-if="hasEvents" class="mx-4 sm:mx-6 lg:mx-8 border-t border-gray-100" />
+      <div v-if="hasEvents" class="border-t border-gray-100" />
       <TirthEvents :tirth="tirth" />
 
       <!-- Dharamshala — hides itself when no linked records found -->
-      <div v-if="hasDharamshala" class="mx-4 sm:mx-6 lg:mx-8 border-t border-gray-100" />
+      <div v-if="hasDharamshala" class="border-t border-gray-100" />
       <TirthDharamshala :tirth-id="tirth.id" @loaded="onDharamshalaLoaded" />
 
       <!-- Bhojanshala — hides itself when no linked records found -->
-      <div v-if="hasBhojanshala" class="mx-4 sm:mx-6 lg:mx-8 border-t border-gray-100" />
+      <div v-if="hasBhojanshala" class="border-t border-gray-100" />
       <TirthBhojanshala :tirth-id="tirth.id" @loaded="onBhojanshalaLoaded" />
 
       <!-- Related Tirths -->
-      <div v-if="relatedTirths.length > 0" class="mx-4 sm:mx-6 lg:mx-8 border-t border-gray-100" />
+      <div v-if="relatedTirths.length > 0" class="border-t border-gray-100" />
       <section
         v-if="relatedTirths.length > 0"
         id="section-related"
-        class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+        class="py-4 sm:py-6"
       >
         <div class="flex items-center justify-between mb-6 sm:mb-8">
           <div class="flex items-center gap-3">

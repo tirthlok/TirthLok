@@ -4,7 +4,8 @@
     <!-- ── Loading: full-page skeleton ──────────────────────────────── -->
     <div v-if="loading" class="min-h-screen bg-gray-50">
       <!-- Hero skeleton (animate-pulse applied to elements) -->
-      <div class="w-full bg-gray-200 relative overflow-hidden" style="height: 92vh; min-height: 520px; max-height: 860px;">
+      <div class="page-container pt-2 sm:pt-4">
+        <div class="w-full bg-gray-200 relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm" style="height: 75vh; min-height: 480px; max-height: 720px;">
         <div class="absolute inset-0 bg-gray-300 animate-pulse" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
         
@@ -32,7 +33,7 @@
       </div>
 
       <!-- Quick info skeleton -->
-      <div class="bg-white border-b border-gray-100 px-4 sm:px-6 lg:px-8 py-4 flex overflow-hidden">
+      <div class="bg-white border-b border-gray-100 page-container py-4 flex overflow-hidden">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
           <div v-for="n in 4" :key="n" class="flex items-center gap-3">
              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex-shrink-0 animate-pulse" />
@@ -43,9 +44,10 @@
           </div>
         </div>
       </div>
+      </div>
 
       <!-- Section nav skeleton -->
-      <div class="bg-white border-b border-gray-100 px-4 sm:px-6 lg:px-8 flex gap-8 py-4 overflow-hidden">
+      <div class="bg-white border-b border-gray-100 page-container flex gap-8 py-4 overflow-hidden">
         <div v-for="n in 4" :key="n" class="flex items-center gap-2">
            <div class="w-5 h-5 bg-gray-200 rounded animate-pulse" />
            <div class="h-4 w-20 bg-gray-200 rounded-md animate-pulse" />
@@ -53,7 +55,7 @@
       </div>
 
       <!-- Content skeleton -->
-      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-4xl">
+      <div class="page-container py-8 md:py-12">
          <!-- About skeleton -->
          <div class="space-y-6 mb-12">
              <div class="flex items-center gap-3">

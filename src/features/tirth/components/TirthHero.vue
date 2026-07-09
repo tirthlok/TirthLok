@@ -1,5 +1,6 @@
 <template>
-  <section id="section-hero" class="relative w-full overflow-hidden" style="height: 92vh; min-height: 520px; max-height: 860px;">
+  <section id="section-hero" class="page-container pt-2 sm:pt-4">
+    <div class="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm" style="height: 75vh; min-height: 480px; max-height: 720px;">
     <!-- Full bleed image carousel -->
     <ImageCarousel
       :images="tirth.images"
@@ -98,6 +99,7 @@
     <!-- Scroll cue -->
     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/40 animate-bounce z-20 hidden sm:flex">
       <Icon name="ChevronDown" :size="22" />
+    </div>
     </div>
   </section>
 </template>

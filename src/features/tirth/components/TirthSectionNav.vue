@@ -8,7 +8,7 @@
         : 'relative bg-white border-b border-gray-100',
     ]"
   >
-    <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="page-container">
       <div class="flex items-center gap-1 overflow-x-auto scrollbar-hide py-0">
         <button
           v-for="section in visibleSections"
