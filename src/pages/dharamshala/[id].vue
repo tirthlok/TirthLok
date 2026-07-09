@@ -3,13 +3,94 @@
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-32">
-        <div class="text-center space-y-6">
-          <div class="relative w-16 h-16 mx-auto">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full animate-spin" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0% 50%)" />
-            <div class="absolute inset-2 bg-white rounded-full" />
+      <div v-if="loading" class="space-y-6 sm:space-y-8 animate-pulse">
+        <!-- Breadcrumb Skeleton -->
+        <div class="hidden md:flex items-center gap-2">
+          <div class="h-4 w-12 bg-gray-200 rounded"></div>
+          <div class="w-3 h-3 bg-gray-200 rounded-full"></div>
+          <div class="h-4 w-24 bg-gray-200 rounded"></div>
+          <div class="w-3 h-3 bg-gray-200 rounded-full"></div>
+          <div class="h-4 w-48 bg-gray-200 rounded"></div>
+        </div>
+
+        <!-- ═══ SECTION 1: Image Gallery Grid Skeleton ═══ -->
+        <div class="relative rounded-2xl overflow-hidden h-64 sm:h-96 lg:h-[480px] grid grid-cols-4 grid-rows-2 gap-1.5 bg-gray-100 shadow-lg">
+          <div class="col-span-2 row-span-2 bg-gray-200" />
+          <div v-for="n in 4" :key="n" class="bg-gray-200" />
+        </div>
+
+        <!-- ═══ SECTION 2: Two-column layout Skeleton ═══ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+          <!-- ── LEFT COLUMN ── -->
+          <div class="lg:col-span-2 space-y-8">
+            <!-- Property Header -->
+            <div class="space-y-4">
+              <div class="h-10 sm:h-12 w-3/4 bg-gray-200 rounded-lg"></div>
+              <div class="h-5 w-1/2 sm:w-1/3 bg-gray-200 rounded"></div>
+              <div class="flex flex-wrap gap-2.5 mt-4">
+                <div class="h-8 w-16 bg-gray-200 rounded-lg"></div>
+                <div class="h-8 w-24 bg-gray-200 rounded-lg"></div>
+                <div class="h-8 w-24 bg-gray-200 rounded-lg"></div>
+                <div class="h-8 w-32 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+
+            <!-- Quick Highlights strip -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div v-for="n in 4" :key="n" class="flex items-center gap-3 p-4 bg-gray-100/50 rounded-xl border border-gray-100">
+                <div class="w-10 h-10 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                <div class="space-y-2 flex-1">
+                  <div class="h-3 w-16 bg-gray-200 rounded"></div>
+                  <div class="h-4 w-20 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div class="space-y-3">
+              <div class="flex items-center gap-2 mb-4">
+                 <div class="w-1 h-6 bg-gray-200 rounded-full"></div>
+                 <div class="h-7 w-48 bg-gray-200 rounded-lg"></div>
+              </div>
+              <div class="h-4 w-full bg-gray-200 rounded"></div>
+              <div class="h-4 w-11/12 bg-gray-200 rounded"></div>
+              <div class="h-4 w-full bg-gray-200 rounded"></div>
+              <div class="h-4 w-5/6 bg-gray-200 rounded"></div>
+              <div class="h-4 w-4/5 bg-gray-200 rounded"></div>
+            </div>
+            
+            <!-- Amenities -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2 mb-4">
+                 <div class="w-1 h-6 bg-gray-200 rounded-full"></div>
+                 <div class="h-7 w-32 bg-gray-200 rounded-lg"></div>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                 <div v-for="n in 6" :key="n" class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200">
+                    <div class="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                    <div class="h-4 w-20 bg-gray-200 rounded"></div>
+                 </div>
+              </div>
+            </div>
           </div>
-          <p class="text-gray-600 font-semibold text-lg">Loading dharamshala details...</p>
+
+          <!-- ── RIGHT COLUMN (sticky) ── -->
+          <div class="lg:col-span-1">
+            <div class="sticky top-24 space-y-4">
+              <!-- Price Card -->
+              <div class="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden h-96">
+                 <div class="h-32 bg-gray-200"></div>
+                 <div class="grid grid-cols-2 border-b border-gray-100">
+                    <div class="p-4 space-y-2"><div class="h-3 w-16 bg-gray-200 rounded"></div><div class="h-4 w-20 bg-gray-200 rounded"></div></div>
+                    <div class="p-4 space-y-2"><div class="h-3 w-16 bg-gray-200 rounded"></div><div class="h-4 w-20 bg-gray-200 rounded"></div></div>
+                 </div>
+                 <div class="p-4 space-y-3">
+                    <div class="h-12 bg-gray-200 rounded-xl"></div>
+                    <div class="h-12 bg-gray-100 rounded-xl"></div>
+                 </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

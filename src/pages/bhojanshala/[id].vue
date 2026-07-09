@@ -1,7 +1,59 @@
 <template>
-  <div v-if="pending" class="min-h-screen flex items-center justify-center">
-    <div class="w-10 h-10 border-2 border-green-500
-                border-t-transparent rounded-full animate-spin"/>
+  <div v-if="pending" class="min-h-screen bg-background animate-pulse">
+    <!-- Hero Skeleton -->
+    <div class="bg-green-950/10 border-b border-green-900/10 relative">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 mb-6">
+          <div class="h-3 w-12 bg-green-900/20 rounded"></div>
+          <div class="w-2 h-2 bg-green-900/20 rounded-full"></div>
+          <div class="h-3 w-24 bg-green-900/20 rounded"></div>
+          <div class="w-2 h-2 bg-green-900/20 rounded-full"></div>
+          <div class="h-3 w-32 bg-green-900/20 rounded"></div>
+        </div>
+        
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div class="w-full max-w-lg space-y-4">
+             <div class="h-6 w-24 bg-green-900/20 rounded-full"></div>
+             <div class="h-10 w-3/4 bg-green-900/20 rounded-lg"></div>
+             <div class="h-5 w-1/2 bg-green-900/20 rounded"></div>
+             <div class="h-5 w-1/3 bg-green-900/20 rounded mt-2"></div>
+          </div>
+          <div class="flex items-center gap-3">
+             <div class="h-10 w-24 bg-green-900/20 rounded-xl"></div>
+             <div class="h-10 w-24 bg-green-900/20 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Skeleton -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: Main Content Skeleton -->
+        <div class="lg:col-span-2 space-y-6">
+          <div v-for="n in 3" :key="n" class="bg-card rounded-2xl border border-border p-6 space-y-4">
+             <div class="h-6 w-32 bg-muted rounded-lg mb-4"></div>
+             <div class="h-4 w-full bg-muted rounded"></div>
+             <div class="h-4 w-11/12 bg-muted rounded"></div>
+             <div class="h-4 w-full bg-muted rounded"></div>
+             <div class="h-4 w-4/5 bg-muted rounded"></div>
+          </div>
+        </div>
+
+        <!-- Right: Sidebar Skeleton -->
+        <div class="space-y-5">
+           <div v-for="n in 2" :key="n" class="bg-card rounded-2xl border border-border p-5 space-y-4">
+              <div class="h-6 w-24 bg-muted rounded-lg mb-4"></div>
+              <div class="space-y-3">
+                 <div class="flex justify-between items-center"><div class="h-4 w-16 bg-muted rounded"></div><div class="h-4 w-20 bg-muted rounded"></div></div>
+                 <div class="flex justify-between items-center"><div class="h-4 w-16 bg-muted rounded"></div><div class="h-4 w-24 bg-muted rounded"></div></div>
+                 <div class="flex justify-between items-center"><div class="h-4 w-20 bg-muted rounded"></div><div class="h-4 w-16 bg-muted rounded"></div></div>
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div v-else-if="!data"

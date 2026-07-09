@@ -58,7 +58,7 @@
           </nav>
 
           <!-- Search Bar -->
-          <div class="w-full relative group max-w-2xl pt-1">
+          <div v-if="!isDetailsPage" class="w-full relative group max-w-2xl pt-1">
              <div ref="searchWrapper" class="relative flex items-center w-full">
                 <input 
                   v-model="searchQuery"
@@ -578,6 +578,12 @@ const activeFilterCount = computed(() => {
   }
   
   return 0
+})
+
+const isDetailsPage = computed(() => {
+  const p = route.path || ''
+  const hasId = !!route.params.id
+  return hasId && (p.startsWith('/tirth/') || p.startsWith('/dharamshala/') || p.startsWith('/bhojanshala/'))
 })
 
 const suggestionsSource = computed(() => {
