@@ -2,7 +2,7 @@
   <section
     v-if="!loading && bhojanshalas.length > 0"
     id="section-bhojanshala"
-    class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+    class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
   >
     <!-- Section Header -->
     <div class="flex items-start gap-4 mb-6 sm:mb-8">

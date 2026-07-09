@@ -2,7 +2,7 @@
   <section
     v-if="tirth.events && tirth.events.length > 0"
     id="section-events"
-    class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+    class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
   >
   <div class="space-y-12 bg-[#FFFBEE] p-6 sm:p-12 rounded-[3.5rem] border border-orange-100/50 shadow-sm">
     <!-- Header with Icon -->

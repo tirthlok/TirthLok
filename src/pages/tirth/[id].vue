@@ -2,25 +2,72 @@
   <div>
 
     <!-- ── Loading: full-page skeleton ──────────────────────────────── -->
-    <div v-if="loading" class="min-h-screen bg-gray-50 animate-pulse">
-      <!-- Hero skeleton -->
-      <div class="w-full bg-gray-200" style="height: 92vh; min-height: 520px; max-height: 860px;" />
+    <div v-if="loading" class="min-h-screen bg-gray-50">
+      <!-- Hero skeleton (animate-pulse applied to elements) -->
+      <div class="w-full bg-gray-200 relative overflow-hidden" style="height: 92vh; min-height: 520px; max-height: 860px;">
+        <div class="absolute inset-0 bg-gray-300 animate-pulse" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+        
+        <!-- Top bar skeleton -->
+        <div class="absolute top-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 flex justify-between z-10">
+            <div class="w-24 h-10 bg-white/30 backdrop-blur-sm rounded-xl animate-pulse" />
+            <div class="flex gap-2">
+                <div class="w-10 h-10 bg-white/30 backdrop-blur-sm rounded-full animate-pulse" />
+                <div class="w-10 h-10 bg-white/30 backdrop-blur-sm rounded-full animate-pulse" />
+            </div>
+        </div>
+        
+        <!-- Bottom content skeleton -->
+        <div class="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 z-10 space-y-4">
+             <div class="flex gap-2">
+                 <div class="h-6 w-24 bg-white/30 backdrop-blur-sm rounded-full animate-pulse" />
+                 <div class="h-6 w-20 bg-white/30 backdrop-blur-sm rounded-full animate-pulse" />
+             </div>
+             <div class="h-12 sm:h-16 w-3/4 max-w-2xl bg-white/40 backdrop-blur-sm rounded-lg animate-pulse" />
+             <div class="flex gap-2 items-center">
+                 <div class="w-4 h-4 bg-white/40 rounded-full animate-pulse" />
+                 <div class="h-5 w-48 bg-white/40 backdrop-blur-sm rounded-md animate-pulse" />
+             </div>
+        </div>
+      </div>
+
       <!-- Quick info skeleton -->
-      <div class="px-4 sm:px-6 lg:px-8 py-4 flex gap-3">
-        <div v-for="n in 4" :key="n" class="h-14 w-32 bg-gray-200 rounded-2xl" />
+      <div class="bg-white border-b border-gray-100 px-4 sm:px-6 lg:px-8 py-4 flex overflow-hidden">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+          <div v-for="n in 4" :key="n" class="flex items-center gap-3">
+             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex-shrink-0 animate-pulse" />
+             <div class="space-y-1.5 flex-grow">
+                 <div class="h-3 w-16 bg-gray-100 rounded animate-pulse" />
+                 <div class="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+             </div>
+          </div>
+        </div>
       </div>
+
       <!-- Section nav skeleton -->
-      <div class="border-b border-gray-100 px-4 sm:px-6 lg:px-8 flex gap-6 py-3">
-        <div v-for="n in 5" :key="n" class="h-5 w-20 bg-gray-200 rounded" />
+      <div class="bg-white border-b border-gray-100 px-4 sm:px-6 lg:px-8 flex gap-8 py-4 overflow-hidden">
+        <div v-for="n in 4" :key="n" class="flex items-center gap-2">
+           <div class="w-5 h-5 bg-gray-200 rounded animate-pulse" />
+           <div class="h-4 w-20 bg-gray-200 rounded-md animate-pulse" />
+        </div>
       </div>
+
       <!-- Content skeleton -->
-      <div class="px-4 sm:px-6 lg:px-8 py-10 space-y-4 max-w-4xl">
-        <div class="h-8 w-48 bg-gray-200 rounded" />
-        <div class="h-4 w-full bg-gray-200 rounded" />
-        <div class="h-4 w-5/6 bg-gray-200 rounded" />
-        <div class="h-4 w-4/6 bg-gray-200 rounded" />
-        <div class="h-4 w-full bg-gray-200 rounded mt-4" />
-        <div class="h-4 w-3/4 bg-gray-200 rounded" />
+      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-4xl">
+         <!-- About skeleton -->
+         <div class="space-y-6 mb-12">
+             <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 bg-gray-200 rounded-2xl animate-pulse" />
+                 <div class="h-8 w-40 bg-gray-200 rounded-lg animate-pulse" />
+             </div>
+             <div class="space-y-3">
+                 <div class="h-4 w-full bg-gray-200 rounded animate-pulse" />
+                 <div class="h-4 w-11/12 bg-gray-200 rounded animate-pulse" />
+                 <div class="h-4 w-full bg-gray-200 rounded animate-pulse" />
+                 <div class="h-4 w-5/6 bg-gray-200 rounded animate-pulse" />
+                 <div class="h-4 w-4/5 bg-gray-200 rounded animate-pulse" />
+             </div>
+         </div>
       </div>
     </div>
 
@@ -94,7 +141,10 @@ const { data: tirth, pending: loading, error: fetchError } = await useAsyncData(
     if (!tirthId.value) return Promise.resolve(null)
     return $fetch<Tirth>(`/api/tirth/${tirthId.value}`)
   },
-  { watch: [tirthId] }
+  { 
+    watch: [tirthId],
+    lazy: import.meta.client 
+  }
 )
 
 const error = computed(() => {

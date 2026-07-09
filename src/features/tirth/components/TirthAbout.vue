@@ -1,5 +1,5 @@
 <template>
-  <section id="section-about" class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+  <section id="section-about" class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
     <div class="space-y-10 sm:space-y-14">
 
       <!-- 1. Description -->

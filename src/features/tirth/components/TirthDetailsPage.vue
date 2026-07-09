@@ -35,7 +35,7 @@
       <section
         v-if="relatedTirths.length > 0"
         id="section-related"
-        class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12"
+        class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
       >
         <div class="flex items-center justify-between mb-6 sm:mb-8">
           <div class="flex items-center gap-3">
