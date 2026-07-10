@@ -13,7 +13,7 @@
     <TirthSectionNav :sections="navSections" />
 
     <!-- 4. Page body -->
-    <div class="page-container">
+    <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
       <!-- About -->
       <TirthAbout :tirth="tirth" />

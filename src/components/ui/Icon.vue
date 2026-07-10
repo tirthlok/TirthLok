@@ -68,7 +68,11 @@ import {
   CalendarCheck,
   BedDouble,
   UserPlus,
-  Users
+  Users,
+  Share,
+  Share2,
+  Grid,
+  Grid3x3
 } from 'lucide-vue-next'
 
 // Custom Mandir Icon
@@ -171,7 +175,11 @@ const Icons = {
   CalendarCheck,
   BedDouble,
   UserPlus,
-  Users
+  Users,
+  Share,
+  Share2,
+  Grid,
+  Grid3x3
 } as const
 
 interface Props {

@@ -13,7 +13,7 @@
       :alt="title || 'Image'"
       loading="lazy"
       class="w-full h-full object-cover transition-transform duration-500"
-      :class="isHovered ? 'scale-110' : ''"
+      :class="!disableZoom && isHovered ? 'scale-110' : ''"
     />
 
     <!-- Gradient Overlay -->
@@ -86,6 +86,7 @@ interface Props {
   showDots?: boolean
   showTitleOverlay?: boolean
   titleOverlayClass?: string
+  disableZoom?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -98,6 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
   showDots: true,
   showTitleOverlay: true,
   titleOverlayClass: 'absolute bottom-0 left-0 right-0 p-4 text-white',
+  disableZoom: false,
 })
 
 const {

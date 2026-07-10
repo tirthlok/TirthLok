@@ -1,6 +1,6 @@
 <template>
   <div v-if="chips.length > 0" class="w-full overflow-x-auto scrollbar-hide">
-    <div class="flex items-center gap-2 sm:gap-3 page-container py-3 sm:py-4 min-w-max">
+    <div class="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-3 sm:py-4 min-w-max">
       <div
         v-for="chip in chips"
         :key="chip.label"
