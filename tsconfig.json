@@ -30,12 +30,8 @@
       "#app": ["node_modules/nuxt/dist/app/index.mjs"],
       "#build": [".nuxt"]
     },
-    "types": ["nuxt/schema", "node"],
-    "ignoreDeprecations": "6.0"
+    "types": ["nuxt/schema", "node"]
   },
   "include": ["**/*.ts", "**/*.d.ts", "**/*.tsx", "**/*.vue", ".nuxt/nuxt.d.ts"],
-  "exclude": ["node_modules", "dist"],
-  "vueCompilerOptions": {
-    "isProduction": false
-  }
+  "exclude": ["node_modules", "dist"]
 }

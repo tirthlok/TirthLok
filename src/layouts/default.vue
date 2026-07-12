@@ -5,9 +5,9 @@
       ? 'bg-gradient-to-b from-gray-900 to-gray-800' 
       : 'bg-gradient-to-b from-white to-gray-50'
   ]">
-    <!-- Header component (hidden on auth pages) -->
-    <Header v-if="!isAuthPage" />
-    <AdminBanner />
+    <!-- Header component (hidden on auth pages and admin mode) -->
+    <Header v-if="!isAuthPage && !adminStore.isAdminMode" />
+    <AdminBanner v-if="adminStore.isAdminMode" />
     <AdminAuthModal
       :show="adminStore.showAuthModal"
       @verified="onAdminVerified"

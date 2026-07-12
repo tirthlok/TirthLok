@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-background min-h-screen font-sans page-container py-6">
+  <div class="bg-background min-h-screen font-sans py-6">
     <!-- Hero Section - Revamped based on "Greatest Outdoors" design -->
-    <div class="flex flex-1 justify-center mx-auto">
+    <div class="page-container flex flex-1 justify-center mx-auto mb-8 sm:mb-12 md:mb-16">
       <!-- Make hero full-bleed on mobile (negate container padding), and only apply rounded/shadow at md+ -->
       <div class="max-w-[1920px] mx-auto relative sm:mx-0 md:rounded-3xl md:overflow-hidden md:shadow-2xl rounded-none h-[60vh] md:h-[65vh] lg:h-[500px] w-full group">
         <!-- Background Image (use explicit backgroundSize: 'auto' for asset) -->
@@ -36,48 +36,49 @@
       </div>
     </div>
 
-    <!-- Featured Tirths Horizontal Scroll -->
-    <div v-if="!loading && filteredTirths.length > 0" class="px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-background">
-      <div class="max-w-7xl mx-auto relative z-10">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
-          <div class="flex-1">
-            <!-- <div class="inline-block mb-3 px-3 py-1 bg-accent/10 rounded-full">
-              <span class="text-sm font-semibold text-accent">✨ Curated Collection</span>
-            </div> -->
-            <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main font-serif mb-2">Featured Tirths</h3>
-            <!-- <p class="text-text-muted text-sm">Discover the most visited sacred destinations worldwide</p> -->
-          </div>
-          <NuxtLink to="/tirth" class="text-primary font-medium hover:text-primary-hover flex items-center gap-2 text-sm sm:text-base px-5 py-2.5 rounded-full hover:bg-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/50">
-            Explore All <Icon name="ArrowRight" :size="18" />
-          </NuxtLink>
-        </div>
-        
-        <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 scroll-smooth">
-          <div class="flex gap-6 w-max snap-x snap-mandatory">
-            <div
-              v-for="tirth in filteredTirths"
-              :key="tirth.id"
-              class="flex-shrink-0 snap-start w-[280px] transition-transform hover:-translate-y-2 duration-300 group relative"
+    <!-- Dynamic tag-based horizontal sections — auto-generated from tirth_tags data -->
+    <template v-if="!loading && tagGroups.length > 0">
+      <section
+        v-for="group in tagGroups"
+        :key="group.tag"
+        class="py-2 md:py-3 bg-background"
+      >
+        <div class="page-container">
+
+          <!-- Section header -->
+          <div class="flex items-center gap-3 mb-4 md:mb-5">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+              {{ group.tag }}
+            </h2>
+            <NuxtLink
+              to="/tirth"
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-900 flex-shrink-0"
+              title="See all"
             >
-              <!-- New badge with animation -->
-              <div v-if="tirth.tirth_tags && tirth.tirth_tags.length > 0" class="absolute -top-3 -right-3 z-10">
-                <span class="inline-block bg-gradient-to-r from-accent to-pink-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20">✨ {{ tirth.tirth_tags[0] }}</span>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 10h12M11 5l5 5-5 5"/>
+              </svg>
+            </NuxtLink>
+          </div>
+
+          <!-- Horizontal scroll row — identical structure to tirth listing grid -->
+          <div class="overflow-x-auto no-scrollbar -mx-4 sm:-mx-6 lg:-mx-8
+                      px-4 sm:px-6 lg:px-8 scroll-smooth">
+            <div class="flex gap-4 sm:gap-5 w-max snap-x snap-mandatory pb-2">
+              <div
+                v-for="tirth in group.tirths"
+                :key="tirth.id"
+                class="flex-shrink-0 snap-start w-[240px] sm:w-[280px]"
+              >
+                <TirthCard :tirth="tirth" />
               </div>
-              <BaseCard
-                :item="tirth"
-                card-type="tirth"
-                :show-wishlist="true"
-                :show-details="false"
-                variant="featured"
-                :image-height="'h-72'"
-                route-prefix="/tirth"
-                :tag-fields="[tirth.sect]"
-              />
             </div>
           </div>
+
         </div>
-      </div>
-    </div>
+      </section>
+    </template>
     <!-- <TirthCardsHorizontalScroll
       class="mt-12"
       :tirths="filteredTirths"
@@ -95,8 +96,8 @@
 
 
     <!-- Key Features Section - "Enhance your travel Experiences" style -->
-    <section class="px-4 sm:px-6 lg:px-8 py-8 md:py-8 bg-background">
-      <div class="max-w-7xl mx-auto">
+    <section class="py-8 md:py-8 bg-background">
+      <div class="page-container">
         <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-2 font-serif">Your Spiritual Companion</h2>
           <p class="text-text-muted text-base sm:text-lg">Discover ancient temples, find accommodations, and get answers.</p>
@@ -162,7 +163,7 @@
 
     <!-- How It Works Section - Soothing Style -->
     <section class="py-8 md:py-12 bg-surface-muted">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="page-container">
         <div class="text-center mb-12">
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-main mb-3 font-serif">How It Works</h2>
           <p class="text-text-muted text-base sm:text-lg">A simple path to planning your Derasar/Tirth Yatra.</p>
@@ -211,25 +212,6 @@
       </div>
     </section>
 
-    <!-- CTA Section - Soothing Gradient -->
-    <section class="py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-background">
-      <div class="max-w-5xl mx-auto rounded-3xl p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
-        <!-- Background Image with Overlay -->
-        <div 
-          class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-100"
-          :style="{ backgroundImage: `url(${ctaImg})` }"
-        >
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
-        </div>
-        
-        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white relative z-10 font-serif mb-">Begin Your Spiritual Journey Today</h3>
-        <p class="text-gray-100 mb-8 text-base sm:text-lg relative z-10 max-w-2xl mx-auto">Let us guide you to the sacred Derasar's/Tirth's that call to your heart.</p>
-        
-        <NuxtLink to="/tirth" class="inline-block bg-white text-primary px-8 py-3 sm:px-10 sm:py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all relative z-10 text-base sm:text-lg">
-          Explore All Tirths
-        </NuxtLink>
-      </div>
-    </section>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-20">
@@ -244,7 +226,7 @@
 
     
     <!-- Empty State -->
-    <div v-if="!loading && filteredTirths.length === 0" class="text-center py-8 md:py-12 px-4">
+    <div v-if="!loading && tagGroups.length === 0" class="text-center py-8 md:py-12 px-4">
       <Icon name="MapPin" :size="48" class="text-text-muted mx-auto mb-4" />
       <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-text-main mb-2">No Temples Found</h3>
       <p class="text-text-muted text-sm md:text-base mb-6">Try adjusting your search or filter criteria</p>
@@ -256,10 +238,10 @@
 import { computed } from 'vue'
 import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
 import Icon from '~/components/ui/Icon.vue'
+import TirthCard from '~/features/tirth/components/TirthCard.vue'
 
 // Import images from assets
 import heroImg from '~/assets/images/hero-jain-temple.png'
-import ctaImg from '~/assets/images/cta-start-your-journey.png'
 // Hero & section images
 import step1Image from '~/assets/images/discover.png' // Temple discovery
 import step2Image from '~/assets/images/explore.png' // Ancient architecture
@@ -288,8 +270,27 @@ if (apiResponse?.value) {
 
 const loading = computed(() => tirthStore.loading)
 const error = computed(() => tirthStore.error)
-const filteredTirths = computed(() => {
-    return tirthStore.filteredTirths.filter((tirth) => tirth.tirth_tags && tirth.tirth_tags.length > 0)
+
+// Dynamic tag groups — one horizontal section per unique tag.
+// A tirth appears in every section matching its tags.
+// Sections with zero tirths are automatically hidden.
+const tagGroups = computed(() => {
+  const groups: Record<string, typeof tirthStore.filteredTirths> = {}
+
+  tirthStore.filteredTirths.forEach(tirth => {
+    if (!Array.isArray(tirth.tirth_tags) || tirth.tirth_tags.length === 0) return
+    tirth.tirth_tags.forEach(tag => {
+      if (!tag) return
+      if (!groups[tag]) groups[tag] = []
+      groups[tag].push(tirth)
+    })
+  })
+
+  // Convert to sorted array — largest section first
+  return Object.entries(groups)
+    .filter(([, tirths]) => tirths.length > 0)
+    .map(([tag, tirths]) => ({ tag, tirths }))
+    .sort((a, b) => b.tirths.length - a.tirths.length)
 })
 
 // Data is fetched and stores hydrated on the server via useAsyncData
