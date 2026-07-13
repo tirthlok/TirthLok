@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-
     <!-- 1. Hero -->
     <TirthHero :tirth="tirth" />
 
@@ -14,7 +13,6 @@
 
     <!-- 4. Page body -->
     <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-
       <!-- About -->
       <TirthAbout :tirth="tirth" />
 
@@ -32,14 +30,12 @@
 
       <!-- Related Tirths -->
       <div v-if="relatedTirths.length > 0" class="border-t border-gray-100" />
-      <section
-        v-if="relatedTirths.length > 0"
-        id="section-related"
-        class="py-4 sm:py-6"
-      >
+      <section v-if="relatedTirths.length > 0" id="section-related" class="py-4 sm:py-6">
         <div class="flex items-center justify-between mb-6 sm:mb-8">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
+            <div
+              class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-md flex-shrink-0"
+            >
               <Icon name="Compass" :size="20" />
             </div>
             <div>
@@ -56,22 +52,25 @@
           </NuxtLink>
         </div>
 
-        <div class="tirth-grid pb-4">
-          <TirthCard
+        <div
+          class="flex gap-4 sm:gap-5 overflow-x-auto pb-4 scrollbar-hide -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 snap-x snap-mandatory scroll-smooth"
+        >
+          <div
             v-for="related in relatedTirths"
             :key="related.id"
-            :tirth="related"
-          />
+            class="flex-shrink-0 w-[260px] sm:w-[280px] snap-start"
+          >
+            <TirthCard :tirth="related" />
+          </div>
         </div>
       </section>
 
       <!-- Footer spacing for sticky bar -->
-      <div class="h-24 sm:h-8" aria-hidden="true" />
+      <div class="hidden lg:block h-20" aria-hidden="true" />
     </div>
 
     <!-- Sticky bottom action bar -->
     <TirthStickyBar :tirth="tirth" />
-
   </div>
 </template>
 
@@ -79,7 +78,6 @@
 import { computed, ref } from 'vue'
 import type { Tirth } from '~/types/models'
 import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
-import { BaseCard } from '~/components/ui'
 import TirthCard from './TirthCard.vue'
 import TirthHero from './TirthHero.vue'
 import TirthQuickInfo from './TirthQuickInfo.vue'
@@ -98,11 +96,15 @@ const props = defineProps<{
 const tirthStore = useTirthStore()
 
 // Track whether related sections have data (set by child components after fetch)
-const hasDharamshala  = ref(false)
-const hasBhojanshala  = ref(false)
+const hasDharamshala = ref(false)
+const hasBhojanshala = ref(false)
 
-const onDharamshalaLoaded  = (count: number) => { hasDharamshala.value  = count > 0 }
-const onBhojanshalaLoaded  = (count: number) => { hasBhojanshala.value  = count > 0 }
+const onDharamshalaLoaded = (count: number) => {
+  hasDharamshala.value = count > 0
+}
+const onBhojanshalaLoaded = (count: number) => {
+  hasBhojanshala.value = count > 0
+}
 
 // Derived flags
 const hasEvents = computed(() => !!(props.tirth.events && props.tirth.events.length > 0))
@@ -113,15 +115,13 @@ const hasEvents = computed(() => !!(props.tirth.events && props.tirth.events.len
 // whose DOM element does not exist, so hidden sections never appear as tabs.
 const navSections = computed(() => {
   const sections = [
-    { id: 'about',        label: 'About',        icon: 'BookOpen'        },
-    ...(hasEvents.value
-      ? [{ id: 'events',      label: 'Events',       icon: 'Calendar'       }]
-      : []),
+    { id: 'about', label: 'About', icon: 'BookOpen' },
+    ...(hasEvents.value ? [{ id: 'events', label: 'Events', icon: 'Calendar' }] : []),
     ...(hasDharamshala.value
-      ? [{ id: 'dharamshala', label: 'Dharamshala',  icon: 'Building2'      }]
+      ? [{ id: 'dharamshala', label: 'Dharamshala', icon: 'Building2' }]
       : []),
     ...(hasBhojanshala.value
-      ? [{ id: 'bhojanshala', label: 'Bhojanshala',  icon: 'UtensilsCrossed'}]
+      ? [{ id: 'bhojanshala', label: 'Bhojanshala', icon: 'UtensilsCrossed' }]
       : []),
   ]
   return sections
@@ -156,5 +156,13 @@ const relatedTirths = computed(() =>
     grid-template-columns: 1fr;
     gap: 16px;
   }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 </style>

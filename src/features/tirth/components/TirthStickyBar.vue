@@ -2,34 +2,35 @@
   <Transition name="slide-up">
     <div
       v-if="isVisible"
-      class="fixed bottom-16 sm:bottom-0 left-0 right-0 z-40 px-4 py-3 bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-2xl"
+      class="hidden lg:block fixed bottom-0 left-0 right-0 z-40 px-4 py-3 bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-2xl"
       role="toolbar"
       aria-label="Quick actions"
     >
-      <div class="max-w-lg mx-auto flex items-center gap-3">
+      <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
         <!-- Tirth name (small, truncated) -->
-        <div class="flex-1 min-w-0">
+        <div class="min-[380px]:block hidden flex-1 min-w-0">
           <p class="text-xs text-gray-400 font-medium truncate">{{ tirth.name }}</p>
-          <p class="text-sm text-gray-700 font-semibold truncate">{{ tirth.location.city }}, {{ tirth.location.state }}</p>
+          <p class="text-sm text-gray-700 font-semibold truncate">
+            {{ tirth.location.city }}, {{ tirth.location.state }}
+          </p>
         </div>
 
         <!-- Action buttons -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div
+          class="flex items-center gap-2 flex-shrink-0 w-full min-[380px]:w-auto justify-between min-[380px]:justify-end"
+        >
           <!-- Wishlist -->
           <div
-            class="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center"
+            class="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center flex-shrink-0"
             :title="'Save to Wishlist'"
           >
-            <WishlistButton
-              :item-id="tirth.id"
-              entity-type="tirth"
-            />
+            <WishlistButton :item-id="tirth.id" entity-type="tirth" />
           </div>
 
           <!-- Share -->
           <button
             @click="handleShare"
-            class="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all hover:scale-105"
+            class="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all hover:scale-105 flex-shrink-0"
             aria-label="Share this tirth"
           >
             <Icon name="Share2" :size="20" />
@@ -40,7 +41,7 @@
             :href="mapsUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-bold text-sm hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg hover:scale-105"
+            class="flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-bold text-sm hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg hover:scale-105 flex-grow min-[380px]:flex-grow-0 text-center"
             aria-label="Navigate to this tirth"
           >
             <Icon name="Navigation" :size="16" />
@@ -61,7 +62,6 @@ import Icon from '~/components/ui/Icon.vue'
 const props = defineProps<{ tirth: Tirth }>()
 
 const isVisible = ref(false)
-let scrollHandler: (() => void) | null = null
 
 // Google Maps URL using existing direction field or coordinates/address
 const mapsUrl = computed(() => {
@@ -81,9 +81,17 @@ const handleShare = async () => {
     url: window.location.href,
   }
   if (navigator.share) {
-    try { await navigator.share(shareData) } catch { /* cancelled */ }
+    try {
+      await navigator.share(shareData)
+    } catch {
+      /* cancelled */
+    }
   } else {
-    try { await navigator.clipboard.writeText(window.location.href) } catch { /* no clipboard */ }
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+    } catch {
+      /* no clipboard */
+    }
   }
 }
 
@@ -109,7 +117,9 @@ onMounted(() => {
 <style scoped>
 .slide-up-enter-active,
 .slide-up-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 .slide-up-enter-from,
 .slide-up-leave-to {
