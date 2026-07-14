@@ -1,20 +1,33 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-    <BottomNav />
+  <div class="min-h-screen bg-background flex flex-col">
+    <div class="flex-1" :class="{ 'pb-16 md:pb-0': !isAuthPage }">
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </div>
+    <BottomNav v-if="!isAuthPage" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
+const route = useRoute()
+
+// Exact-segment match — `startsWith('/auth')` would also match `/authors`,
+// `/authentication-*`, or anything else that happens to share the prefix.
+const isAuthPage = computed(() => {
+  const path = route.path
+  return path === '/auth' || path.startsWith('/auth/')
+})
+
 useHead({
   title: 'Tirthlok',
   meta: [
     {
       name: 'description',
       content:
-        'Explore Jain Tirths with Tirthlok. Discover detailed information, nearby facilities like Dharamshala and Bhojanshala .',
+        'Explore Jain Tirths with Tirthlok. Discover detailed information, nearby facilities like Dharamshala and Bhojanshala.',
     },
     {
       name: 'viewport',
@@ -26,7 +39,3 @@ useHead({
   },
 })
 </script>
-
-<style scoped>
-/* Global styles handled by Tailwind CSS */
-</style>

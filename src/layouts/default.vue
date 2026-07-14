@@ -20,7 +20,7 @@
     </main>
 
     <!-- Footer -->
-    <footer :class="[
+    <footer v-if="!isAuthPage" :class="[
       'text-light-gray',
       themeStore?.isDarkMode ? 'bg-gray-950' : 'bg-charcoal'
     ]">
