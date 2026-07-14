@@ -316,25 +316,45 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* ── Airbnb-style card grid ──────────────────────────────── */
+/*
+  Mobile  (< 640px)  : 2 columns exact
+  Tablet  (640-1023) : auto-fill 3 cols
+  Laptop  (1024px+)  : 5 columns fixed
+  Desktop (1280px+)  : 5 columns fixed
+  Wide    (1536px+)  : 5 columns fixed
+*/
+
 .tirth-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
-/* Responsive breakpoint tweaks */
-@media (max-width: 479px) {
+@media (min-width: 640px) {
   .tirth-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
     gap: 16px;
   }
 }
 
-@media (max-width: 359px) {
+@media (min-width: 1024px) {
   .tirth-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .tirth-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 22px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .tirth-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
   }
 }
 </style>
