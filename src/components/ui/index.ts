@@ -29,8 +29,8 @@ export type {
 // =============================================================================
 // Filter Components — Shared Only
 // =============================================================================
-// NOTE: TirthFilterPanel → features/tirth/components/TirthFilterPanel.vue
-// NOTE: DharamshalaFilterPanel → features/dharamshala/components/DharamshalaFilterPanel.vue
+// NOTE: TirthFilterPanel → features/tirth/tirthpage/components/TirthFilterPanel.vue
+// NOTE: DharamshalaFilterPanel → features/dharamshala/dharamshalalistpage/components/DharamshalaFilterPanel.vue
 export { default as SearchBox } from './filters/SearchBox.vue'
 export type { SearchResult } from './filters/SearchBox.vue'
 
@@ -46,5 +46,4 @@ export { default as Icon } from './Icon.vue'
 export { default as BottomNav } from './BottomNav.vue'
 // CardSkeleton — generic skeleton used by various list pages
 export { default as CardSkeleton } from './CardSkeleton.vue'
-// TirthCardSkeleton — Airbnb square skeleton matching TirthCard proportions
-export { default as TirthCardSkeleton } from './TirthCardSkeleton.vue'
+// TirthCardSkeleton has moved → features/tirth/tirthpage/components/TirthCardSkeleton.vue

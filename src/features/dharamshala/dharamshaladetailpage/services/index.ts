@@ -1,0 +1,1 @@
+export { useRoomBookingApi } from './roomBookingApi'

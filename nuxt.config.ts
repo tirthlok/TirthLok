@@ -61,13 +61,15 @@ export default defineNuxtConfig({
     autoImport: true,
     // directories are relative to `srcDir`
     dirs: [
-      'composables',            // useFilter, useRole (root-level shared composables)
+      'composables',                             // useFilter, useRole (root-level shared composables)
       'stores',
-      'features/auth/composables',        // useAuth, useSupabase, useCustomerProfile, useRole
-      'features/tirth/composables',       // useTirthStore, useVisitedStore, useGrouping
-      'features/dharamshala/composables', // useDharamshalaStore, useRoomBooking
-      'features/bhojanshala/composables', // useBhojanshalaStore
-      'features/wishlist/composables',    // useWishlistStore
+      'features/auth/composables',               // useAuth, useSupabase, useCustomerProfile, useRole
+      'features/tirth/shared/composables',      // useTirthStore (shared by both tirth pages)
+      'features/tirth/tirthpage/composables',    // useGrouping, useVisitedStore (listing-page only)
+      'features/dharamshala/shared/composables',
+      'features/dharamshala/dharamshaladetailpage/composables',
+      'features/bhojanshala/shared/composables',
+      'features/wishlist/composables',           // useWishlistStore
     ],
   },
 

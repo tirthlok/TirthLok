@@ -76,8 +76,7 @@
 
       <!-- Loading -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="i in 6" :key="i"
-             class="bg-card rounded-2xl border border-border h-64 animate-pulse"/>
+        <BhojanshalaCardSkeleton v-for="i in 8" :key="i" />
       </div>
 
       <!-- Empty -->
@@ -127,16 +126,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useAuth } from '~/features/auth/composables/useAuth'
-import { useWishlistStore } from '~/features/wishlist'
 import Icon from '~/components/ui/Icon.vue'
-import BhojanshalaCard from '~/features/bhojanshala/components/BhojanshalaCard.vue'
+import BhojanshalaCardSkeleton from '~/features/bhojanshala/bhojanshalalistpage/components/BhojanshalaCardSkeleton.vue'
+import BhojanshalaCard from '~/features/bhojanshala/shared/components/BhojanshalaCard.vue'
 import type { Bhojanshala } from '~/types/models'
 
 useHead({ title: 'Bhojanshala — TirthLok' })
 
-const { isAuthenticated } = useAuth()
-const wishlistStore = useWishlistStore()
+
 
 const bhojanshalas = ref<any[]>([])
 const total        = ref(0)
@@ -233,19 +230,7 @@ const debouncedFetch = () => {
   }, 350)
 }
 
-const isWishlisted = (id: string) =>
-  wishlistStore.wishlistItems.some(
-    (w: any) => w.entity_type === 'bhojanshala' &&
-                w.bhojanshala_id === id
-  )
 
-const toggleWishlist = async (b: any) => {
-  if (isWishlisted(b.bhojanshala_id)) {
-    await wishlistStore.removeFromWishlist(b.bhojanshala_id, 'bhojanshala')
-  } else {
-    await wishlistStore.addToWishlist(b.bhojanshala_id, 'bhojanshala')
-  }
-}
 
 onMounted(fetchBhojanshalas)
 </script>

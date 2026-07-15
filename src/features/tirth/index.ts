@@ -1,20 +1,18 @@
 /**
  * Tirth Feature
- * Tirth locations, details, and related functionality
+ * Tirth locations, details, and related functionality.
+ *
+ * Structure:
+ *  - shared/           → Shared components & composables (used by both pages)
+ *  - tirthpage/        → Everything exclusive to the Tirth listing page
+ *  - tirthdetailpage/  → Everything exclusive to the Tirth detail page
  */
 
-// Components
-export { default as TirthAbout } from './components/TirthAbout.vue'
-export { default as TirthFacilities } from './components/TirthFacilities.vue'
-export { default as TirthEvents } from './components/TirthEvents.vue'
-export { default as TirthFilterPanel } from './components/TirthFilterPanel.vue'
-export { default as TirthCard } from './components/TirthCard.vue'
+// ── Shared ─────────────────────────────────────────────────────────────────
+export * from './shared'
 
-// Composables (State)
-export { useTirthStore } from './composables/useTirthStore'
-export { useVisitedStore } from './composables/useVisitedStore'
-export { useGrouping } from './composables/useGrouping'
+// ── Tirth Listing Page ─────────────────────────────────────────────────────
+export * from './tirthpage'
 
-// Services (API)
-export { useTirthApi } from './services/tirthApi'
-export { useEventsApi } from './services/eventsApi'
+// ── Tirth Detail Page ──────────────────────────────────────────────────────
+export * from './tirthdetailpage'

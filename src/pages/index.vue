@@ -494,8 +494,8 @@ Index · VUE
  
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
-import TirthCard from '~/features/tirth/components/TirthCard.vue'
+import { useTirthStore } from '~/features/tirth/shared/composables/useTirthStore'
+import TirthCard from '~/features/tirth/shared/components/TirthCard.vue'
  
 // Icon is auto-imported — no explicit import needed
  
@@ -511,7 +511,7 @@ const tirthStore = useTirthStore()
 // Explicit server:true ensures data arrives in SSR HTML — no client waterfall
 const { data: apiResponse } = await useAsyncData(
   'tirths',
-  () => $fetch('/api/tirth'),
+  () => $fetch('/api/tirth' as string),
   { server: true }
 )
  

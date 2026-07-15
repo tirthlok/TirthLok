@@ -1,6 +1,6 @@
-import { useTirthStore } from '~/features/tirth/composables/useTirthStore'
+import { useTirthStore } from '~/features/tirth/shared/composables/useTirthStore'
 
-export default defineNuxtPlugin(async (nuxtApp) => {
+export default defineNuxtPlugin(async (_nuxtApp) => {
   // Get store instance
   const tirthStore = useTirthStore()
 
