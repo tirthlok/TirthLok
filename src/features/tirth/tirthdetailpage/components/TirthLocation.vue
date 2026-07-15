@@ -1,17 +1,5 @@
 <template>
-  <section id="section-location" class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-    <!-- Section header -->
-    <div class="flex items-center gap-3 mb-6 sm:mb-8">
-      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
-        <Icon name="MapPin" :size="20" />
-      </div>
-      <div>
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Location</h2>
-        <p class="text-sm text-gray-500">{{ tirth.location.city }}, {{ tirth.location.state }}</p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
       <!-- Map embed (takes 3/5 on desktop) -->
       <div
         class="lg:col-span-3 rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-100 shadow-sm relative bg-gray-100"
@@ -82,9 +70,8 @@
           <Icon name="Navigation" :size="20" class="group-hover:rotate-12 transition-transform duration-300" />
           Open in Google Maps
         </a>
-      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -98,7 +85,7 @@ const copied = ref(false)
 
 // OpenStreetMap embed iframe src (no API key needed)
 const mapSrc = computed(() => {
-  const { latitude, longitude, city, state } = props.tirth.location
+  const { latitude, longitude } = props.tirth.location
   if (latitude && longitude) {
     const bbox = {
       west: longitude - 0.02,

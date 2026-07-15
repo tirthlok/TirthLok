@@ -73,7 +73,18 @@ import {
   Share2,
   Grid,
   Grid3x3,
-  Compass
+  Compass,
+  Car,
+  Train,
+  Plane,
+  Map,
+  Smartphone,
+  Gift,
+  Coins,
+  ChevronUp,
+  Expand,
+  Camera,
+  Copy
 } from 'lucide-vue-next'
 
 // Custom Mandir Icon
@@ -181,7 +192,18 @@ const Icons = {
   Share2,
   Grid,
   Grid3x3,
-  Compass
+  Compass,
+  Car,
+  Train,
+  Plane,
+  Map,
+  Smartphone,
+  Gift,
+  Coins,
+  ChevronUp,
+  Expand,
+  Camera,
+  Copy
 } as const
 
 interface Props {

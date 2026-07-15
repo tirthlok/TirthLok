@@ -1,11 +1,11 @@
 <template>
   <div class="min-h-screen bg-background flex flex-col">
-    <div class="flex-1" :class="{ 'pb-16 md:pb-0': !isAuthPage }">
+    <div class="flex-1" :class="{ 'pb-16 md:pb-0': !isAuthPage && !isDetailPage }">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
     </div>
-    <BottomNav v-if="!isAuthPage" />
+    <BottomNav v-if="!isAuthPage && !isDetailPage" />
   </div>
 </template>
 
@@ -19,6 +19,12 @@ const route = useRoute()
 const isAuthPage = computed(() => {
   const path = route.path
   return path === '/auth' || path.startsWith('/auth/')
+})
+
+// Check if current route is a details sub-page (e.g. /tirth/TL-GJ-0001, /dharamshala/abc)
+const isDetailPage = computed(() => {
+  const path = route.path
+  return /\/(tirth|dharamshala|bhojanshala)\/[^/]+$/.test(path)
 })
 
 useHead({

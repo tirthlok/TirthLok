@@ -1,12 +1,12 @@
 <template>
   <div
-    class="fixed inset-0 z-[100] bg-white overflow-y-auto flex flex-col"
+    class="fixed inset-0 z-[100] bg-white overflow-y-auto flex flex-col animate-fade-in"
     role="dialog"
     aria-modal="true"
     aria-label="Photo tour"
   >
     <!-- Header -->
-    <div class="sticky top-0 bg-white/90 backdrop-blur-md z-10 border-b border-gray-100 px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-gray-100/60 px-4 sm:px-6 py-3 flex items-center justify-between">
       <button
         ref="closeButtonRef"
         @click="$emit('close')"
@@ -16,8 +16,8 @@
         <Icon name="ChevronLeft" :size="24" />
       </button>
 
-      <div class="font-semibold text-lg absolute left-1/2 -translate-x-1/2">
-        Photo tour
+      <div class="font-bold text-gray-900 text-lg absolute left-1/2 -translate-x-1/2 tracking-tight">
+        Photo Tour
       </div>
 
       <div class="flex items-center gap-2">
@@ -31,7 +31,7 @@
           </button>
           <div
             v-if="justCopied"
-            class="absolute top-full mt-1 right-0 text-xs font-medium text-white bg-gray-900 px-2 py-1 rounded-md whitespace-nowrap"
+            class="absolute top-full mt-1 right-0 text-xs font-medium text-white bg-gray-900 px-2 py-1 rounded-md whitespace-nowrap shadow-md"
           >
             Link copied
           </div>
@@ -46,12 +46,35 @@
       </div>
     </div>
 
-    <!-- Content: Masonry/Grid of all images -->
+    <!-- Content: Masonry Grid of all images -->
     <div class="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 pb-24">
-       <!-- Simplified masonry grid for Photo Tour -->
        <div class="columns-1 sm:columns-2 gap-4 space-y-4">
-         <div v-for="(img, idx) in normalizedImages" :key="idx" class="break-inside-avoid">
-            <img :src="img" class="w-full rounded-xl object-cover hover:opacity-95 transition-opacity" :alt="`Photo ${idx + 1} of ${tirth.name}`" loading="lazy" />
+         <div 
+           v-for="(img, idx) in normalizedImages" 
+           :key="idx" 
+           class="break-inside-avoid relative group rounded-2xl overflow-hidden border border-gray-150/40 bg-gray-100 shadow-sm transition-all duration-300 hover:shadow-md"
+         >
+            <!-- Gray placeholder skeleton -->
+            <div 
+              v-if="!loadedImages[idx]" 
+              class="w-full bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse h-48 sm:h-64 flex items-center justify-center"
+            >
+              <Icon name="Grid" :size="28" class="text-gray-300 animate-pulse" />
+            </div>
+            
+            <img 
+              :src="img" 
+              @load="loadedImages[idx] = true"
+              :class="[
+                'w-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]',
+                loadedImages[idx] ? 'opacity-100 scale-100 block' : 'opacity-0 scale-95 hidden'
+              ]" 
+              :alt="`Photo ${idx + 1} of ${tirth.name}`" 
+              loading="lazy" 
+            />
+            
+            <!-- Soft hover overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
          </div>
        </div>
     </div>
@@ -69,9 +92,8 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 
 const closeButtonRef = ref<HTMLButtonElement | null>(null)
 const justCopied = ref(false)
+const loadedImages = ref<Record<number, boolean>>({})
 
-// Same normalization as TirthCard.vue's `cardImages` — entries in
-// tirth.images may be a plain string or a {url,…} object, not just strings.
 const normalizedImages = computed(() => {
   const imgs = props.tirth.images
   if (!Array.isArray(imgs)) return []
@@ -88,7 +110,6 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') emit('close')
 }
 
-// Prevent background scrolling while modal is open
 onMounted(() => {
   document.body.style.overflow = 'hidden'
   closeButtonRef.value?.focus()
@@ -110,10 +131,9 @@ const handleShare = async () => {
     try {
       await navigator.share(shareData)
     } catch {
-      // User cancelled share
+      // User cancelled
     }
   } else {
-    // Fallback: copy to clipboard
     try {
       await navigator.clipboard.writeText(window.location.href)
       justCopied.value = true
@@ -124,3 +144,19 @@ const handleShare = async () => {
   }
 }
 </script>
+
+<style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>

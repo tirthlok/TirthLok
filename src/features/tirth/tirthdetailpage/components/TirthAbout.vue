@@ -1,7 +1,7 @@
 <template>
   <section id="section-about" class="py-4 sm:py-6">
     <div class="space-y-10 sm:space-y-14">
-
+      
       <!-- 1. Description -->
       <div v-if="has(tirth.description)" class="relative">
         <div class="flex items-start gap-4 mb-4">

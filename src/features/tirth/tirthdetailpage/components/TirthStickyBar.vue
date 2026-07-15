@@ -2,7 +2,7 @@
   <Transition name="slide-up">
     <div
       v-if="isVisible"
-      class="hidden lg:block fixed bottom-0 left-0 right-0 z-40 px-4 py-3 bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-2xl"
+      class="fixed bottom-0 left-0 right-0 z-40 px-4 py-3 bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-2xl pb-[calc(12px+env(safe-area-inset-bottom))]"
       role="toolbar"
       aria-label="Quick actions"
     >

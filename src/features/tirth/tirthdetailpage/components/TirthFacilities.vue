@@ -1,10 +1,16 @@
 <template>
-  <section v-if="tirth.facilities && tirth.facilities.length > 0" id="section-facilities" class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+  <section v-if="tirth.facilities && tirth.facilities.length > 0" id="section-facilities" class="py-4 sm:py-6">
   <div class="space-y-6">
     <!-- Header with Icon -->
-    <div class="flex items-center gap-3 mb-8">
-      <Icon name="Home" :size="32" class="text-blue-600" />
-      <h2 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">Facilities & Amenities</h2>
+    <div class="flex items-start gap-4 mb-6 sm:mb-8">
+      <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md">
+        <Icon name="Home" :size="22" />
+      </div>
+      <div class="flex-1 min-w-0">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Facilities & Amenities</h2>
+        <p class="text-sm text-gray-500 mt-0.5">Services provided at the pilgrimage site</p>
+        <div class="h-0.5 w-16 bg-gradient-to-r from-gray-300 to-transparent rounded-full mt-1" />
+      </div>
     </div>
 
     <!-- Filter Tabs with Modern Styling -->

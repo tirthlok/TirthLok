@@ -1,24 +1,25 @@
 <template>
-  <section v-if="images.length > 0" id="section-gallery" class="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+  <section v-if="images.length > 0" id="section-gallery" class="py-4 sm:py-6">
     <!-- Section header -->
-    <div class="flex items-center justify-between mb-6 sm:mb-8">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
-          <Icon name="Images" :size="20" />
-        </div>
-        <div>
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Gallery</h2>
-          <p class="text-sm text-gray-500">{{ images.length }} photos</p>
-        </div>
+    <div class="flex items-start gap-4 mb-6 sm:mb-8">
+      <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+        <Icon name="Grid" :size="22" />
       </div>
-      <button
-        v-if="images.length > visibleCount"
-        @click="showAll = !showAll"
-        class="text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
-      >
-        {{ showAll ? 'Show less' : `View all ${images.length}` }}
-        <Icon :name="showAll ? 'ChevronUp' : 'ChevronRight'" :size="16" />
-      </button>
+      <div class="flex-1 min-w-0 flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Photo Gallery</h2>
+          <p class="text-sm text-gray-500 mt-0.5">{{ images.length }} photos of the temple</p>
+          <div class="h-0.5 w-16 bg-gradient-to-r from-gray-300 to-transparent rounded-full mt-1" />
+        </div>
+        <button
+          v-if="images.length > visibleCount"
+          @click="showAll = !showAll"
+          class="text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1 flex-shrink-0"
+        >
+          {{ showAll ? 'Show less' : `View all ${images.length}` }}
+          <Icon :name="showAll ? 'ChevronUp' : 'ChevronRight'" :size="16" />
+        </button>
+      </div>
     </div>
 
     <!-- Masonry grid -->
