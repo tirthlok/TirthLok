@@ -4,6 +4,7 @@
 
     <!-- ── Image Container ── -->
     <div
+      ref="imageWrap"
       class="bhojanshala-card__image-wrap"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
@@ -118,6 +119,7 @@ import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import type { Bhojanshala } from '~/types/models'
 import placeholderImg from '~/assets/images/jain-temple-placeholder.png'
+import { useSwipe } from '~/composables/useSwipe'
 
 // ── Props ──────────────────────────────────────────────────────────────────
 interface Props {
@@ -173,6 +175,10 @@ const prevCardImage = () => {
 
 // ── Hover state ────────────────────────────────────────────────────────────
 const isHovered = ref(false)
+
+// ── Swipe support (mobile / tablet) ────────────────────────────────────────
+const imageWrap = ref<HTMLElement | null>(null)
+useSwipe(imageWrap, nextCardImage, prevCardImage)
 
 // ── Type badge label ───────────────────────────────────────────────────────
 const typeBadge = computed(() => {
@@ -247,6 +253,7 @@ const handleCardClick = (event: MouseEvent) => {
   border-radius: 12px;
   overflow: hidden;
   background: #ECFDF5;
+  touch-action: pan-y;
 }
 
 /* ── Image with scale-on-hover ─────────────────────────── */

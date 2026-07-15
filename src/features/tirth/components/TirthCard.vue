@@ -4,6 +4,7 @@
 
     <!-- ── Image Container ── -->
     <div
+      ref="imageWrap"
       class="tirth-card__image-wrap"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
@@ -122,8 +123,8 @@ import { useRouter } from 'vue-router'
 import { useWishlistStore } from '~/features/wishlist'
 import { useAuth } from '~/features/auth/composables/useAuth'
 import type { Tirth } from '~/types/models'
-// Fallback placeholder image
 import placeholderImg from '~/assets/images/jain-temple-placeholder.png'
+import { useSwipe } from '~/composables/useSwipe'
 
 // ── Props ──────────────────────────────────────────────────────────────────
 interface Props {
@@ -183,6 +184,10 @@ const prevCardImage = () => {
 
 // ── Hover state ────────────────────────────────────────────────────────────
 const isHovered = ref(false)
+
+// ── Swipe support (mobile / tablet) ────────────────────────────────────────
+const imageWrap = ref<HTMLElement | null>(null)
+useSwipe(imageWrap, nextCardImage, prevCardImage)
 
 // ── Badge: uses existing tirth_tags logic ─────────────────────────────────
 // Shows first tag from tirth_tags (existing system) — per user instruction
@@ -251,6 +256,7 @@ const handleCardClick = (event: MouseEvent) => {
   border-radius: 12px;
   overflow: hidden;
   background: #F0EDE8;
+  touch-action: pan-y; /* allow vertical scroll; JS handles horizontal swipe */
 }
 
 /* ── Image with scale-on-hover ─────────────────────────── */
