@@ -31,45 +31,6 @@
         </div>
       </div>
 
-      <!-- 2. Mul Nayak (Moolnayak) -->
-      <div v-if="hasMoolnayak" class="relative">
-        <div class="flex items-start gap-4 mb-4">
-          <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white shadow-md">
-            <Icon name="Star" :size="22" />
-          </div>
-          <div class="flex-1 min-w-0">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Mul Nayak</h2>
-            <div class="h-0.5 w-16 bg-gradient-to-r from-gray-300 to-transparent rounded-full mt-1" />
-          </div>
-        </div>
-        <div class="sm:ml-16 space-y-4">
-          <div
-            v-for="(idol, idx) in validMoolnayak"
-            :key="idx"
-            class="relative bg-gradient-to-br from-orange-50 to-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-orange-100 overflow-hidden shadow-sm hover:shadow-md transition-all"
-          >
-            <Icon name="Sparkles" :size="100" class="absolute -right-6 -bottom-6 text-orange-200/30 rotate-12 pointer-events-none" />
-            <div class="relative flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-              <div class="flex-1">
-                <h4 class="text-lg font-bold text-orange-900 mb-3">{{ idol.name }}</h4>
-                <div class="flex flex-wrap gap-2">
-                  <span v-if="has(idol.height)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100/70 rounded-full text-xs font-semibold text-orange-700">
-                    <Icon name="ArrowUp" :size="11" /> {{ idol.height }}
-                  </span>
-                  <span v-if="has(idol.metal)" class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100/70 rounded-full text-xs font-semibold text-orange-700">
-                    <Icon name="Info" :size="11" /> {{ idol.metal }}
-                  </span>
-                </div>
-                <p v-if="has(idol.details)" class="mt-3 text-sm text-gray-600 leading-relaxed">{{ idol.details }}</p>
-              </div>
-              <div v-if="idol.year && has(String(idol.year))" class="flex flex-col items-center justify-center p-3 bg-white rounded-2xl border border-orange-200 shadow-sm min-w-[80px] flex-shrink-0">
-                <span class="text-[9px] uppercase tracking-widest text-orange-400 font-bold">Year</span>
-                <span class="text-2xl font-black text-orange-600">{{ idol.year }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- 3. Sacred Identity & Mythology -->
       <div v-if="has(tirth.mythology)" class="relative">
