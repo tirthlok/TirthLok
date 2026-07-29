@@ -64,7 +64,7 @@
           class="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1"
         >
           <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          {{ room.total_inventory }} left
+          {{ room.available_rooms ?? room.total_inventory }} left
         </span>
         <span
           v-else
@@ -119,7 +119,7 @@
       <!-- Inventory Count -->
       <div v-if="statusClass !== 'sold_out'" class="flex items-center gap-2 text-xs">
         <div :class="['w-2 h-2 rounded-full', statusClass === 'limited' ? 'bg-amber-500 animate-pulse' : 'bg-green-500']" />
-        <span class="text-gray-600 font-medium">{{ room.total_inventory }} rooms available</span>
+        <span class="text-gray-600 font-medium">{{ room.available_rooms ?? room.total_inventory }} rooms available</span>
       </div>
 
       <!-- Amenities -->

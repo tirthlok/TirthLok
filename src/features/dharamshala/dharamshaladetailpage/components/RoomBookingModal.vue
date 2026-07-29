@@ -83,10 +83,23 @@
                       />
                     </div>
                   </div>
-                  <!-- Night Count Badge -->
-                  <div v-if="booking.nights > 0" class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-                    <Icon name="Moon" :size="14" class="text-blue-600" />
-                    <span class="text-sm font-semibold text-blue-700">{{ booking.nights }} night{{ booking.nights > 1 ? 's' : '' }}</span>
+                  <!-- Night Count & Availability Badge -->
+                  <div v-if="booking.nights > 0" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                    <div class="flex items-center gap-2">
+                      <Icon name="Moon" :size="14" class="text-blue-600" />
+                      <span class="text-sm font-semibold text-blue-700">{{ booking.nights }} night{{ booking.nights > 1 ? 's' : '' }}</span>
+                    </div>
+                    <div v-if="booking.selectedRoom?.available_rooms !== undefined" 
+                         :class="[
+                           'text-sm font-bold',
+                           booking.selectedRoom.available_rooms > 0 ? 'text-green-700' : 'text-red-700'
+                         ]">
+                      {{ booking.selectedRoom.available_rooms > 0 ? `${booking.selectedRoom.available_rooms} Rooms Available` : 'Sold Out / 0 Rooms Available' }}
+                    </div>
+                    <div v-else class="flex items-center gap-2 text-sm font-semibold text-blue-700">
+                      <div class="w-3 h-3 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                      Checking availability...
+                    </div>
                   </div>
                 </div>
 

@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const supabase = getSupabaseTirthlok()
+    const supabase = getSupabaseTirthlok() as any
 
     // Resolve dharamshala_id
     let dharamshalaId = decodeURIComponent(id)
@@ -67,8 +67,8 @@ export default defineEventHandler(async (event) => {
       dharamshalaId = detailData.dharamshala_id
     }
 
-    // Query available rooms with sufficient capacity and inventory
-    const { data, error } = await supabase
+    // Query available rooms with sufficient capacity
+    const { data: roomTypes, error: roomsError } = await supabase
       .from('room_types')
       .select('*')
       .eq('dharamshala_id', dharamshalaId)
@@ -77,14 +77,60 @@ export default defineEventHandler(async (event) => {
       .gt('total_inventory', 0)
       .order('base_price', { ascending: true })
 
-    if (error) {
-      console.error('[availability] fetch failed:', error.message)
+    if (roomsError) {
+      console.error('[availability] fetch failed:', roomsError.message)
       throw createError({ statusCode: 500, statusMessage: 'Failed to check room availability' })
     }
 
+    // Query active overlapping bookings for these dates in this dharamshala
+    const { data: bookings, error: bookingsError } = await supabase
+      .from('bookings')
+      .select('room_type_id, check_in_date, check_out_date, rooms_count')
+      .eq('dharamshala_id', dharamshalaId)
+      .not('status', 'in', '(cancelled,refunded)')
+      .lt('check_in_date', checkOutDate)
+      .gt('check_out_date', checkInDate)
+
+    if (bookingsError) {
+      console.error('[availability] bookings fetch failed:', bookingsError.message)
+      throw createError({ statusCode: 500, statusMessage: 'Failed to check room availability' })
+    }
+
+    // Calculate available_rooms for each room type date-wise
+    const checkIn = new Date(checkInDate)
+    const checkOut = new Date(checkOutDate)
+
+    const processedRooms = (roomTypes || []).map((room: any) => {
+      let maxOccupancy = 0
+      const current = new Date(checkIn)
+
+      while (current < checkOut) {
+        const dateStr = current.toISOString().split('T')[0]
+        let occupiedOnDate = 0
+
+        for (const b of bookings || []) {
+          if (b.room_type_id === room.room_type_id && b.check_in_date <= dateStr && b.check_out_date > dateStr) {
+            occupiedOnDate += b.rooms_count || 1
+          }
+        }
+
+        if (occupiedOnDate > maxOccupancy) {
+          maxOccupancy = occupiedOnDate
+        }
+
+        current.setDate(current.getDate() + 1)
+      }
+
+      const availableRooms = Math.max(0, room.total_inventory - maxOccupancy)
+      return {
+        ...room,
+        available_rooms: availableRooms
+      }
+    })
+
     return {
       success: true,
-      data: data || [],
+      data: processedRooms,
       source: 'supabase',
     }
   } catch (error: any) {

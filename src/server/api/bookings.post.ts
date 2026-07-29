@@ -3,7 +3,6 @@
  * Validates inventory, creates booking record, and decrements room inventory
  * Queries tirthlok.room_types directly
  */
-import type { Booking } from '~/types/models'
 import { getSupabaseTirthlok, getUserIdFromEvent } from '~/server/utils/supabase'
 import {
   sendBookingConfirmation,
@@ -58,7 +57,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const supabase = getSupabaseTirthlok()
+  const supabase = getSupabaseTirthlok() as any
 
   // Allow max 5 bookings per user in the last 10 minutes
   const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
@@ -99,11 +98,56 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Step 2: Validate inventory > 0
-    if (room.total_inventory <= 0) {
+    const roomsCount = parseInt(body.roomsCount || body.rooms_count || 1, 10) || 1
+    if (roomsCount < 1) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid number of rooms requested',
+      })
+    }
+
+    // Step 2: Validate available rooms date-wise immediately before booking
+    const { data: activeBookings, error: activeBookingsError } = await supabase
+      .from('bookings')
+      .select('check_in_date, check_out_date, rooms_count')
+      .eq('room_type_id', body.roomId)
+      .not('status', 'in', '(cancelled,refunded)')
+      .lt('check_in_date', body.checkOutDate)
+      .gt('check_out_date', body.checkInDate)
+
+    if (activeBookingsError) {
+      console.error('[bookings] active bookings check failed:', activeBookingsError.message)
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Failed to verify room availability',
+      })
+    }
+
+    let maxOccupancy = 0
+    const currentCheck = new Date(checkIn)
+
+    while (currentCheck < checkOut) {
+      const dateStr = currentCheck.toISOString().split('T')[0]
+      let occupiedOnDate = 0
+
+      for (const b of activeBookings || []) {
+        if (b.check_in_date <= dateStr && b.check_out_date > dateStr) {
+          occupiedOnDate += b.rooms_count || 1
+        }
+      }
+
+      if (occupiedOnDate > maxOccupancy) {
+        maxOccupancy = occupiedOnDate
+      }
+
+      currentCheck.setDate(currentCheck.getDate() + 1)
+    }
+
+    const availableRooms = Math.max(0, room.total_inventory - maxOccupancy)
+    if (roomsCount > availableRooms) {
       throw createError({
         statusCode: 409,
-        statusMessage: 'This room type is fully booked. No inventory available.',
+        statusMessage: `Requested ${roomsCount} room(s), but only ${availableRooms} room(s) are available for the selected dates.`,
       })
     }
 
@@ -128,7 +172,7 @@ export default defineEventHandler(async (event) => {
       Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)),
       1
     )
-    const subtotal = room.base_price * nights
+    const subtotal = room.base_price * nights * roomsCount
     const tax = Math.round(subtotal * 0.05 * 100) / 100 // 5% GST
     const serviceCharge = 50 // flat service charge
     const discount = body.discount || 0
@@ -141,7 +185,7 @@ export default defineEventHandler(async (event) => {
         user_id:          userId,
         dharamshala_id:   body.dharamshalaId,
         room_type_id:     body.roomId,
-        rooms_count:      1,
+        rooms_count:      roomsCount,
         check_in_date:    body.checkInDate,
         check_out_date:   body.checkOutDate,
         total_amount:     grandTotal,
@@ -167,16 +211,16 @@ export default defineEventHandler(async (event) => {
 
     // Step 7: Write to room_inventory_ledger for each booked date
     const ledgerEntries = []
-    const current = new Date(checkIn)
-    while (current < checkOut) {
-      const dateStr = current.toISOString().split('T')[0]
+    const currentLedger = new Date(checkIn)
+    while (currentLedger < checkOut) {
+      const dateStr = currentLedger.toISOString().split('T')[0]
       ledgerEntries.push({
         room_type_id:    body.roomId,
         booking_date:    dateStr,
-        allocated_rooms: 1,
+        allocated_rooms: roomsCount,
         held_rooms:      0,
       })
-      current.setDate(current.getDate() + 1)
+      currentLedger.setDate(currentLedger.getDate() + 1)
     }
 
     const { error: ledgerError } = await supabase

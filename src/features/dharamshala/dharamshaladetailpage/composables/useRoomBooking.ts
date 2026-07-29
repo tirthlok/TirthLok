@@ -15,6 +15,7 @@ export function useRoomBooking(dharamshalaId: string) {
     getRoomAvailabilityStatus,
     getTotalGuests,
     createBooking,
+    checkRoomAvailability,
   } = useRoomBookingApi()
 
   // ─── State ──────────────────────────────────────────────
@@ -100,6 +101,9 @@ export function useRoomBooking(dharamshalaId: string) {
     if (selectedRoom.value && totalGuests.value > selectedRoom.value.max_guests) {
       errors.push(`Maximum ${selectedRoom.value.max_guests} guests allowed`)
     }
+    if (selectedRoom.value && selectedRoom.value.available_rooms !== undefined && selectedRoom.value.available_rooms <= 0) {
+      errors.push('This room type is fully booked for the selected dates')
+    }
     if (!guestName.value.trim()) errors.push('Guest name is required')
     if (!guestEmail.value.trim()) errors.push('Email is required')
     if (guestEmail.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.value)) {
@@ -125,6 +129,34 @@ export function useRoomBooking(dharamshalaId: string) {
       const d = new Date(newVal)
       d.setDate(d.getDate() + 1)
       checkOutDate.value = d.toISOString().split('T')[0]
+    }
+  })
+
+  // Update selected room availability dynamically when dates change
+  watch([checkInDate, checkOutDate], async ([newCheckIn, newCheckOut]) => {
+    if (newCheckIn && newCheckOut && newCheckOut > newCheckIn && selectedRoom.value) {
+      selectedRoom.value.available_rooms = undefined
+      try {
+        const rooms = await checkRoomAvailability(dharamshalaId, newCheckIn, newCheckOut)
+        const matched = rooms.find(r => r.room_type_id === selectedRoom.value?.room_type_id)
+        if (matched) {
+          selectedRoom.value.available_rooms = matched.available_rooms
+        }
+      } catch (err) {
+        console.error('Failed to check dynamic room availability:', err)
+      }
+    }
+  })
+
+  // Auto-display date/capacity validation errors in the modal error area
+  watch(validationErrors, (newErrors) => {
+    const dateOrCapacityError = newErrors.find(e => 
+      e.includes('date') || e.includes('booked') || e.includes('guests')
+    )
+    if (dateOrCapacityError) {
+      bookingError.value = dateOrCapacityError
+    } else if (bookingError.value && (bookingError.value.includes('date') || bookingError.value.includes('booked') || bookingError.value.includes('guests'))) {
+      bookingError.value = ''
     }
   })
 

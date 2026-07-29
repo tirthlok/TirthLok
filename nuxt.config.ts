@@ -75,6 +75,10 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
+  experimental: {
+    appManifest: false
+  },
+
   build: {
     transpile: ['@supabase/ssr'],
   },

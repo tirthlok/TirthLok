@@ -194,8 +194,9 @@ export const useRoomBookingApi = () => {
    * Derive availability status from room inventory
    */
   const getRoomAvailabilityStatus = (room: RoomType): RoomAvailabilityStatus => {
-    if (!room.is_available_ui || room.total_inventory <= 0) return 'sold_out'
-    if (room.total_inventory <= 5) return 'limited'
+    const inventory = room.available_rooms !== undefined ? room.available_rooms : room.total_inventory
+    if (!room.is_available_ui || inventory <= 0) return 'sold_out'
+    if (inventory <= 5) return 'limited'
     return 'available'
   }
 

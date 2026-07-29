@@ -113,6 +113,7 @@ export interface RoomType {
   max_guests: number
   base_price: number
   total_inventory: number
+  available_rooms?: number
   amenities: string[]
   room_type_images: string[]
   is_available_ui: boolean
